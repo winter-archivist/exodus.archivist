@@ -17,5 +17,5 @@ async def setup(CLIENT):
     log.info('> Template Loaded')
 
 
-async def teardown(CLIENT):
+async def teardown():
     log.critical('> Template Unloaded')

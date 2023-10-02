@@ -47,9 +47,9 @@ CLIENT = ExodusClient(command_prefix=CLIENT_PREFIX, intents=INTENTS)
 @CLIENT.event
 async def on_ready():
     log.info('$ Loading Bootstrap Cogs...')
-    log.info('$ Please Wait...')
     # Bootstrap Cogs Loading Start
     await CLIENT.load_extension('cogs.cogManager')
+    await CLIENT.load_extension('cogs.vampire')
     # Bootstrap Cogs Loading Ended
     log.info('$ Bot Online | All Bootstrap Cogs Loaded.')
 

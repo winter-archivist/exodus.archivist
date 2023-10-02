@@ -1,5 +1,25 @@
+import discord
 from zenlog import log
 import yaml
+import sqlite3
+
+embed_colors = {
+    "white": 0xFFFFFF,
+    "black": 0x000000,
+    "purple": 0x800080,
+    "red": 0xFF0000,
+    "blue": 0x0000FF,
+    "dark_yellow": 0x8B8000,
+    "cyan": 0x00FFF
+}
+
+
+async def roleCheck(targetUser, ctx, roleName):
+    checkRole = discord.utils.find(lambda ringo: ringo.name == f'{roleName}', ctx.message.guild.roles)
+    if checkRole in targetUser.roles:
+        return True
+    else:
+        return False
 
 
 async def cacheHandler(*, primaryRunType=None, secondaryRunType=None, targetCache=None, dataInput=None, searchFor=None):
@@ -44,6 +64,10 @@ async def cacheHandler(*, primaryRunType=None, secondaryRunType=None, targetCach
             return
         with open(f'{targetCache}', 'w') as file:
             pass
+
+
+async def dbHandler(*, primaryRunType=None, secondaryRunType=None, targetDB=None, dataInput=None, searchFor=None):
+    pass
 
 
 async def embedHandler(*, primaryRunType, secondaryRunType=None, interaction=None, handled_embeds):
