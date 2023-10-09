@@ -86,6 +86,9 @@ async def embedHandler(*, primaryRunType, secondaryRunType=None, interaction=Non
             yaml_error_embed.add_field(name='Solution:', value=f'Cache Cleared', inline=False)
             log.info('> Embeds Set for CogManager...')
 
+        if secondaryRunType == '--vr':  # veRoll
+            pass
+
     elif primaryRunType == '-r':  # Resets an embed
 
         if interaction is None:  # Logs Error & returns

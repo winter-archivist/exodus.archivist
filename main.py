@@ -10,7 +10,7 @@ from discord.ext import commands
 from zenlog import log
 
 TOKEN: str = os.environ["TOKEN"]
-CLIENT_PREFIX: str = '.'
+CLIENT_PREFIX: str = 'ex.'
 
 
 # Custom Client & Handler
@@ -48,7 +48,7 @@ CLIENT = ExodusClient(command_prefix=CLIENT_PREFIX, intents=INTENTS)
 async def on_ready():
     log.info('$ Loading Bootstrap Cogs...')
     # Bootstrap Cogs Loading Start
-    await CLIENT.load_extension('cogs.cogManager')
+    await CLIENT.load_extension('cogManager')
     await CLIENT.load_extension('cogs.vampire')
     # Bootstrap Cogs Loading Ended
     log.info('$ Bot Online | All Bootstrap Cogs Loaded.')
