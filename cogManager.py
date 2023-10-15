@@ -1,25 +1,16 @@
 import discord
 from discord.ext import commands
 from discord.ui import View
-
 from zenlog import log
 
-from misc import ashen_utils as au
+cog_manager_embed = discord.Embed(title='Cog Manager', color=0x8A2BE2)
+cog_manager_embed.add_field(name='targetCog:', value=f'N/A', inline=True)
+cog_manager_embed.add_field(name='operationType:', value=f'N/A', inline=True)
+cog_manager_embed.add_field(name='CMD:', value=f'N/A', inline=False)
 
-cog_manager_embed = discord.Embed(title='Cog Manager', description='', color=0x8A2BE2)
-non_admin_embed = discord.Embed(title='Requirements Unmet',
-                                description='You\'re not an administrator of this bot.', color=0xFF0000)
-yaml_error_embed = discord.Embed(title='Cog Manager Error', color=0xFF0000)
-
-
-async def CacheData_ExistCheck(*, checkFor, interaction):
-    does_exist = await au.cacheHandler(primaryRunType='-e', targetCache='cogs/shared/cache/cogManager.yaml', searchFor=checkFor)
-    if bool(does_exist) is True:
-        await au.embedHandler(primaryRunType='-r', secondaryRunType='--cm', interaction=interaction, handled_embeds=cog_manager_embed)
-        await au.cacheHandler(secondaryRunType='--c', targetCache='cogs/shared/cache/cogManager.yaml')
-        yaml_error_embed.set_field_at(index=0, name='Issue:', value=f'targetCog Already Provided', inline=False)
-        await interaction.followup.send(embed=yaml_error_embed, ephemeral=True)
-        return True
+run_command = \
+    {"operation": 'tc.Ungiven1',
+     "target": 'Ungiven2'}
 
 
 class ExodusView(View):
@@ -31,24 +22,22 @@ class ExodusView(View):
         placeholder='Select targetCog',
         options=[
             discord.SelectOption(
-                label='Template', value='cogs.template',
+                label='Template', value='template',
                 emoji='<a:pydis_pridespin:1113716405192376351>',
             ),
             discord.SelectOption(
-                label='Vampire', value='cogs.vampire',
+                label='Vampire', value='vampire',
                 emoji='<:bloodT:555804549173084160>',
             )],
         row=0)
     async def targetCog_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != '.ashywinter':
-            await interaction.response.send_message(embed=non_admin_embed, ephemeral=True)
             return
 
-        if await CacheData_ExistCheck(checkFor='targetCog', interaction=interaction) is True:
-            return
+        global run_command
+        run_command["target"] = f'{select.values[0]}'
 
-        await au.cacheHandler(primaryRunType='-w', targetCache='cogs/shared/cache/cogManager.yaml', dataInput={'targetCog': f'{select.values[0]}'})
-        cog_manager_embed.set_field_at(index=0, name='targetCog:', value=f'{select.values[0]}', inline=False)
+        cog_manager_embed.set_field_at(index=0, name='targetCog:', value=f'{run_command["target"]}', inline=True)
         await interaction.response.edit_message(embed=cog_manager_embed)
 
     @discord.ui.select(
@@ -63,49 +52,39 @@ class ExodusView(View):
         row=1)
     async def operationType_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != '.ashywinter':
-            await interaction.response.send_message(embed=non_admin_embed, ephemeral=True)
             return
 
-        if await CacheData_ExistCheck(checkFor='operationType', interaction=interaction) is True:
-            return
+        global run_command
+        run_command["operation"] = f'{select.values[0]}'
 
-        await au.cacheWrite('cogs/shared/cache/cogManager.yaml', {'operationType': f'{select.values[0]}'})
-        # await au.cacheHandler(primaryRunType='-w', targetCache='cogs/shared/cache/cogManager.yaml', dataInput={'operationType': f'{select.values[0]}'})
-
-        cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'{select.values[0]}', inline=False)
+        cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'{run_command["operation"]}', inline=True)
         await interaction.response.edit_message(embed=cog_manager_embed)
 
     @discord.ui.button(label='Run', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green)
     async def run_button_callback(self, interaction, button):
         if str(interaction.user) != '.ashywinter':
-            await interaction.response.send_message(embed=non_admin_embed, ephemeral=True)
             return
 
-        data = await au.cacheRead('cogs/shared/cache/cogManager.yaml')
-        use_data = {}; use_data.update(data)
-        target_cog = use_data['targetCog']; operation_type = use_data['operationType']
+        global run_command
+        cmd_operation = run_command["operation"]
+        cmd_target = run_command["target"]
 
-        if operation_type == 'load':
-            await self.CLIENT.load_extension(f'{target_cog}')
+        match cmd_operation:
+            case 'load':
+                await self.CLIENT.load_extension(f'cogs.{cmd_target}')
 
-        elif operation_type == 'unload':
-            await self.CLIENT.unload_extension(f'{target_cog}')
+            case 'unload':
+                await self.CLIENT.unload_extension(f'cogs.{cmd_target}')
 
-        elif operation_type == 'reload':
-            await self.CLIENT.reload_extension(f'{target_cog}')
+            case 'unload':
+                await self.CLIENT.reload_extension(f'cogs.{cmd_target}')
 
-        await au.embedHandler(primaryRunType='-r', secondaryRunType='--cm', interaction=interaction, handled_embeds=cog_manager_embed)
-        await au.cacheHandler(secondaryRunType='--c', targetCache='cogs/shared/cache/cogManager.yaml')
-        cog_manager_embed.set_field_at(index=2, name='Run:', value=f'{operation_type} -> {target_cog}', inline=False)
-
-    @discord.ui.button(label='Clear', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red)
-    async def clear_button_callback(self, interaction, button):
-        if str(interaction.user) != '.ashywinter':
-            await interaction.response.send_message(embed=non_admin_embed, ephemeral=True)
-            return
-
-        await au.embedHandler(primaryRunType='-r', secondaryRunType='--cm', interaction=interaction, handled_embeds=cog_manager_embed)
-        await au.cacheHandler(secondaryRunType='--c', targetCache='cogs/shared/cache/cogManager.yaml')
+        cog_manager_embed.set_field_at(index=0, name='targetCog:', value=f'N/A', inline=True)
+        cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'N/A', inline=True)
+        cog_manager_embed.set_field_at(index=2, name='CMD:', value=f'{cmd_operation} -> {cmd_target}', inline=False)
+        run_command["operation"] = 'Ungiven1'
+        run_command["target"] = 'Ungiven2'
+        await interaction.response.edit_message(embed=cog_manager_embed)
 
 
 class cog_manager(commands.Cog):
@@ -113,33 +92,16 @@ class cog_manager(commands.Cog):
         self.CLIENT = CLIENT
 
     @commands.command(hidden=True)
-    async def _cog(self, ctx):
-
-        if not isinstance(ctx.channel, discord.channel.DMChannel):
-            await ctx.channel.purge(limit=1)
-
-        if str(ctx.author) == '.ashywinter':
-            await au.cacheHandler(secondaryRunType='--c', targetCache='cogs/shared/cache/cogManager.yaml')
-            await ctx.author.send(embed=cog_manager_embed, view=ExodusView(self.CLIENT))
-
-    @commands.command(hidden=True)
     async def cog(self, ctx):
-
         if not isinstance(ctx.channel, discord.channel.DMChannel):
             await ctx.channel.purge(limit=1)
 
-        if str(ctx.author) == '.ashywinter':
-            await au.cacheHandler(secondaryRunType='--c', targetCache='cogs/shared/cache/cogManager.yaml')
-            await ctx.send(embed=cog_manager_embed, view=ExodusView(self.CLIENT))
+        if str(ctx.author) != '.ashywinter':
+            return
+
+        await ctx.send(embed=cog_manager_embed, view=ExodusView(self.CLIENT))
 
 
 async def setup(CLIENT):
-    await au.embedHandler(primaryRunType='-$', secondaryRunType='--cm', handled_embeds=(cog_manager_embed, yaml_error_embed))
-    # await embedHandler(runType='-s')
-    await au.cacheHandler(secondaryRunType='--c', targetCache='cogs/shared/cache/cogManager.yaml')
     await CLIENT.add_cog(cog_manager(CLIENT))
     log.info('> Cog Manager Loaded')
-
-
-async def teardown():
-    log.critical('> Cog Manager Unloaded | _FIND OUT WHY HOLY SHIT_')

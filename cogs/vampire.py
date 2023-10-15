@@ -92,7 +92,6 @@ class Vampire(commands.Cog):
 
 
 async def setup(CLIENT):
-    await au.embedHandler(primaryRunType='-$', secondaryRunType='--vr', handled_embeds=None)
     await CLIENT.add_cog(Vampire(CLIENT))
     log.info('> Vampire Loaded')
 
