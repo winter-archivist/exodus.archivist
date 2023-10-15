@@ -35,12 +35,8 @@ class ExodusView(View):
                 emoji='<a:pydis_pridespin:1113716405192376351>',
             ),
             discord.SelectOption(
-                label='Orokast Rolls', value='cogs.orokast_rolls',
-                emoji='<:pixels_snek_2:847766933084045332>',
-            ),
-            discord.SelectOption(
-                label='General Rolls', value='cogs.general_rolls',
-                emoji='<:gorbbrain:725954288005677056>',
+                label='Vampire', value='cogs.vampire',
+                emoji='<:bloodT:555804549173084160>',
             )],
         row=0)
     async def targetCog_select_callback(self, interaction, select: discord.ui.Select):
@@ -73,7 +69,8 @@ class ExodusView(View):
         if await CacheData_ExistCheck(checkFor='operationType', interaction=interaction) is True:
             return
 
-        await au.cacheHandler(primaryRunType='-w', targetCache='cogs/shared/cache/cogManager.yaml', dataInput={'operationType': f'{select.values[0]}'})
+        await au.cacheWrite('cogs/shared/cache/cogManager.yaml', {'operationType': f'{select.values[0]}'})
+        # await au.cacheHandler(primaryRunType='-w', targetCache='cogs/shared/cache/cogManager.yaml', dataInput={'operationType': f'{select.values[0]}'})
 
         cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'{select.values[0]}', inline=False)
         await interaction.response.edit_message(embed=cog_manager_embed)
@@ -84,7 +81,7 @@ class ExodusView(View):
             await interaction.response.send_message(embed=non_admin_embed, ephemeral=True)
             return
 
-        data = await au.cacheHandler(primaryRunType='-r', targetCache='cogs/shared/cache/cogManager.yaml')
+        data = await au.cacheRead('cogs/shared/cache/cogManager.yaml')
         use_data = {}; use_data.update(data)
         target_cog = use_data['targetCog']; operation_type = use_data['operationType']
 

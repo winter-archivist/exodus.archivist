@@ -5,6 +5,7 @@ from zenlog import log
 
 from misc import ashen_utils as au
 from cogs.shared.config import vampire as v
+import sqlite3
 
 
 async def vtmMenuHandler(parsingInfo, veInfo):
@@ -43,19 +44,17 @@ class Vampire(commands.Cog):
         AS IF FROM ANOTHER PLAYER'S ACCOUNT
         """
         parsingInfo = (targetUser, ctx, adminPanelPassphrase, self)
-        # Used by all the views below, stays the same so no need to repeat
-        # Do not change this, everything will break :)
+        # Used by all vtmMenuHandler views
+        # Do not change this, they will all fucking shatter :)
 
         match view:
-            # Don't use vtmMenuHandler :: Handle _ALL_ Logic Locally or in ve file
-            case 'chargen':
-                await ctx.send(embed=v.gen.chargen_embed, view=v.gen.CharGenView(self.CLIENT))  # CharGen View
+            # Don't use vtmMenuHandler :: Determining Logic is Handled Here. Use veV file for View Logic
             case 'homebrew':
                 await ctx.send(embed=v.hbr.homebrew_embed, view=v.hbr.HomebrewView(self.CLIENT))  # Homebrew View
             case 'roll':
                 await ctx.send(embed=v.rll.roll_embed, view=v.rll.RollView(self.CLIENT))  # Rolling View
 
-            # Uses vtmMenuHandler :: Logic should all be handled at declaration
+            # Uses vtmMenuHandler :: Determining Logic is at vtmMenuHandler. Use veV file for View Logic
             case 'cobweb':
                 await vtmMenuHandler(parsingInfo, v.web.cobwebInfo)
             case 'mark':
@@ -65,8 +64,31 @@ class Vampire(commands.Cog):
             case 'rat':
                 await vtmMenuHandler(parsingInfo, v.rat.ratInfo)
 
-            case _:  # Local Logic :: Handle Logic Locally
+            case _:  # No Logic
                 await ctx.send(embed=v.nov.no_view_embed)
+
+    @commands.command()
+    async def make(self, ctx):
+        if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
+        if str(ctx.author) != '.ashywinter':
+            await ctx.send('No. uwu')
+            return
+        db = sqlite3.connect(f'{au.vePCDBLocation}apollyon.sqlite')
+        cursor = db.cursor()
+        # Blank Vampire database Maker
+        cursor.execute('CREATE TABLE IF NOT EXISTS ownerid(id TEXT)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS physicalStats(strength INTEGER, dexterity INTEGER, stamina INTEGER)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS socialStats(charisma INTEGER, manipulation INTEGER, composure INTEGER)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS mentalStats(intelligence INTEGER, wits INTEGER, resolve INTEGER)')
+        cursor.execute('CREATE TABLE IF NOT EXISTS hunger(hungerCount INTEGER)')
+
+        # Basic Value Input into Blank Vampire DB
+        cursor.execute('INSERT INTO physicalStats (strength, dexterity, stamina) VALUES(1,2,3)')
+        cursor.execute('INSERT INTO socialStats (charisma, manipulation, composure) VALUES(3,4,5)')
+        cursor.execute('INSERT INTO mentalStats (intelligence, wits, resolve) VALUES(6,7,8)')
+        cursor.execute('INSERT INTO hunger (hungerCount) VALUES(1)')
+        db.commit()
+        db.close()
 
 
 async def setup(CLIENT):
