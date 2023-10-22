@@ -7,45 +7,100 @@ import sqlite3
 from random import randint
 
 from misc import ashen_utils as au
-import cogs.vampire.rollExtras as re
+from cogs.vampire.select import selections as s
 
+selection_embed = (discord.Embed(title='',
+                                 description='',
+                                 color=au.embed_colors["purple"]))
 
-selection_embed = (
-    discord.Embed(title='',
-                  description='',
-                  color=au.embed_colors["purple"]))
+roll_embed = (discord.Embed(title='Roll',
+                            description='',
+                            color=au.embed_colors["purple"]))
 
+roll_details_embed = (discord.Embed(title='Extra Details:',
+                                    description='If you believe there is an issue, screenshot this and send it to `.ashywinter`',
+                                    color=au.embed_colors["black"]))
 
-roll_embed = (
-    discord.Embed(title='Roll',
-                  description='',
-                  color=au.embed_colors["purple"]))
-
-roll_details_embed = (
-    discord.Embed(title='Extra Details:',
-                  description='If you believe there is an issue, screenshot this and send it to `.ashywinter`',
-                  color=au.embed_colors["black"]))
-
-not_enough_wp_embed = (
-    discord.Embed(title='Willpower Reroll',
-                  description='You don\'t have enough willpower.',
-                  color=au.embed_colors["red"]))
+not_enough_wp_embed = (discord.Embed(title='Willpower Reroll',
+                                     description='You don\'t have enough willpower.',
+                                     color=au.embed_colors["red"]))
 
 character = 'Send `[cN] Error.001` to `.ashywinter`'
 user = 'Send `[uV] Error.001` to `.ashywinter`'
-roll_pool = 0
+roll_pool, difficulty, result = 0, 0, 0
 pool_composition = []
-difficulty = 0
-result = 0
-reroll_dict = {
-    'r_crit': 0,
-    'rh_crit': 0,
-    'r_success': 0,
-    'rh_success': 0,
-    'r_fail': 0,
-    'rh_fail': 0,
-    'rh_skull': 0
-}
+reroll_dict = {'r_crit'    : 0,
+               'rh_crit'   : 0,
+               'r_success' : 0,
+               'rh_success': 0,
+               'r_fail'    : 0,
+               'rh_fail'   : 0,
+               'rh_skull'  : 0}
+
+
+async def rollDecide(embed, rolls, diffi):
+    embed.clear_fields()
+    r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = rolls
+
+    crits = 0
+    whileTotal = r_crit + rh_crit
+    flag = 0
+
+    while whileTotal > 0:
+        if r_crit + rh_crit > 2:
+            if r_crit >= 2:
+                crits += 4
+                r_crit -= 2
+
+            elif rh_crit >= 2:
+                crits += 4
+                flag += 1
+                rh_crit -= 2
+
+            elif r_crit + rh_crit >= 2:
+                crits += 4
+                flag += 1
+                break
+        else:
+            break
+        whileTotal -= 1
+
+    if flag > 0:
+        flag = 'Messy Crit'
+
+    crits += rh_crit + r_crit
+
+    totalSuccesses = int(r_success + rh_success + crits)
+    if totalSuccesses < int(diffi) and int(rh_skull) > 0:
+        flag = 'Bestial Failure'
+    elif totalSuccesses < int(diffi):
+        flag = 'Fail'
+    elif totalSuccesses >= int(diffi) and flag != 'Messy Crit':
+        flag = 'Success'
+
+    if r_crit > 0:
+        embed.add_field(name='Crits:', value=f'{r_crit}', inline=True)
+    if rh_crit > 0:
+        embed.add_field(name='Hunger Crits:', value=f'{rh_crit}', inline=True)
+    embed.add_field(name='', value='', inline=False)
+
+    if r_success > 0:
+        embed.add_field(name='Successes:', value=f'{r_success}', inline=True)
+    if rh_success > 0:
+        embed.add_field(name='Hunger Successes:', value=f'{rh_success}', inline=True)
+    embed.add_field(name='', value='', inline=False)
+
+    if r_fail > 0:
+        embed.add_field(name='Fails:', value=f'{r_fail}', inline=True)
+    if rh_fail > 0:
+        embed.add_field(name='Hunger Fails:', value=f'{rh_fail}', inline=True)
+    embed.add_field(name='', value='', inline=False)
+
+    if rh_skull > 0:
+        embed.add_field(name='Skulls:', value=f'{rh_skull}', inline=False)
+    embed.add_field(name='', value='', inline=False)
+
+    return (totalSuccesses, flag), embed
 
 
 class AttributeView(View):
@@ -65,76 +120,40 @@ class AttributeView(View):
         placeholder='Select physicalAttribute',
         min_values=1,
         max_values=3,
-        options=[
-            discord.SelectOption(
-                label='Strength', value='strength',
-                emoji='<:color_01_blood_red:1136744533812596906>',
-            ),
-            discord.SelectOption(
-                label='Dexterity', value='dexterity',
-                emoji='<:color_04_orange:1136744764201512981> ',
-            ),
-            discord.SelectOption(
-                label='Stamina', value='stamina',
-                emoji='<:color_08_dark_green:1136753193691381760>',
-            )])
+        options=s.physicalAttributeOptions)
     async def physicalAttribute_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition
         targetTable = 'physicalAttributes'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
     @discord.ui.select(
         placeholder='Select socialAttributes',
         min_values=1,
         max_values=3,
-        options=[
-            discord.SelectOption(
-                label='Charisma', value='charisma',
-                emoji='<:color_01_blood_red:1136744533812596906>',
-            ),
-            discord.SelectOption(
-                label='Manipulation', value='manipulation',
-                emoji='<:color_04_orange:1136744764201512981> ',
-            ),
-            discord.SelectOption(
-                label='Composure', value='composure',
-                emoji='<:color_08_dark_green:1136753193691381760>',
-            )])
+        options=s.socialAttributeOptions)
     async def socialAttribute_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition
         targetTable = 'socialAttributes'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
     @discord.ui.select(
         placeholder='Select mentalAttribute',
         min_values=1,
         max_values=3,
-        options=[
-            discord.SelectOption(
-                label='Intelligence', value='intelligence',
-                emoji='<:color_01_blood_red:1136744533812596906>',
-            ),
-            discord.SelectOption(
-                label='Wits', value='wits',
-                emoji='<:color_04_orange:1136744764201512981> ',
-            ),
-            discord.SelectOption(
-                label='Resolve', value='resolve',
-                emoji='<:color_08_dark_green:1136753193691381760>',
-            )])
+        options=s.socialAttributeOptions)
     async def mentalAttribute_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition
         targetTable = 'mentalAttributes'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
 
 class SkillView(View):
@@ -154,40 +173,40 @@ class SkillView(View):
         placeholder='Select physicalSkill',
         min_values=1,
         max_values=3,
-        options=re.physicalSkillOptions)
+        options=s.physicalSkillOptions)
     async def physicalSkill_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition
         targetTable = 'physicalSkills'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
     @discord.ui.select(
         placeholder='Select socialSkill',
         min_values=1,
         max_values=3,
-        options=re.socialSkillOptions)
+        options=s.socialSkillOptions)
     async def socialSkill_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition
         targetTable = 'socialSkills'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
     @discord.ui.select(
         placeholder='Select mentalSkill',
         min_values=1,
         max_values=3,
-        options=re.mentalSkillOptions)
+        options=s.mentalSkillOptions)
     async def mentalSkill_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition, pool_composition
         targetTable = 'mentalSkills'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
 
 class DisciplineView(View):
@@ -205,14 +224,14 @@ class DisciplineView(View):
 
     @discord.ui.select(
         placeholder='Select disciplines',
-        options=re.disciplineOptions)
+        options=s.disciplineOptions)
     async def discipline_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
 
         global roll_pool, character, pool_composition
         targetTable = 'disciplines'
-        roll_pool = await re.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
+        roll_pool = await s.basicSelection(character, select.values, roll_pool, pool_composition, targetTable, interaction)
 
 
 class ExtraView(View):
@@ -222,7 +241,7 @@ class ExtraView(View):
 
     @discord.ui.select(
         placeholder='Select Extras',
-        options=re.extraOptions)
+        options=s.extraOptions)
     async def extra_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
@@ -246,11 +265,14 @@ class ExtraView(View):
         # r = roll
         # rh = roll hunger
         # TODO : kill me
-        r_crit = 0; rh_crit = 0
+        r_crit = 0;
+        rh_crit = 0
 
-        r_success = 0; rh_success = 0
+        r_success = 0;
+        rh_success = 0
 
-        r_fail = 0; rh_fail = 0
+        r_fail = 0;
+        rh_fail = 0
 
         rh_skull = 0
 
@@ -306,7 +328,7 @@ class ExtraView(View):
             r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull)
 
         die_results_packed = (r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull)
-        result, specEmbed = await re.rollDecide(roll_details_embed, die_results_packed, difficulty)
+        result, specEmbed = await rollDecide(roll_details_embed, die_results_packed, difficulty)
 
         roll_embed.add_field(name='Result:', value=f'{result[0]} | {result[1]}', inline=False)
 
@@ -320,7 +342,7 @@ class VampireRoll(commands.Cog):
 
     @commands.command()
     @commands.has_role('.Kindred')
-    async def roll(self, ctx, givenCharacter, givenDifficulty,):
+    async def roll(self, ctx, givenCharacter, givenDifficulty, ):
         if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
         db = sqlite3.connect(f'{au.vePCDBLocation}{givenCharacter}.sqlite')
         cursor = db.cursor()
@@ -454,11 +476,12 @@ class RerollView(View):
             db.commit()
             db.close()
         else:
-            cursor.execute(f'UPDATE willpower SET willpowerSUP={wpSUP + 4}')
+            cursor.execute(f'UPDATE willpower SET willpowerSUP={wpSUP + 1}')
             db.commit()
             db.close()
 
-        r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = reroll_dict['r_crit', 'rh_crit', 'r_success', 'rh_success', 'r_fail', 'rh_fail', 'rh_skull']
+        r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = reroll_dict[
+            'r_crit', 'rh_crit', 'r_success', 'rh_success', 'r_fail', 'rh_fail', 'rh_skull']
 
         rerollCount = r_fail
         if rerollCount > 3:
@@ -483,7 +506,7 @@ class RerollView(View):
             rerollCount -= 1
 
         die_results_packed = (r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull)
-        reroll_result, specEmbed = await re.rollDecide(roll_details_embed, die_results_packed, difficulty)
+        reroll_result, specEmbed = await rollDecide(roll_details_embed, die_results_packed, difficulty)
 
         roll_embed.add_field(name='New Result:', value=f'{reroll_result[0]} | {reroll_result[1]}', inline=True)
 
