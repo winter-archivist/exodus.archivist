@@ -1,5 +1,4 @@
 import cogs.shared.config.vampire.veHomebrew as hbr
-import cogs.shared.config.vampire.veRoll as rll
 import cogs.shared.config.vampire.veMark as mrk
 import cogs.shared.config.vampire.veCobweb as web
 import cogs.shared.config.vampire.veRat as rat

@@ -15,7 +15,3 @@ class TEMPLATE(commands.Cog):
 async def setup(CLIENT):
     await CLIENT.add_cog(TEMPLATE(CLIENT))
     log.info('> Template Loaded')
-
-
-async def teardown():
-    log.critical('> Template Unloaded')

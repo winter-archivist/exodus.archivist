@@ -1,8 +1,10 @@
-# PROJECT BRANCH:
-# MAIN #
+# ## ------------ ## #
+# ## BRANCH: MAIN ## #
+# ## ------------ ## #
 
 import os
 import typing
+import time
 
 import discord
 from discord.ext import commands
@@ -45,24 +47,21 @@ CLIENT = ExodusClient(command_prefix=CLIENT_PREFIX, intents=INTENTS)
 
 
 @CLIENT.event
+async def on_command_error(ctx, error):
+    """Error Handling"""
+    await ctx.send(f'`{error}`')
+
+
+@CLIENT.event
 async def on_ready():
-    log.info('$ Loading Bootstrap Cogs...')
-    # Bootstrap Cogs Loading Start
+    log.warn('$ Project Branch: MAIN')
+    log.info(f'$ Servers: {", ".join(str(x) for x in CLIENT.guilds)}\n$ Server Count: {len(CLIENT.guilds)}')
+    log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
+
+    log.warn('$ Loading Bootstrap Cogs...')
     await CLIENT.load_extension('cogManager')
-    await CLIENT.load_extension('cogs.vampire')
-    # Bootstrap Cogs Loading Ended
-    log.info('$ Bot Online | All Bootstrap Cogs Loaded.')
-
-
-@CLIENT.command()
-async def test(ctx: ExodusContext) -> None:
-    await ctx.channel.purge(limit=1)
-    await ctx.send('public_test')
-
-
-@CLIENT.command(hidden=True)
-async def _test(ctx: ExodusContext) -> None:
-    await ctx.channel.purge(limit=1)
-    await ctx.author.send('hidden_test')
+    await CLIENT.load_extension('cogs.vampire.vampireRoll')
+    log.warn('$ Bot Online | All Bootstrap Cogs Loaded.')
+    await CLIENT.change_presence(status=discord.Status.idle, activity=discord.Game('with Snakes.'))
 
 CLIENT.run(TOKEN)

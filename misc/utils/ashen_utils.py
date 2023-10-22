@@ -4,6 +4,7 @@ import yaml
 import sqlite3
 
 vePCDBLocation = 'cogs\\shared\\database\\vampire\\'
+veRollCacheLocation = 'cogs/shared/cache/veRoll.yaml'
 
 embed_colors = {
     "white": 0xFFFFFF,
@@ -73,15 +74,6 @@ async def dbDelete(*, targetDB, removeThis):
     cursor.execute(f'DELETE {removeThis} FROM {targetDB}')
     db.commit()
     return True
-
-
-async def dbDataExistCheck(targetDB, checkFor, condOne, condTwo):
-    db = sqlite3.connect(f'{targetDB}.sqlite')
-    cursor = db.cursor()
-    for row in cursor.execute(f'SELECT {checkFor} FROM {targetDB} WHERE {condOne}="{condTwo}"'):
-        return True
-    else:
-        return False
 
 
 async def dbMake(*, primaryRunType=None, secondaryRunType=None, targetDB=None, dataInput=None, searchFor=None):
