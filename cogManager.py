@@ -26,7 +26,7 @@ class ExodusView(View):
                 emoji='<a:pydis_pridespin:1113716405192376351>',
             ),
             discord.SelectOption(
-                label='Vampire', value='vampire',
+                label='Vampire', value='cogs.vampire.vampireRoll',
                 emoji='<:bloodT:555804549173084160>',
             )],
         row=0)
