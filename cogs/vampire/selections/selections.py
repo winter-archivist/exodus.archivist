@@ -1,10 +1,9 @@
 import discord
 import sqlite3
-from misc import ashen_utils as au
 
 
 async def basicSelection(character, selectValues, roll_pool, pool_composition, targetTable, interaction):
-    db = sqlite3.connect(f'{au.vePCDBLocation}{character}.sqlite')
+    db = sqlite3.connect(f'cogs//vampire//characters//{character}.sqlite')
     cursor = db.cursor()
     forVar = 0
 
