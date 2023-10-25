@@ -7,7 +7,7 @@ import sqlite3
 from random import randint
 
 from misc import ashen_utils as au
-from cogs.vampire.select import selections as s
+from cogs.vampire.selections import selections as s
 
 selection_embed = (discord.Embed(title='',
                                  description='',
@@ -35,9 +35,11 @@ reroll_dict = {'r_crit'    : 0,
                'rh_success': 0,
                'r_fail'    : 0,
                'rh_fail'   : 0,
-               'rh_skull'  : 0}
+               'rh_skull'  : 0
+               }
 
 
+# ! Yes I know this sucks.
 async def rollDecide(embed, rolls, diffi):
     embed.clear_fields()
     r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = rolls
@@ -78,6 +80,7 @@ async def rollDecide(embed, rolls, diffi):
     elif totalSuccesses >= int(diffi) and flag != 'Messy Crit':
         flag = 'Success'
 
+    # ! This sucks, but is just for the user to see all the roll details, really just for clarity
     if r_crit > 0:
         embed.add_field(name='Crits:', value=f'{r_crit}', inline=True)
     if rh_crit > 0:
@@ -101,6 +104,15 @@ async def rollDecide(embed, rolls, diffi):
     embed.add_field(name='', value='', inline=False)
 
     return (totalSuccesses, flag), embed
+
+
+async def hungerGrab(target_character: str) -> int:
+    db = sqlite3.connect(f'cogs//vampire//characters//{target_character}.sqlite')
+    cursor = db.cursor()
+    hunger_result_grab = cursor.execute('SELECT hungerCount FROM hunger')
+    hunger_result = hunger_result_grab.fetchone()[0]
+    db.close()
+    return hunger_result
 
 
 class AttributeView(View):
@@ -146,7 +158,7 @@ class AttributeView(View):
         placeholder='Select mentalAttribute',
         min_values=1,
         max_values=3,
-        options=s.socialAttributeOptions)
+        options=s.mentalAttributeOptions)
     async def mentalAttribute_select_callback(self, interaction, select: discord.ui.Select):
         if str(interaction.user) != f'{user}':
             return
@@ -251,6 +263,7 @@ class ExtraView(View):
 
         for x in select.values:
             roll_pool += int(select.values[forVar])
+            pool_composition.append(f'{int(select.values[forVar])}')
             forVar += 1
 
         await interaction.response.edit_message()
@@ -265,23 +278,15 @@ class ExtraView(View):
         # r = roll
         # rh = roll hunger
         # TODO : kill me
-        r_crit = 0;
-        rh_crit = 0
+        r_crit = 0; rh_crit = 0
 
-        r_success = 0;
-        rh_success = 0
+        r_success = 0; rh_success = 0
 
-        r_fail = 0;
-        rh_fail = 0
+        r_fail = 0; rh_fail = 0
 
         rh_skull = 0
 
-        db = sqlite3.connect(f'{au.vePCDBLocation}{character}.sqlite')
-        cursor = db.cursor()
-        hungerResultGrab = cursor.execute('SELECT hungerCount FROM hunger')
-        hungerResult = hungerResultGrab.fetchone()[0]
-        db.close()
-        hunger_count = hungerResult
+        hunger_count = await hungerGrab(character)
 
         roll_embed.add_field(name='Pool:', value=f'{roll_pool} | {" + ".join(pool_composition)}', inline=True)
 
@@ -319,8 +324,7 @@ class ExtraView(View):
                                 msg='Send `[regR.H] Error.002` to `.ashywinter`')
 
                 case _:
-                    await interaction.response.send_message(
-                        msg=f'Send `[regR] Error.003 {die_result} {hunger_count} {hungerResult}` to `.ashywinter`')
+                    await interaction.response.send_message(f'Send `[regR] Error.003 {die_result} {hunger_count}` to `.ashywinter`')
 
             whilePool -= 1
 
@@ -336,6 +340,72 @@ class ExtraView(View):
         await interaction.followup.send(embed=specEmbed, ephemeral=True)
 
 
+class RerollView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Willpower Reroll', emoji='<:bloodT:555804549173084160>', style=discord.ButtonStyle.red, row=0)
+    async def reroll_button_callback(self, interaction, button):
+        if str(interaction.user) != f'{user}':
+            return
+
+        global result, reroll_dict, difficulty, character
+
+        db = sqlite3.connect(f'cogs//vampire//characters//{character}.sqlite')
+        cursor = db.cursor()
+        wp_base = cursor.execute('SELECT willpowerBase FROM willpower').fetchone()[0]
+        wp_SUP = cursor.execute('SELECT willpowerSUP FROM willpower').fetchone()[0]
+        wp_AGG = cursor.execute('SELECT willpowerAGG FROM willpower').fetchone()[0]
+
+        if wp_base <= wp_AGG:
+            await interaction.response.edit_message(embeds=not_enough_wp_embed, view=None, ephemeral=True)
+            db.close()
+            return
+        elif wp_base <= wp_SUP:
+            cursor.execute('UPDATE willpower SET willpowerAGG=?', str(wp_AGG + 1))
+            db.commit()
+            db.close()
+        else:
+            cursor.execute('UPDATE willpower SET willpowerSUP=?', str(wp_SUP + 1))
+            db.commit()
+            db.close()
+
+        r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = reroll_dict[
+            'r_crit', 'rh_crit', 'r_success', 'rh_success', 'r_fail', 'rh_fail', 'rh_skull']
+
+        rerollCount = r_fail
+        if rerollCount > 3:
+            rerollCount = 3
+
+        r_fail -= 3
+
+        while 0 < rerollCount:
+            die_result = randint(1, 10)
+
+            match die_result:
+                case 10:
+                    r_crit += 1
+                case 9 | 8 | 7 | 6:
+                    r_success += 1
+                case 5 | 4 | 3 | 2 | 1:
+                    r_fail += 1
+                case _:
+                    await interaction.response.send_message(
+                        msg='Send `[regR.!H] Error.002` to `.ashywinter`')
+
+            rerollCount -= 1
+
+        die_results_packed = (r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull)
+        reroll_result, specEmbed = await rollDecide(roll_details_embed, die_results_packed, difficulty)
+
+        roll_embed.add_field(name='New Result:', value=f'{reroll_result[0]} | {reroll_result[1]}', inline=True)
+
+        await interaction.response.edit_message(embed=roll_embed, view=None)
+        await interaction.followup.send(embed=specEmbed, ephemeral=True)
+
+
+# * Commands are here
 class VampireRoll(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
@@ -344,7 +414,7 @@ class VampireRoll(commands.Cog):
     @commands.has_role('.Kindred')
     async def roll(self, ctx, givenCharacter, givenDifficulty, ):
         if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
-        db = sqlite3.connect(f'{au.vePCDBLocation}{givenCharacter}.sqlite')
+        db = sqlite3.connect(f'cogs//vampire//characters//{givenCharacter}.sqlite')
         cursor = db.cursor()
         charOwnerResultGrab = cursor.execute('SELECT userID FROM charOwner')
         charOwnerResult = charOwnerResultGrab.fetchone()[0]
@@ -374,7 +444,7 @@ class VampireRoll(commands.Cog):
     async def make(self, ctx, targetCharacter):
         if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
         if str(ctx.author) != '.ashywinter': return
-        db = sqlite3.connect(f'{au.vePCDBLocation}{targetCharacter}.sqlite')
+        db = sqlite3.connect(f'cogs//vampire//characters//{targetCharacter}.sqlite')
         cursor = db.cursor()
         # Blank Vampire database Maker
 
@@ -441,77 +511,9 @@ class VampireRoll(commands.Cog):
         cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
         cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
         cursor.execute('INSERT INTO hunger (hungerCount) VALUES(1)')
-        cursor.execute(f'INSERT INTO charOwner (userID) VALUES("{str(ctx.author)}")')
+        cursor.execute('INSERT INTO charOwner (userID) VALUES(".ashywinter")')
         db.commit()
         db.close()
-
-
-class RerollView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Willpower Reroll', emoji='<:bloodT:555804549173084160>', style=discord.ButtonStyle.red, row=0)
-    async def reroll_button_callback(self, interaction, button):
-        if str(interaction.user) != f'{user}':
-            return
-
-        global result, reroll_dict, difficulty, character
-
-        db = sqlite3.connect(f'{au.vePCDBLocation}{character}.sqlite')
-        cursor = db.cursor()
-        wpBaseGrab = cursor.execute('SELECT willpowerBase FROM willpower')
-        wpBase = wpBaseGrab.fetchone()[0]
-        wpSUPGrab = cursor.execute('SELECT willpowerSUP FROM willpower')
-        wpSUP = wpSUPGrab.fetchone()[0]
-        wpAGGGrab = cursor.execute('SELECT willpowerAGG FROM willpower')
-        wpAGG = wpAGGGrab.fetchone()[0]
-
-        if wpBase == wpAGG:
-            await interaction.response.edit_message(embeds=not_enough_wp_embed, view=None, ephemeral=True)
-            db.close()
-            return
-        elif wpBase == wpSUP:
-            cursor.execute(f'UPDATE willpower SET willpowerAGG={wpAGG + 1}')
-            db.commit()
-            db.close()
-        else:
-            cursor.execute(f'UPDATE willpower SET willpowerSUP={wpSUP + 1}')
-            db.commit()
-            db.close()
-
-        r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = reroll_dict[
-            'r_crit', 'rh_crit', 'r_success', 'rh_success', 'r_fail', 'rh_fail', 'rh_skull']
-
-        rerollCount = r_fail
-        if rerollCount > 3:
-            rerollCount = 3
-
-        r_fail -= 3
-
-        while 0 < rerollCount:
-            die_result = randint(1, 10)
-
-            match die_result:
-                case 10:
-                    r_crit += 1
-                case 9 | 8 | 7 | 6:
-                    r_success += 1
-                case 5 | 4 | 3 | 2 | 1:
-                    r_fail += 1
-                case _:
-                    await interaction.response.send_message(
-                        msg='Send `[regR.!H] Error.002` to `.ashywinter`')
-
-            rerollCount -= 1
-
-        die_results_packed = (r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull)
-        reroll_result, specEmbed = await rollDecide(roll_details_embed, die_results_packed, difficulty)
-
-        roll_embed.add_field(name='New Result:', value=f'{reroll_result[0]} | {reroll_result[1]}', inline=True)
-
-        await interaction.response.edit_message(embed=roll_embed, view=None)
-        await interaction.followup.send(embed=specEmbed, ephemeral=True)
 
 
 async def setup(CLIENT):
