@@ -3,9 +3,6 @@ from zenlog import log
 import yaml
 import sqlite3
 
-vePCDBLocation = 'cogs\\shared\\database\\vampire\\'
-veRollCacheLocation = 'cogs/shared/cache/veRoll.yaml'
-
 embed_colors = {
     "white": 0xFFFFFF,
     "black": 0x000000,
@@ -15,14 +12,6 @@ embed_colors = {
     "dark_yellow": 0x8B8000,
     "cyan": 0x00FFF
 }
-
-
-async def roleCheck(targetUser, ctx, roleName):
-    checkRole = discord.utils.find(lambda ringo: ringo.name == f'{roleName}', ctx.message.guild.roles)
-    if checkRole in targetUser.roles:
-        return True
-    else:
-        return False
 
 
 async def cacheRead(targetCache):
@@ -50,31 +39,3 @@ async def cacheDataExist(targetCache, searchFor):
         return True
     else:
         return False
-
-
-async def dbRead(*, targetDB, targetTable, readFor, condOne, condTwo):
-    db = sqlite3.connect(f'{targetDB}.sqlite')
-    cursor = db.cursor()
-    cursor.execute(f'SELECT {readFor} FROM {targetTable} WHERE {condOne}="{condTwo}"')
-    return cursor.fetchall()
-
-
-async def dbWrite(*, targetDB, dbColumn, writeInfo, condOne, condTwo):
-    db = sqlite3.connect(f'{targetDB}.sqlite')
-    cursor = db.cursor()
-    cursor.execute(f'UPDATE {targetDB} SET {dbColumn}="{writeInfo}" WHERE {condOne}="{condTwo}"')
-    db.commit()
-    return True
-
-
-async def dbDelete(*, targetDB, removeThis):
-    db = sqlite3.connect(f'{targetDB}.sqlite')
-    cursor = db.cursor()
-    print(f'DELETE {removeThis} FROM {targetDB}')
-    cursor.execute(f'DELETE {removeThis} FROM {targetDB}')
-    db.commit()
-    return True
-
-
-async def dbMake(*, primaryRunType=None, secondaryRunType=None, targetDB=None, dataInput=None, searchFor=None):
-    pass
