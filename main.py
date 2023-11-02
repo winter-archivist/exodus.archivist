@@ -60,8 +60,15 @@ async def on_ready():
 
     log.warn('$ Loading Bootstrap Cogs...')
     await CLIENT.load_extension('cogManager')
+    await CLIENT.load_extension('cogs.exonotes.exoNotes')
     await CLIENT.load_extension('cogs.vampire.vampireRoll')
     log.warn('$ Bot Online | All Bootstrap Cogs Loaded.')
     await CLIENT.change_presence(status=discord.Status.idle, activity=discord.Game('with Snakes.'))
+
+
+@CLIENT.command()
+async def test(ctx):
+    if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
+    await ctx.author.send(f'Bot Functional {time.strftime("%H:%M:%S", time.localtime())}')
 
 CLIENT.run(TOKEN)
