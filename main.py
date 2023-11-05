@@ -50,6 +50,7 @@ INTENTS = discord.Intents.all()
 CLIENT = ExodusClient(command_prefix=PREFIX, intents=INTENTS)
 
 
+# ? Error "Handler"
 @CLIENT.event
 async def on_command_error(ctx, error):
     """Error Handling"""
