@@ -9,9 +9,9 @@ class TEMPLATE(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    @app_commands.command(name="TEMPLATE", description="TEMPLATE COMMAND")
+    @app_commands.command(name="template", description="TEMPLATE COMMAND")
     @app_commands.describe(templateinput='TEMPLATE Display Text')
-    async def TEMPLATE(self, interaction: discord.Interaction, templateinput: str):
+    async def template(self, interaction: discord.Interaction, templateinput: str):
         await interaction.response.send_message(f'TEMPLATE; {templateinput}')
 
 
