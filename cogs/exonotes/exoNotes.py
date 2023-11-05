@@ -4,11 +4,9 @@ from discord.ui import View
 
 from zenlog import log
 import sqlite3
+import os
 
 from misc import ashen_utils as au
-
-# cache current user later instead, or just make it so the bot checks if someone is using the command already.
-user = '.ashywinter'
 
 selection_embed = (discord.Embed(title='Select',
                                  description='',
@@ -37,16 +35,82 @@ class SelectionView(View):
     @discord.ui.select(
         placeholder='Select decision',
         min_values=1,
-        max_values=3,
+        max_values=1,
         options=selectionOptions)
     async def decision_select_callback(self, interaction, select: discord.ui.Select):
-        if str(interaction.user) != f'{user}':
-            return
+        match select.values[0]:
+            case 'make':
+                await interaction.response.edit_message(view=MakeView(self.CLIENT))
 
-        db = sqlite3.connect(f'cogs//exonotes//notes//{user[2]}.sqlite')
+            case 'read':
+                await interaction.response.edit_message(view=ReadView(self.CLIENT))
+
+            case 'edit':
+                await interaction.response.edit_message(view=EditView(self.CLIENT))
+
+            case 'delete':
+                await interaction.response.edit_message(view=DeleteView(self.CLIENT))
+
+            case _:
+                log.crit('Bad Value Passed in SelectionView')
+                await interaction.response.edit_message(view=None)
+
+
+class MakeView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+    # Title
+    # Subtitle
+    # Tags
+    # Content
+
+    @discord.ui.button(label='Finish', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=4)
+    async def finish_button_callback(self, interaction, button):
+
+        await interaction.response.edit_message(embed=None, view=None)
+
+
+class ReadView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.select(
+        placeholder='Select read',
+        min_values=1,
+        max_values=1,
+        options=selectionOptions)
+    async def read_select_callback(self, interaction, select: discord.ui.Select):
         pass
-        db.close()
-        await interaction.response.edit_message()
+
+
+class EditView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.select(
+        placeholder='Select edit',
+        min_values=1,
+        max_values=1,
+        options=selectionOptions)
+    async def edit_select_callback(self, interaction, select: discord.ui.Select):
+        pass
+
+
+class DeleteView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.select(
+        placeholder='Select delete',
+        min_values=1,
+        max_values=1,
+        options=selectionOptions)
+    async def delete_select_callback(self, interaction, select: discord.ui.Select):
+        pass
 
 
 class EXONOTES(commands.Cog):
@@ -58,19 +122,22 @@ class EXONOTES(commands.Cog):
         await ctx.send('EXONOTES')
 
     @commands.command()
-    async def note(self, ctx, privateOnly=True):
-        if isinstance(ctx.channel, discord.channel.DMChannel):
-            # ? Intentionally doesn't delete what you've sent, this may be changed:
-            # ! MESSAGE DELETION LINE: await ctx.channel.purge(limit=1
-            pass
-        elif privateOnly != 'f':
-            await ctx.send('This command may __not__ be used in a server.\n'
-                           'This is done to protect any information contained in your notes.\n'
-                           '> __Please DM me instead!__')
-            return
+    @commands.dm_only()
+    async def note(self, ctx):
+        userID = ctx.author.id
 
-        db = sqlite3.connect(f'cogs//exonotes//notes//{user[2]}.sqlite')
+        path = f'./cogs/exonotes/notes/{userID}'
+        if not os.path.exists(path):
+            os.mkdir(path)
+            log.warn(f'> User Note Folder _ {path} _ created!')
+        else:
+            log.warn(f'> User Note Folder _ {path} _ already exists')
+        db = sqlite3.connect(f'cogs//exonotes//notes//{userID}//{userID}.sqlite')
         cursor = db.cursor()
+        cursor.execute('CREATE TABLE IF NOT EXISTS charOwner(userID TEXT)')
+        cursor.execute('INSERT INTO charOwner (userID) VALUES("")')
+        cursor.execute('UPDATE charOwner SET userID=?', (userID,))
+        db.commit()
         db.close()
 
         await ctx.send(embed=selection_embed, view=SelectionView(self.CLIENT))
