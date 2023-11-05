@@ -363,11 +363,11 @@ class RerollView(View):
             db.close()
             return
         elif wp_base <= wp_SUP:
-            cursor.execute('UPDATE willpower SET willpowerAGG=?', str(wp_AGG + 1))
+            cursor.execute('UPDATE willpower SET willpowerAGG=?', (str(wp_AGG + 1),))
             db.commit()
             db.close()
         else:
-            cursor.execute('UPDATE willpower SET willpowerSUP=?', str(wp_SUP + 1))
+            cursor.execute('UPDATE willpower SET willpowerSUP=?', (str(wp_SUP + 1),))
             db.commit()
             db.close()
 
