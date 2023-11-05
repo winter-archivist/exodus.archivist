@@ -3,8 +3,13 @@ ExodusAutomaton Rewrite
 ---
 ## General
 
-placeholder 1 \
-placeholder 2 \
+Currently, I'm using pycharm community for development; though on Nov 29th I'll be applying for Pycharm Professional \
+> Primary Features: 
+>> * 1
+>> * 2
+>> * 3 
+>> * 4 
+
 placeholder 3
 
 ---
