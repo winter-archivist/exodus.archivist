@@ -72,6 +72,8 @@ class EXONOTES(commands.Cog):
     @app_commands.describe(tags='Note Tags')
     @app_commands.describe(content='Note Content')
     async def note_make(self, interaction: discord.Interaction, title: str, handle: str, tags: str, content: str):
+        if str(interaction.user) != f'{au.RUNNER}':
+            return
         note_embed.clear_fields()
 
         note_embed.add_field(name='Title:', value=f'{title}', inline=True)
@@ -83,6 +85,8 @@ class EXONOTES(commands.Cog):
     @app_commands.command(name="note_read", description="exoNote Read")
     @app_commands.describe(handle='Note Handle')
     async def note_read(self, interaction: discord.Interaction, handle: str):
+        if str(interaction.user) != f'{au.RUNNER}':
+            return
         match handle:
             case 'all':
                 # ! Shows all notes of the user, have a | <- Del Edi -> | menu
