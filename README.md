@@ -3,12 +3,21 @@ ExodusAutomaton Rewrite
 ---
 ## General
 
-Currently, I'm using pycharm community for development; though on Nov 29th I'll be applying for Pycharm Professional \
+Currently, I'm using pycharm community for development; though on Nov 29th I'll be applying for Pycharm Professional
 > Primary Features: 
->> * 1
->> * 2
->> * 3 
->> * 4 
+>> * Project: 
+>>> * Easily Setup
+>>> * Open Source [GNU 3.0]
+>>> * Logging /w "Syntax"
+>>> * Dangerously Cheesy [so much spaghetti]
+>>> * In Active Development [NOV 2023]
+>> * Bot: 
+>>> * CogManager
+>>> * V5 VTM Dice Roller /w Character Tracker
+
+
+> Heavily Work-In-Progress Features: 
+>> * Notes System
 
 placeholder 3
 
