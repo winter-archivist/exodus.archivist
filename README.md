@@ -11,7 +11,7 @@ Currently, I'm using pycharm community for development; though on Nov 29th I'll 
 >>> * Logging /w "Syntax"
 >>> * Dangerously Cheesy [so much spaghetti]
 >>> * In Active Development [NOV 2023]
->> * Bot: 
+>> * Client: 
 >>> * CogManager
 >>> * V5 VTM Dice Roller /w Character Tracker
 
