@@ -6,28 +6,27 @@ from zenlog import log
 import sqlite3
 from random import randint
 
-from main import RUNNER, ISSUE_CONTACT
 from misc import ashen_utils as au
 from cogs.vampire.selections import selections as s
 
 selection_embed = (discord.Embed(title='',
-                                 description=f'{ISSUE_CONTACT}',
+                                 description=f'{au.ISSUE_CONTACT}',
                                  color=au.embed_colors["purple"]))
 
 roll_embed = (discord.Embed(title='Roll',
-                            description=f'{ISSUE_CONTACT}',
+                            description=f'{au.ISSUE_CONTACT}',
                             color=au.embed_colors["purple"]))
 
 roll_details_embed = (discord.Embed(title='Extra Details:',
-                                    description=f'{ISSUE_CONTACT}',
+                                    description=f'{au.ISSUE_CONTACT}',
                                     color=au.embed_colors["black"]))
 
 not_enough_wp_embed = (discord.Embed(title='Willpower Reroll',
-                                     description=f'You don\'t have enough willpower. {ISSUE_CONTACT}',
+                                     description=f'You don\'t have enough willpower. {au.ISSUE_CONTACT}',
                                      color=au.embed_colors["red"]))
 
-character = f'[THIS IS AN ISSUE] Send `[cN] Error.001`:\n {ISSUE_CONTACT}'
-user = f'[THIS IS AN ISSUE] Send `[uV] Error.001`:\n {ISSUE_CONTACT}'
+character = f'[THIS IS AN ISSUE] Send `[cN] Error.001`:\n {au.ISSUE_CONTACT}'
+user = f'[THIS IS AN ISSUE] Send `[uV] Error.001`:\n {au.ISSUE_CONTACT}'
 roll_pool, difficulty, result = 0, 0, 0
 pool_composition = []
 reroll_dict = {'r_crit'    : 0,
@@ -307,7 +306,7 @@ class ExtraView(View):
                             r_fail += 1
                         case _:
                             await interaction.response.send_message(
-                                msg=f'[THIS IS AN ISSUE] Send `[!H] Error.001`:\n {ISSUE_CONTACT}')
+                                msg=f'[THIS IS AN ISSUE] Send `[!H] Error.001`:\n {au.ISSUE_CONTACT}')
 
                 case 1 | 2 | 3 | 4 | 5:
                     hunger_count -= 1
@@ -322,10 +321,10 @@ class ExtraView(View):
                             rh_skull += 1
                         case _:
                             await interaction.response.send_message(
-                                msg=f'[THIS IS AN ISSUE] Send `[regR.H] Error.001`:\n {ISSUE_CONTACT}')
+                                msg=f'[THIS IS AN ISSUE] Send `[regR.H] Error.001`:\n {au.ISSUE_CONTACT}')
 
                 case _:
-                    await interaction.response.send_message(f'[THIS IS AN ISSUE] Send `[regR] Error.003 {die_result} {hunger_count}`:\n {ISSUE_CONTACT}')
+                    await interaction.response.send_message(f'[THIS IS AN ISSUE] Send `[regR] Error.003 {die_result} {hunger_count}`:\n {au.ISSUE_CONTACT}')
 
             whilePool -= 1
 
@@ -393,7 +392,7 @@ class RerollView(View):
                     r_fail += 1
                 case _:
                     await interaction.response.send_message(
-                        masg=f'[THIS IS AN ISSUE] Send `[regR.!H] Error.002`:\n {ISSUE_CONTACT}')
+                        masg=f'[THIS IS AN ISSUE] Send `[regR.!H] Error.002`:\n {au.ISSUE_CONTACT}')
 
             rerollCount -= 1
 
@@ -444,7 +443,7 @@ class VampireRoll(commands.Cog):
     @commands.command()
     async def make(self, ctx, targetCharacter):
         if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
-        if str(ctx.author) != f'{RUNNER}': return
+        if str(ctx.author) != f'{au.RUNNER}': return
         db = sqlite3.connect(f'cogs//vampire//characters//{targetCharacter}.sqlite')
         cursor = db.cursor()
         # Blank Vampire database Maker
