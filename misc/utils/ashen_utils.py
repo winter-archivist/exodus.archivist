@@ -5,7 +5,8 @@ import sqlite3
 import os
 # ? Used Across Bot
 DEVELOPER: str = '.ashywinter'  # ! if you need to contact who wrote this awful code
-GITREPO: str = 'https://github.com/AshenEntropy/.ae_rewrite'
+GITREPO: str = 'https://github.com/AshenEntropy/.ae_rewrite'  # ! if you need to contact who wrote this awful code
+DEVLOG: str = 'https://ashenentropy.github.io/ashenDevlog/'  # ? To witness my horrid planning, BE WARNED: ITS PURE WEB1 BAD
 RUNNER: str = f'{os.environ["RUNNER"]}'  # ? This should be your DISCORD userNAME (Not your DISCORD userID)
 RUNNER_ID: str = f'{os.environ["RUNNER_ID"]}'  # ? This should be your DISCORD userID (Not your DISCORD userNAME)
 ISSUE_CONTACT: str = (f'If you believe there is an issue, screenshot this and send it to `{RUNNER}`, the host of this bot. \n'
