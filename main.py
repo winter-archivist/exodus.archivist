@@ -1,6 +1,6 @@
-# ## ------------ ## #
-# ## BRANCH: MAIN ## #
-# ## ------------ ## #
+# ! ## ------------ ## #
+# ? ## BRANCH: MAIN ## #
+# ! ## ------------ ## #
 
 import os
 import typing
@@ -11,11 +11,19 @@ from discord.ext import commands
 
 from zenlog import log
 
-TOKEN: str = os.environ["TOKEN"]
-CLIENT_PREFIX: str = 'ex.'
+# ? Used to start the bot, TOKEN you can find on the discord developer page, prefix is just the bot prefix ex: ! ? # . <
+TOKEN: str = f'{os.environ["TOKEN"]}'
+PREFIX: str = f'{os.environ["PREFIX"]}'
+
+# ? Used Across Bot, this should be YOUR userNAME (Not userID)
+DEVELOPER = '.ashywinter'  # ! if you need to contact who wrote this awful code
+GITREPO = 'https://github.com/AshenEntropy/.ae_rewrite'
+RUNNER: str = f'{os.environ["RUNNER"]}'  # ! your discord userNAME
+ISSUE_CONTACT: str = (f'If you believe there is an issue, screenshot this and send it to `{RUNNER}`, the host of this bot. \n'
+                      f'To contact the original bot writer: {DEVELOPER}` and/or visit `{GITREPO}`')
 
 
-# Custom Client & Handler
+# ? Custom Client & Handler
 class ExodusContext(commands.Context):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any):
         super().__init__(*args, **kwargs)
@@ -26,6 +34,7 @@ class ExodusContext(commands.Context):
         await self.send(f"{self.test}")
 
 
+# ? The Client itself
 class ExodusClient(commands.Bot):
 
     async def get_context(self, message: discord.Message, *, cls=ExodusContext):
@@ -43,7 +52,7 @@ class ExodusClient(commands.Bot):
 
 # Client Var
 INTENTS = discord.Intents.all()
-CLIENT = ExodusClient(command_prefix=CLIENT_PREFIX, intents=INTENTS)
+CLIENT = ExodusClient(command_prefix=PREFIX, intents=INTENTS)
 
 
 @CLIENT.event
