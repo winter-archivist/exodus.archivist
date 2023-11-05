@@ -1,5 +1,5 @@
 # ! ## ------------ ## #
-# ? ## BRANCH: SLASH ## #
+# ? ## BRANCH: MAIN ## #
 # ! ## ------------ ## #
 
 import os
@@ -13,7 +13,7 @@ from discord.ext import commands
 from misc import ashen_utils as au
 from zenlog import log
 
-# ? Used to start the bot, TOKEN you can find on the discord developer page, prefix is just the bot prefix ex: ! ? # . <
+# ? Used to start the bot, TOKEN you can find on the discord developer portal, prefix is just the bot prefix ex: ! ? # . <
 TOKEN: str = f'{os.environ["TOKEN"]}'
 PREFIX: str = f'{os.environ["PREFIX"]}'
 
