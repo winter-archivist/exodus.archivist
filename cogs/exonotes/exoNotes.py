@@ -1,6 +1,7 @@
 from discord.ext import commands
-import discord
+from discord import app_commands
 from discord.ui import View
+import discord
 
 from zenlog import log
 import sqlite3
@@ -11,6 +12,10 @@ from misc import ashen_utils as au
 selection_embed = (discord.Embed(title='Select',
                                  description='',
                                  color=au.embed_colors["purple"]))
+
+note_embed = (discord.Embed(title='Note',
+                            description='',
+                            color=au.embed_colors["dark_yellow"]))
 
 selectionOptions = [
     discord.SelectOption(
@@ -27,120 +32,74 @@ selectionOptions = [
     )]
 
 
-class SelectionView(View):
+class NoteView(View):
     def __init__(self, CLIENT):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.select(
-        placeholder='Select decision',
-        min_values=1,
-        max_values=1,
-        options=selectionOptions)
-    async def decision_select_callback(self, interaction, select: discord.ui.Select):
-        match select.values[0]:
-            case 'make':
-                await interaction.response.edit_message(view=MakeView(self.CLIENT))
-
-            case 'read':
-                await interaction.response.edit_message(view=ReadView(self.CLIENT))
-
-            case 'edit':
-                await interaction.response.edit_message(view=EditView(self.CLIENT))
-
-            case 'delete':
-                await interaction.response.edit_message(view=DeleteView(self.CLIENT))
-
-            case _:
-                log.crit('Bad Value Passed in SelectionView')
-                await interaction.response.edit_message(view=None)
-
-
-class MakeView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-    # Title
-    # Subtitle
-    # Tags
-    # Content
-
-    @discord.ui.button(label='Finish', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=4)
-    async def finish_button_callback(self, interaction, button):
-
+    @discord.ui.button(label='Left', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def left_button_callback(self, interaction, button):
         await interaction.response.edit_message(embed=None, view=None)
 
+    @discord.ui.button(label='Exit', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
+    async def exit_button_callback(self, interaction, button):
+        await interaction.response.edit_message(embed=None, view=None)
 
-class ReadView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
+    @discord.ui.button(label='Right', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def right_button_callback(self, interaction, button):
+        await interaction.response.edit_message(embed=None, view=None)
 
-    @discord.ui.select(
-        placeholder='Select read',
-        min_values=1,
-        max_values=1,
-        options=selectionOptions)
-    async def read_select_callback(self, interaction, select: discord.ui.Select):
-        pass
+    @discord.ui.button(label='Edit', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
+    async def edit_button_callback(self, interaction, button):
+        await interaction.response.edit_message(embed=None, view=None)
 
+    @discord.ui.button(label='Exit', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    async def exittwo_button_callback(self, interaction, button):
+        await interaction.response.edit_message(embed=None, view=None)
 
-class EditView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.select(
-        placeholder='Select edit',
-        min_values=1,
-        max_values=1,
-        options=selectionOptions)
-    async def edit_select_callback(self, interaction, select: discord.ui.Select):
-        pass
-
-
-class DeleteView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.select(
-        placeholder='Select delete',
-        min_values=1,
-        max_values=1,
-        options=selectionOptions)
-    async def delete_select_callback(self, interaction, select: discord.ui.Select):
-        pass
+    @discord.ui.button(label='Delete', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def delete_button_callback(self, interaction, button):
+        await interaction.response.edit_message(embed=None, view=None)
 
 
 class EXONOTES(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    @commands.command()
-    async def en(self, ctx):
-        await ctx.send('EXONOTES')
+    @app_commands.command(name="note_make", description="exoNote Make")
+    @app_commands.describe(title='Note Title')
+    @app_commands.describe(handle='Note Handle')
+    @app_commands.describe(tags='Note Tags')
+    @app_commands.describe(content='Note Content')
+    async def note_make(self, interaction: discord.Interaction, title: str, handle: str, tags: str, content: str):
+        note_embed.clear_fields()
 
-    @commands.command()
-    @commands.dm_only()
-    async def note(self, ctx):
-        userID = ctx.author.id
+        note_embed.add_field(name='Title:', value=f'{title}', inline=True)
+        note_embed.add_field(name='Handle:', value=f'{handle}', inline=True)
+        note_embed.add_field(name='Tags:', value=f'{tags}', inline=True)
+        note_embed.add_field(name='Content:', value=f'{content}', inline=True)
+        await interaction.response.send_message(embed=note_embed, view=NoteView(self.CLIENT))
 
-        path = f'./cogs/exonotes/notes/{userID}'
-        if not os.path.exists(path):
-            os.mkdir(path)
-            log.warn(f'> User Note Folder _ {path} _ created!')
-        else:
-            log.warn(f'> User Note Folder _ {path} _ already exists')
-        db = sqlite3.connect(f'cogs//exonotes//notes//{userID}//{userID}.sqlite')
-        cursor = db.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS charOwner(userID TEXT)')
-        cursor.execute('INSERT INTO charOwner (userID) VALUES("")')
-        cursor.execute('UPDATE charOwner SET userID=?', (userID,))
-        db.commit()
-        db.close()
+    @app_commands.command(name="note_read", description="exoNote Read")
+    @app_commands.describe(handle='Note Handle')
+    async def note_read(self, interaction: discord.Interaction, handle: str):
+        match handle:
+            case 'all':
+                # ! Shows all notes of the user, have a | <- Del Edi -> | menu
+                return
+            case 'test':
+                # ! Just to test/debug the command
+                note_embed.clear_fields()
 
-        await ctx.send(embed=selection_embed, view=SelectionView(self.CLIENT))
+                title, tags, content = 1, 1, 1
+                note_embed.add_field(name='Title:', value=f'{title}', inline=True)
+                note_embed.add_field(name='Handle:', value=f'{handle}', inline=True)
+                note_embed.add_field(name='Tags:', value=f'{tags}', inline=True)
+                note_embed.add_field(name='Content:', value=f'{content}', inline=True)
+                await interaction.response.send_message(embed=note_embed, view=NoteView(self.CLIENT))
+            case _:
+                # ! use HANDLE
+                return
 
 
 async def setup(CLIENT):
