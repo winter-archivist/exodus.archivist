@@ -6,27 +6,28 @@ from zenlog import log
 import sqlite3
 from random import randint
 
+from main import RUNNER, ISSUE_CONTACT
 from misc import ashen_utils as au
 from cogs.vampire.selections import selections as s
 
 selection_embed = (discord.Embed(title='',
-                                 description='',
+                                 description=f'{ISSUE_CONTACT}',
                                  color=au.embed_colors["purple"]))
 
 roll_embed = (discord.Embed(title='Roll',
-                            description='',
+                            description=f'{ISSUE_CONTACT}',
                             color=au.embed_colors["purple"]))
 
 roll_details_embed = (discord.Embed(title='Extra Details:',
-                                    description='If you believe there is an issue, screenshot this and send it to `.ashywinter`',
+                                    description=f'{ISSUE_CONTACT}',
                                     color=au.embed_colors["black"]))
 
 not_enough_wp_embed = (discord.Embed(title='Willpower Reroll',
-                                     description='You don\'t have enough willpower.',
+                                     description=f'You don\'t have enough willpower. {ISSUE_CONTACT}',
                                      color=au.embed_colors["red"]))
 
-character = 'Send `[cN] Error.001` to `.ashywinter`'
-user = 'Send `[uV] Error.001` to `.ashywinter`'
+character = f'[THIS IS AN ISSUE] Send `[cN] Error.001`:\n {ISSUE_CONTACT}'
+user = f'[THIS IS AN ISSUE] Send `[uV] Error.001`:\n {ISSUE_CONTACT}'
 roll_pool, difficulty, result = 0, 0, 0
 pool_composition = []
 reroll_dict = {'r_crit'    : 0,
@@ -306,7 +307,7 @@ class ExtraView(View):
                             r_fail += 1
                         case _:
                             await interaction.response.send_message(
-                                msg='Send `[regR.!H] Error.001` to `.ashywinter`')
+                                msg=f'[THIS IS AN ISSUE] Send `[!H] Error.001`:\n {ISSUE_CONTACT}')
 
                 case 1 | 2 | 3 | 4 | 5:
                     hunger_count -= 1
@@ -321,10 +322,10 @@ class ExtraView(View):
                             rh_skull += 1
                         case _:
                             await interaction.response.send_message(
-                                msg='Send `[regR.H] Error.002` to `.ashywinter`')
+                                msg=f'[THIS IS AN ISSUE] Send `[regR.H] Error.001`:\n {ISSUE_CONTACT}')
 
                 case _:
-                    await interaction.response.send_message(f'Send `[regR] Error.003 {die_result} {hunger_count}` to `.ashywinter`')
+                    await interaction.response.send_message(f'[THIS IS AN ISSUE] Send `[regR] Error.003 {die_result} {hunger_count}`:\n {ISSUE_CONTACT}')
 
             whilePool -= 1
 
@@ -392,7 +393,7 @@ class RerollView(View):
                     r_fail += 1
                 case _:
                     await interaction.response.send_message(
-                        msg='Send `[regR.!H] Error.002` to `.ashywinter`')
+                        masg=f'[THIS IS AN ISSUE] Send `[regR.!H] Error.002`:\n {ISSUE_CONTACT}')
 
             rerollCount -= 1
 
@@ -443,7 +444,7 @@ class VampireRoll(commands.Cog):
     @commands.command()
     async def make(self, ctx, targetCharacter):
         if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
-        if str(ctx.author) != '.ashywinter': return
+        if str(ctx.author) != f'{RUNNER}': return
         db = sqlite3.connect(f'cogs//vampire//characters//{targetCharacter}.sqlite')
         cursor = db.cursor()
         # Blank Vampire database Maker
@@ -511,7 +512,7 @@ class VampireRoll(commands.Cog):
         cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
         cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
         cursor.execute('INSERT INTO hunger (hungerCount) VALUES(1)')
-        cursor.execute('INSERT INTO charOwner (userID) VALUES(".ashywinter")')
+        cursor.execute('INSERT INTO charOwner (userID) VALUES("")')
         db.commit()
         db.close()
 
