@@ -1,7 +1,10 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.ui import View
 from zenlog import log
+
+from misc import ashen_utils as au
 
 cog_manager_embed = discord.Embed(title='Cog Manager', color=0x8A2BE2)
 cog_manager_embed.add_field(name='targetCog:', value=f'N/A', inline=True)
@@ -91,15 +94,15 @@ class cog_manager(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    @commands.command(hidden=True)
-    async def cog(self, ctx):
-        if not isinstance(ctx.channel, discord.channel.DMChannel):
-            await ctx.channel.purge(limit=1)
+    @app_commands.command(name="cog", description="CogManager")
+    async def cog(self, interaction: discord.Interaction):
+        if not isinstance(interaction.channel, discord.channel.DMChannel):
+            await interaction.channel.purge(limit=1)
 
-        if str(ctx.author) != '.ashywinter':
+        if str(interaction.user) != f'{au.RUNNER}':
             return
 
-        await ctx.send(embed=cog_manager_embed, view=ExodusView(self.CLIENT))
+        await interaction.response.send_message(embed=cog_manager_embed, view=ExodusView(self.CLIENT))
 
 
 async def setup(CLIENT):
