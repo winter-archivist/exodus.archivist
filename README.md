@@ -7,7 +7,7 @@ Currently, I'm using pycharm community for development; though on Nov 29th I'll 
 > Primary Features: 
 >> * Project: 
 >>> * Easily Setup
->>> * Open Source [GNU 3.0]
+>>> * Open Source [GPL 3.0]
 >>> * Logging /w "Syntax"
 >>> * Slash Commands
 >>> * Dangerously Cheesy [so much spaghetti]
