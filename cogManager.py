@@ -29,8 +29,12 @@ class ExodusView(View):
                 emoji='<a:pydis_pridespin:1113716405192376351>',
             ),
             discord.SelectOption(
-                label='Vampire', value='cogs.vampire.vampireRoll',
+                label='Vampire', value='vampire.vampireRoll',
                 emoji='<:bloodT:555804549173084160>',
+            ),
+            discord.SelectOption(
+                label='exoNotes', value='exonotes.exoNotes',
+                emoji='<:ExodusE:1145153679155007600>',
             )],
         row=0)
     async def targetCog_select_callback(self, interaction, select: discord.ui.Select):
