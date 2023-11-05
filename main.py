@@ -1,5 +1,5 @@
 # ! ## ------------ ## #
-# ? ## BRANCH: MAIN ## #
+# ? ## BRANCH: SLASH ## #
 # ! ## ------------ ## #
 
 import os
@@ -7,6 +7,7 @@ import typing
 import time
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from misc import ashen_utils as au
@@ -68,20 +69,19 @@ async def on_ready():
     await CLIENT.load_extension('cogs.exonotes.exoNotes')
     await CLIENT.load_extension('cogs.vampire.vampireRoll')
     log.warn('$ Bot Online | All Bootstrap Cogs Loaded.')
+    try:
+        synced = await CLIENT.tree.sync()
+        log.crit(f'Synced {len(synced)} command(s)')
+    except Exception as e:
+        log.crit(f'Error Syncing Commands: {e}')
+
     await CLIENT.change_presence(status=discord.Status.idle, activity=discord.Game('with Snakes.'))
 
 
-@CLIENT.command()
-async def test(ctx):
-    if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
-    await ctx.author.send(f'Bot Functional {time.strftime("%H:%M:%S", time.localtime())}')
-
-
-@CLIENT.command()
-@commands.dm_only()
-async def errormake(ctx):
-    if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
-    await ctx.author.send(f'Bot Functional {time.strftime("%H:%M:%S", time.localtime())}')
+@CLIENT.command(name="sync")
+async def sync(ctx):
+    synced = await CLIENT.tree.sync()
+    print(f"Synced {len(synced)} command(s).")
 
 
 CLIENT.run(TOKEN)

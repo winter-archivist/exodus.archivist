@@ -9,6 +9,7 @@ Currently, I'm using pycharm community for development; though on Nov 29th I'll 
 >>> * Easily Setup
 >>> * Open Source [GNU 3.0]
 >>> * Logging /w "Syntax"
+>>> * Slash Commands
 >>> * Dangerously Cheesy [so much spaghetti]
 >>> * In Active Development [NOV 2023]
 >> * Client: 

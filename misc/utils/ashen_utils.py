@@ -7,6 +7,7 @@ import os
 DEVELOPER: str = '.ashywinter'  # ! if you need to contact who wrote this awful code
 GITREPO: str = 'https://github.com/AshenEntropy/.ae_rewrite'
 RUNNER: str = f'{os.environ["RUNNER"]}'  # ? This should be your DISCORD userNAME (Not your DISCORD userID)
+RUNNER_ID: str = f'{os.environ["RUNNER_ID"]}'  # ? This should be your DISCORD userID (Not your DISCORD userNAME)
 ISSUE_CONTACT: str = (f'If you believe there is an issue, screenshot this and send it to `{RUNNER}`, the host of this bot. \n'
                       f'To contact the original bot writer: {DEVELOPER}` and/or visit `{GITREPO}`')
 embed_colors = {
