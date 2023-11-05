@@ -9,18 +9,12 @@ import time
 import discord
 from discord.ext import commands
 
+from misc import ashen_utils as au
 from zenlog import log
 
 # ? Used to start the bot, TOKEN you can find on the discord developer page, prefix is just the bot prefix ex: ! ? # . <
 TOKEN: str = f'{os.environ["TOKEN"]}'
 PREFIX: str = f'{os.environ["PREFIX"]}'
-
-# ? Used Across Bot, this should be YOUR userNAME (Not userID)
-DEVELOPER = '.ashywinter'  # ! if you need to contact who wrote this awful code
-GITREPO = 'https://github.com/AshenEntropy/.ae_rewrite'
-RUNNER: str = f'{os.environ["RUNNER"]}'  # ! your discord userNAME
-ISSUE_CONTACT: str = (f'If you believe there is an issue, screenshot this and send it to `{RUNNER}`, the host of this bot. \n'
-                      f'To contact the original bot writer: {DEVELOPER}` and/or visit `{GITREPO}`')
 
 
 # ? Custom Client & Handler
@@ -58,7 +52,9 @@ CLIENT = ExodusClient(command_prefix=PREFIX, intents=INTENTS)
 @CLIENT.event
 async def on_command_error(ctx, error):
     """Error Handling"""
-    await ctx.send(f'`{error}`')
+    await ctx.send(f'> `{error}` \n'
+                   f'Screenshot this and send it to `{au.RUNNER}`, the host of this bot. \n'
+                   f'To contact the original bot writer: `{au.DEVELOPER}` and/or visit `{au.GITREPO}`')
 
 
 @CLIENT.event
@@ -79,5 +75,13 @@ async def on_ready():
 async def test(ctx):
     if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
     await ctx.author.send(f'Bot Functional {time.strftime("%H:%M:%S", time.localtime())}')
+
+
+@CLIENT.command()
+@commands.dm_only()
+async def errormake(ctx):
+    if not isinstance(ctx.channel, discord.channel.DMChannel): await ctx.channel.purge(limit=1)
+    await ctx.author.send(f'Bot Functional {time.strftime("%H:%M:%S", time.localtime())}')
+
 
 CLIENT.run(TOKEN)
