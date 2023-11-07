@@ -82,7 +82,7 @@ async def on_ready():
     log.info(f'$ Servers {len(CLIENT.guilds)}: {", ".join(str(x) for x in CLIENT.guilds)}')
     log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
 
-    await ci.initialCogs(CLIENT)
+    await initialCogs(CLIENT)
 
     # ! Slash Commands Setup
     if config.SLASH_MODE is True:
