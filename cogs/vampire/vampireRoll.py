@@ -526,4 +526,3 @@ class VampireRoll(commands.Cog):
 
 async def setup(CLIENT):
     await CLIENT.add_cog(VampireRoll(CLIENT))
-    log.info('> VampireRoll Loaded')

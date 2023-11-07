@@ -111,4 +111,3 @@ class cog_manager(commands.Cog):
 
 async def setup(CLIENT):
     await CLIENT.add_cog(cog_manager(CLIENT))
-    log.info('$> Cog Manager Loaded')
