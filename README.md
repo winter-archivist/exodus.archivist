@@ -22,6 +22,7 @@ Currently, I'm using pycharm community for development; though on Nov 29th I'll 
 ---
 ## USE:
 Below are things just for this bot, I am not going to explain python, discord.py, or how to use discord dev tools
+* This bot is not *meant* to be installed & used by other people, I am merely sharing its source-code.
 * Change the Bot's Token
 * Remove the marked lines in misc/cog_initial.py
 * 
@@ -38,7 +39,7 @@ Higher they are on the list, the more important/higher "priority" \
 ---
 > Prefix List
 >> SHUTDOWN :: <<<{text}>>> \
-> Error     :: * \
-> Startup   ::  $ \
-> From Cog  ::  >
+>> Error     :: * \
+>> Startup   ::  $ \
+>> From Cog  ::  >
 ---
