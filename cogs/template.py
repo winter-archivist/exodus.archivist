@@ -2,8 +2,6 @@ from discord.ext import commands
 from discord import app_commands
 import discord
 
-from zenlog import log
-
 
 class TEMPLATE(commands.Cog):
     def __init__(self, CLIENT):
