@@ -17,20 +17,6 @@ note_embed = (discord.Embed(title='Note',
                             description='',
                             color=au.embed_colors["dark_yellow"]))
 
-selectionOptions = [
-    discord.SelectOption(
-        label='Make', value='make', emoji='<:snek:785811903938953227>'
-    ),
-    discord.SelectOption(
-        label='Read', value='read', emoji='<:snek:785811903938953227>'
-    ),
-    discord.SelectOption(
-        label='Edit', value='edit', emoji='<:snek:785811903938953227>'
-    ),
-    discord.SelectOption(
-        label='Delete', value='delete', emoji='<:snek:785811903938953227>'
-    )]
-
 
 class NoteView(View):
     def __init__(self, CLIENT):
@@ -54,7 +40,7 @@ class NoteView(View):
         await interaction.response.edit_message(embed=None, view=None)
 
     @discord.ui.button(label='Exit', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def exittwo_button_callback(self, interaction, button):
+    async def exit_two_button_callback(self, interaction, button):
         await interaction.response.edit_message(embed=None, view=None)
 
     @discord.ui.button(label='Delete', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
@@ -108,4 +94,3 @@ class EXONOTES(commands.Cog):
 
 async def setup(CLIENT):
     await CLIENT.add_cog(EXONOTES(CLIENT))
-    log.info('> exoNotes Loaded')
