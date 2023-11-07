@@ -19,8 +19,12 @@ Currently, I'm using pycharm community for development; though on Nov 29th I'll 
 
 > Heavily Work-In-Progress Features: 
 >> * Notes System
-
-placeholder 3
+---
+## USE:
+Below are things just for this bot, I am not going to explain python, discord.py, or how to use discord dev tools
+* Change the Bot's Token
+* Remove the marked lines in misc/cog_initial.py
+* 
 
 ---
 ## LOGGING
