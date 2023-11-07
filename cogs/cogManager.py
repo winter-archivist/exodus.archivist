@@ -2,28 +2,15 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.ui import View
-from zenlog import log
 
-from misc import ashen_utils as au
+from misc.config import main_config as mc
 
 cog_manager_embed = discord.Embed(title='Cog Manager', color=0x8A2BE2)
 cog_manager_embed.add_field(name='targetCog:', value=f'N/A', inline=True)
 cog_manager_embed.add_field(name='operationType:', value=f'N/A', inline=True)
 cog_manager_embed.add_field(name='CMD:', value=f'N/A', inline=False)
 
-run_command = \
-    {"operation": 'tc.Ungiven1',
-     "target": 'Ungiven2'}
-
-
-class ExodusView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.select(
-        placeholder='Select targetCog',
-        options=[
+cog_selections = [
             discord.SelectOption(
                 label='Template', value='template',
                 emoji='<a:pydis_pridespin:1113716405192376351>',
@@ -35,10 +22,33 @@ class ExodusView(View):
             discord.SelectOption(
                 label='exoNotes', value='exonotes.exoNotes',
                 emoji='<:ExodusE:1145153679155007600>',
-            )],
+            ),
+            discord.SelectOption(
+                label='test', value='1',
+                emoji='<a:spinningmoyai:838121158606848030>',
+            ),
+            discord.SelectOption(
+                label='test', value='1',
+                emoji='<a:spinningmoyai:838121158606848030>',
+            ),
+            discord.SelectOption(
+                label='test', value='1',
+                emoji='<a:spinningmoyai:838121158606848030>',
+            )]
+run_command = {"operation": 'tc.Ungiven1', "target": 'Ungiven2'}
+
+
+class ExodusView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.select(
+        placeholder='Select targetCog',
+        options=cog_selections,
         row=0)
     async def targetCog_select_callback(self, interaction, select: discord.ui.Select):
-        if str(interaction.user.id) != f'{au.RUNNER_ID}':
+        if str(interaction.user.id) != f'{mc.RUNNER_ID}':
             return
 
         global run_command
@@ -58,7 +68,7 @@ class ExodusView(View):
                 label='Reload', value='reload', emoji='<:nbthinblood:982240285243351080>', )],
         row=1)
     async def operationType_select_callback(self, interaction, select: discord.ui.Select):
-        if str(interaction.user.id) != f'{au.RUNNER_ID}':
+        if str(interaction.user.id) != f'{mc.RUNNER_ID}':
             return
 
         global run_command
@@ -69,7 +79,7 @@ class ExodusView(View):
 
     @discord.ui.button(label='Run', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green)
     async def run_button_callback(self, interaction, button):
-        if str(interaction.user.id) != f'{au.RUNNER_ID}':
+        if str(interaction.user.id) != f'{mc.RUNNER_ID}':
             return
 
         global run_command
@@ -103,7 +113,7 @@ class cog_manager(commands.Cog):
         if not isinstance(interaction.channel, discord.channel.DMChannel):
             await interaction.channel.purge(limit=1)
 
-        if str(interaction.user) != f'{au.RUNNER}':
+        if str(interaction.user) != f'{mc.RUNNER}':
             return
 
         await interaction.response.send_message(embed=cog_manager_embed, view=ExodusView(self.CLIENT))

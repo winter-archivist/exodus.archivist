@@ -7,15 +7,15 @@ from zenlog import log
 import sqlite3
 import os
 
-from misc import ashen_utils as au
+from misc.config import main_config as mc
 
 selection_embed = (discord.Embed(title='Select',
                                  description='',
-                                 color=au.embed_colors["purple"]))
+                                 color=mc.embed_colors["purple"]))
 
 note_embed = (discord.Embed(title='Note',
                             description='',
-                            color=au.embed_colors["dark_yellow"]))
+                            color=mc.embed_colors["dark_yellow"]))
 
 
 class NoteView(View):
@@ -58,7 +58,7 @@ class EXONOTES(commands.Cog):
     @app_commands.describe(tags='Note Tags')
     @app_commands.describe(content='Note Content')
     async def note_make(self, interaction: discord.Interaction, title: str, handle: str, tags: str, content: str):
-        if str(interaction.user) != f'{au.RUNNER}':
+        if str(interaction.user) != f'{mc.RUNNER}':
             return
         note_embed.clear_fields()
 
@@ -71,7 +71,7 @@ class EXONOTES(commands.Cog):
     @app_commands.command(name="note_read", description="exoNote Read")
     @app_commands.describe(handle='Note Handle')
     async def note_read(self, interaction: discord.Interaction, handle: str):
-        if str(interaction.user) != f'{au.RUNNER}':
+        if str(interaction.user) != f'{mc.RUNNER}':
             return
         match handle:
             case 'all':

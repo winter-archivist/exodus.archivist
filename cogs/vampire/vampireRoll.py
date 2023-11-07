@@ -3,31 +3,30 @@ from discord import app_commands
 import discord
 from discord.ui import View
 
-from zenlog import log
 import sqlite3
 from random import randint
 
-from misc import ashen_utils as au
+from misc.config import main_config as mc
 from cogs.vampire.selections import selections as s
 
 selection_embed = (discord.Embed(title='',
                                  description=f'',
-                                 color=au.embed_colors["purple"]))
+                                 color=mc.embed_colors["purple"]))
 
 roll_embed = (discord.Embed(title='Roll',
                             description=f'',
-                            color=au.embed_colors["purple"]))
+                            color=mc.embed_colors["purple"]))
 
 roll_details_embed = (discord.Embed(title='Extra Details:',
-                                    description=f'{au.ISSUE_CONTACT}',
-                                    color=au.embed_colors["black"]))
+                                    description=f'{mc.ISSUE_CONTACT}',
+                                    color=mc.embed_colors["black"]))
 
 not_enough_wp_embed = (discord.Embed(title='Willpower Reroll',
-                                     description=f'You don\'t have enough willpower. {au.ISSUE_CONTACT}',
-                                     color=au.embed_colors["red"]))
+                                     description=f'You don\'t have enough willpower. {mc.ISSUE_CONTACT}',
+                                     color=mc.embed_colors["red"]))
 
-character = f'[THIS IS AN ISSUE] Send `[cN] Error.001`:\n {au.ISSUE_CONTACT}'
-user = f'[THIS IS AN ISSUE] Send `[uV] Error.001`:\n {au.ISSUE_CONTACT}'
+character = f'[THIS IS AN ISSUE] Send `[cN] Error.001`:\n {mc.ISSUE_CONTACT}'
+user = f'[THIS IS AN ISSUE] Send `[uV] Error.001`:\n {mc.ISSUE_CONTACT}'
 roll_pool, difficulty, result = 0, 0, 0
 pool_composition = []
 reroll_dict = {'r_crit'    : 0,
@@ -307,7 +306,7 @@ class ExtraView(View):
                             r_fail += 1
                         case _:
                             await interaction.response.send_message(
-                                msg=f'[THIS IS AN ISSUE] Send `[!H] Error.001`:\n {au.ISSUE_CONTACT}')
+                                msg=f'[THIS IS AN ISSUE] Send `[!H] Error.001`:\n {mc.ISSUE_CONTACT}')
 
                 case 1 | 2 | 3 | 4 | 5:
                     hunger_count -= 1
@@ -322,10 +321,10 @@ class ExtraView(View):
                             rh_skull += 1
                         case _:
                             await interaction.response.send_message(
-                                msg=f'[THIS IS AN ISSUE] Send `[regR.H] Error.001`:\n {au.ISSUE_CONTACT}')
+                                msg=f'[THIS IS AN ISSUE] Send `[regR.H] Error.001`:\n {mc.ISSUE_CONTACT}')
 
                 case _:
-                    await interaction.response.send_message(f'[THIS IS AN ISSUE] Send `[regR] Error.003 {die_result} {hunger_count}`:\n {au.ISSUE_CONTACT}')
+                    await interaction.response.send_message(f'[THIS IS AN ISSUE] Send `[regR] Error.003 {die_result} {hunger_count}`:\n {mc.ISSUE_CONTACT}')
 
             whilePool -= 1
 
@@ -393,7 +392,7 @@ class RerollView(View):
                     r_fail += 1
                 case _:
                     await interaction.response.send_message(
-                        masg=f'[THIS IS AN ISSUE] Send `[regR.!H] Error.002`:\n {au.ISSUE_CONTACT}')
+                        masg=f'[THIS IS AN ISSUE] Send `[regR.!H] Error.002`:\n {mc.ISSUE_CONTACT}')
 
             rerollCount -= 1
 
@@ -448,7 +447,7 @@ class VampireRoll(commands.Cog):
     async def blankmake(self, interaction: discord.Interaction, targetcharacter: str):
         if not isinstance(interaction.channel, discord.channel.DMChannel):
             await interaction.channel.purge(limit=1)
-        if int(interaction.user.id) == int(au.RUNNER_ID):
+        if int(interaction.user.id) == int(mc.RUNNER_ID):
             db = sqlite3.connect(f'cogs//vampire//characters//{targetcharacter}.sqlite')
             cursor = db.cursor()
             # Blank Vampire database Maker

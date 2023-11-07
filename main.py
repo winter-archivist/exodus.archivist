@@ -2,20 +2,39 @@
 # ? ## BRANCH: MAIN ## #
 # ! ## ------------ ## #
 
-import os
 import typing
 import time
 
 import discord
 from discord.ext import commands
 
-from misc import ashen_utils as au, cog_initial as ci
 from zenlog import log
 
-# ! You can find my personal discord [au.DEVELOPER] & the gitrepo [au.GITREPO] in misc/utils/ashen_utils.py
-# ? Essential for Client to run.
-TOKEN: str = f'{os.environ["TOKEN"]}'  # ? Find this on your discord developer portal
-PREFIX: str = f'{os.environ["PREFIX"]}'  # ? Prefix for all Non-Slash Commands. Default: "ex."
+from misc.config import main_config as mc
+import client_config as config
+
+
+async def initialCogs(CLIENT_INPUT):
+    log.warn('$ Loading Initial Cogs...')
+    initial_cogs = ('cogs.cogManager',
+                    'cogs.vampire.vampireRoll',
+                    'cogs.exonotes.exoNotes')
+    forVar = 0
+    for x in initial_cogs:
+        target = initial_cogs[forVar]
+        try:
+            await CLIENT_INPUT.load_extension(f'{target}')
+        except Exception as e:
+            log.warn(f"<<<$ Failed to load {target} {e}>>>")
+            exit()
+        forVar = 1
+
+    # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
+    try:
+        await CLIENT_INPUT.load_extension('cogs.ddtr')
+    except Exception as e:
+        log.warn(f"<<<$ {e} | REMOVE TRY STATEMENT IN main.py CONTAINING cogs.ddtr >>>"); exit()
+    # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
 
 
 # ? Custom Client & Handler, not much extra here yet.
@@ -45,7 +64,7 @@ class ExodusClient(commands.Bot):
 
 
 INTENTS = discord.Intents.all()
-CLIENT = ExodusClient(command_prefix=PREFIX, intents=INTENTS)
+CLIENT = ExodusClient(command_prefix=config.PREFIX, intents=INTENTS)
 
 
 # ? Error Handler
@@ -53,24 +72,30 @@ CLIENT = ExodusClient(command_prefix=PREFIX, intents=INTENTS)
 async def on_command_error(ctx, error):
     """Error Handling"""
     await ctx.send(f'> `{error}` \n'
-                   f'Screenshot this and send it to `{au.RUNNER}`, the host of this bot. \n'
-                   f'To contact the original bot writer: `{au.DEVELOPER}` and/or visit `{au.GITREPO}`')
+                   f'Screenshot this and send it to `{mc.RUNNER}`, the host of this bot. \n'
+                   f'To contact the original bot writer: `{mc.DEVELOPER}` and/or visit `{mc.GITREPO}`')
 
 
 @CLIENT.event
 async def on_ready():
     log.warn('$ Project Branch: MAIN')
-    log.info(f'$ Servers: {", ".join(str(x) for x in CLIENT.guilds)}\n$ Server Count: {len(CLIENT.guilds)}')
+    log.info(f'$ Servers {len(CLIENT.guilds)}: {", ".join(str(x) for x in CLIENT.guilds)}')
     log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
 
     await ci.initialCogs(CLIENT)
 
     # ! Slash Commands Setup
-    try:
-        synced = await CLIENT.tree.sync()
-        log.crit(f'$ Synced {len(synced)} command(s)')
-    except Exception as e:
-        log.crit(f'<<<$ Error Syncing Commands: {e}>>>')
+    if config.SLASH_MODE is True:
+        try:
+            synced = await CLIENT.tree.sync()
+            log.crit(f'$ Synced {len(synced)} command(s)')
+        except Exception as e:
+            log.crit(f'<<<$ Error Syncing Commands: {e}>>>')
+            exit()
+    elif config.SLASH_MODE is False:
+        log.crit('$ SLASH_MODE is False.')
+    else:
+        log.warn('<<<$ Startup Error: SLASH_MODE IS NOT TRUE OR FALSE >>>')
         exit()
 
     log.warn('$ Bot Online | All Boot Cogs Loaded.')
@@ -80,10 +105,10 @@ async def on_ready():
 
 @CLIENT.command(name="sync")
 async def sync(ctx):  # ! Slash Commands Cog Essential
-    if str(ctx.author.id) != f'{au.RUNNER}':
+    if str(ctx.author.id) != f'{mc.RUNNER}':
         return
     synced = await CLIENT.tree.sync()
     print(f"Synced {len(synced)} command(s).")
 
 
-CLIENT.run(TOKEN)
+CLIENT.run(config.TOKEN)
