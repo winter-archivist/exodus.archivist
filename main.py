@@ -27,13 +27,14 @@ async def initialCogs(CLIENT_INPUT):
         except Exception as e:
             log.warn(f"<<<$ Failed to load {target} {e}>>>")
             exit()
-        forVar = 1
+        forVar += 1
 
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
     try:
-        await CLIENT_INPUT.load_extension('cogs.ddtr')
+        await CLIENT_INPUT.load_extension('cogs.ddtr.ddtr')
     except Exception as e:
-        log.warn(f"<<<$ {e} | REMOVE TRY STATEMENT IN main.py CONTAINING cogs.ddtr >>>"); exit()
+        log.warn(f"<<<$ {e} | REMOVE TRY STATEMENT IN main.py CONTAINING cogs.ddtr.ddtr >>>")
+        exit()
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
 
 
