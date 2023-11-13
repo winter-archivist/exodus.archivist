@@ -99,8 +99,8 @@ class ExodusView(View):
         cog_manager_embed.set_field_at(index=0, name='targetCog:', value=f'N/A', inline=True)
         cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'N/A', inline=True)
         cog_manager_embed.set_field_at(index=2, name='CMD:', value=f'{cmd_operation} -> {cmd_target}', inline=False)
-        run_command["operation"] = 'Ungiven1'
-        run_command["target"] = 'Ungiven2'
+        run_command["operation"] = 'Ungiven_cogManager_Operation'
+        run_command["target"] = 'Ungiven_cogManager_Target'
         await interaction.response.edit_message(embed=cog_manager_embed)
 
 
@@ -110,8 +110,6 @@ class cog_manager(commands.Cog):
 
     @app_commands.command(name="cog", description="CogManager")
     async def cog(self, interaction: discord.Interaction):
-        if not isinstance(interaction.channel, discord.channel.DMChannel):
-            await interaction.channel.purge(limit=1)
 
         if str(interaction.user) != f'{mc.RUNNER}':
             return

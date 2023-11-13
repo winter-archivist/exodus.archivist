@@ -271,6 +271,7 @@ class ExtraView(View):
     @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
     async def roll_button_callback(self, interaction, button):
         global user
+        await self.CLIENT.change_presence(status=discord.Status.idle, activity=discord.Game('with Snakes.'))
         if str(interaction.user) != f'{user}':
             return
 
@@ -414,8 +415,6 @@ class VampireRoll(commands.Cog):
     @app_commands.describe(charactername='Character Name')
     @app_commands.describe(rolldifficulty='Roll Difficulty')
     async def vroll(self, interaction: discord.Interaction, charactername: str, rolldifficulty: str):
-        if not isinstance(interaction.channel, discord.channel.DMChannel):
-            await interaction.channel.purge(limit=1)
         db = sqlite3.connect(f'cogs//vampire//characters//{charactername}.sqlite')
         cursor = db.cursor()
         charOwnerResultGrab = cursor.execute('SELECT userID FROM charOwner')
@@ -440,13 +439,12 @@ class VampireRoll(commands.Cog):
         global character, difficulty, user  # Converts prior runs into current
         character, difficulty, user = charactername, rolldifficulty, interaction.user
 
+        await self.CLIENT.change_presence(status=discord.Status.dnd, activity=discord.Game('Rousing The Blood'))
         await interaction.response.send_message(embed=selection_embed, view=AttributeView(self.CLIENT))
 
     @app_commands.command(name="blankmake", description="Makes a blank vampire DB")
     @app_commands.describe(targetcharacter='Character Name')
     async def blankmake(self, interaction: discord.Interaction, targetcharacter: str):
-        if not isinstance(interaction.channel, discord.channel.DMChannel):
-            await interaction.channel.purge(limit=1)
         if int(interaction.user.id) == int(mc.RUNNER_ID):
             db = sqlite3.connect(f'cogs//vampire//characters//{targetcharacter}.sqlite')
             cursor = db.cursor()

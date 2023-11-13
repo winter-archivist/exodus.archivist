@@ -112,4 +112,11 @@ async def sync(ctx):  # ! Slash Commands Cog Essential
     print(f"Synced {len(synced)} command(s).")
 
 
+@commands.command(hidden=True)
+async def kill(self, ctx):
+    if str(ctx.author.id) != f'{mc.RUNNER_ID}':
+        return
+    exit()
+
+
 CLIENT.run(config.TOKEN)
