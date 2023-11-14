@@ -1,7 +1,6 @@
 # ! ## ------------ ## #
 # ? ## BRANCH: MAIN ## #
 # ! ## ------------ ## #
-# * COMMIT TEST
 
 import typing
 import time
