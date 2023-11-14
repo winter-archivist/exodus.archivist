@@ -442,8 +442,7 @@ class VampireRoll(commands.Cog):
         await self.CLIENT.change_presence(status=discord.Status.dnd, activity=discord.Game('Rousing The Blood'))
         await interaction.response.send_message(embed=selection_embed, view=AttributeView(self.CLIENT))
 
-    @app_commands.command(name="blankmake", description="Makes a blank vampire DB")
-    @app_commands.describe(targetcharacter='Character Name')
+    @commands.command(hidden=True)
     async def blankmake(self, interaction: discord.Interaction, targetcharacter: str):
         if int(interaction.user.id) == int(mc.RUNNER_ID):
             db = sqlite3.connect(f'cogs//vampire//characters//{targetcharacter}.sqlite')
