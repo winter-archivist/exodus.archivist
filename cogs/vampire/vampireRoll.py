@@ -1,6 +1,6 @@
-from discord.ext import commands
-from discord import app_commands
 import discord
+from discord import app_commands
+from discord.ext import commands
 from discord.ui import View
 
 import sqlite3
@@ -407,6 +407,38 @@ class RerollView(View):
 class VampireRoll(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
+
+    @app_commands.command(name='newroll', description='newRollTest')
+    @app_commands.choices(rollType=[
+        app_commands.Choice(name="Standard", value="standard"),
+        app_commands.Choice(name="Frenzy Resist", value="frenzy_resist"),
+        app_commands.Choice(name="predator__type_hunt", value="predator_type_hunt"),
+        app_commands.Choice(name="Rouse", value="rouse"),
+        app_commands.Choice(name="Remorse", value="remorse"),
+        ])
+    async def newRoll(self, interaction: discord.Interaction, choices: app_commands.Choice[str]):
+        match choices.value:
+            case 'standard':
+                # go to a view asking for stuff in vroll()
+                pass
+            case 'frenzy_resist':
+                # frenzy resist calculations
+                frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                await interaction.response.send_message(embed=frenzy_resist_embed)
+            case 'predator_type_hunt':
+                # pred-type hunt calculations
+                pred_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                await interaction.response.send_message(embed=pred_embed)
+            case 'rouse':
+                # remorse calculations
+                rouse_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                await interaction.response.send_message(embed=rouse_embed)
+            case 'remorse':
+                # remorse calculations
+                remorse_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                await interaction.response.send_message(embed=remorse_embed)
+            case _:
+                await interaction.response.send_message(content=f'{choices.value=}')
 
     @app_commands.command(name="vroll", description="Vampire: The Masquerade v5 Roller & Char Tracker")
     @app_commands.describe(charactername='Character Name')
