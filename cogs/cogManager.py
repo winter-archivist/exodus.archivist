@@ -22,18 +22,6 @@ cog_selections = [
             discord.SelectOption(
                 label='exoNotes', value='exonotes.exoNotes',
                 emoji='<:ExodusE:1145153679155007600>',
-            ),
-            discord.SelectOption(
-                label='test', value='1',
-                emoji='<a:spinningmoyai:838121158606848030>',
-            ),
-            discord.SelectOption(
-                label='test', value='1',
-                emoji='<a:spinningmoyai:838121158606848030>',
-            ),
-            discord.SelectOption(
-                label='test', value='1',
-                emoji='<a:spinningmoyai:838121158606848030>',
             )]
 run_command = {"operation": 'tc.Ungiven1', "target": 'Ungiven2'}
 
