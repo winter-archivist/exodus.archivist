@@ -354,23 +354,20 @@ class RerollView(View):
         global result, reroll_dict, difficulty, character
 
         db = sqlite3.connect(f'cogs//vampire//characters//{character}.sqlite')
-        cursor = db.cursor()
-        wp_base = cursor.execute('SELECT willpowerBase FROM willpower').fetchone()[0]
-        wp_SUP = cursor.execute('SELECT willpowerSUP FROM willpower').fetchone()[0]
-        wp_AGG = cursor.execute('SELECT willpowerAGG FROM willpower').fetchone()[0]
+        wp_base = db.cursor().execute('SELECT willpowerBase FROM willpower').fetchone()[0]
+        wp_SUP = db.cursor().execute('SELECT willpowerSUP FROM willpower').fetchone()[0]
+        wp_AGG = db.cursor().execute('SELECT willpowerAGG FROM willpower').fetchone()[0]
 
         if wp_base <= wp_AGG:
             await interaction.response.edit_message(embed=not_enough_wp_embed, view=None)
             db.close()
             return
         elif wp_base <= wp_SUP:
-            cursor.execute('UPDATE willpower SET willpowerAGG=?', (str(wp_AGG + 1),))
-            db.commit()
-            db.close()
+            db.cursor().execute('UPDATE willpower SET willpowerAGG=?', (str(wp_AGG + 1),))
         else:
-            cursor.execute('UPDATE willpower SET willpowerSUP=?', (str(wp_SUP + 1),))
-            db.commit()
-            db.close()
+            db.cursor().execute('UPDATE willpower SET willpowerSUP=?', (str(wp_SUP + 1),))
+        db.commit()
+        db.close()
 
         r_crit, rh_crit, r_success, rh_success, r_fail, rh_fail, rh_skull = reroll_dict[
             'r_crit', 'rh_crit', 'r_success', 'rh_success', 'r_fail', 'rh_fail', 'rh_skull']

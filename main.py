@@ -116,7 +116,7 @@ async def sync(ctx):  # ! Slash Commands Cog Essential
 async def kill(self, ctx):
     if str(ctx.author.id) != f'{mc.RUNNER_ID}':
         return
-    exit()
+    await CLIENT.close()
 
 
 CLIENT.run(config.TOKEN)
