@@ -25,6 +25,14 @@ Below are things just for this bot, I am not going to explain python, discord.py
 * This bot is not *meant* to be installed & used by other people, I am merely sharing its source-code.
 * Change the Bot's TOKEN [client_config.py]
 * Change the Bot's RUNNER and RUNNER_ID [misc/config/main_config.py]
+---
+## Notes:
+> The Following IDs are used throughout the bot: \
+> Format: tag : type : when
+>> mc.RUNNER_ID : int : For Runner Commands\
+>> interaction.user.id : int : Mostly Views & Slash-Commands | Anything using interaction \
+>> ctx.author.id : int: Runner/Non-Slash Commands | Anything using ctx
+
 
 ---
 ## LOGGING

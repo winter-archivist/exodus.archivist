@@ -36,7 +36,7 @@ class ExodusView(View):
         options=cog_selections,
         row=0)
     async def targetCog_select_callback(self, interaction, select: discord.ui.Select):
-        if str(interaction.user.id) != f'{mc.RUNNER_ID}':
+        if interaction.user.id != mc.RUNNER_ID:
             return
 
         global run_command
@@ -56,7 +56,7 @@ class ExodusView(View):
                 label='Reload', value='reload', emoji='<:nbthinblood:982240285243351080>', )],
         row=1)
     async def operationType_select_callback(self, interaction, select: discord.ui.Select):
-        if str(interaction.user.id) != f'{mc.RUNNER_ID}':
+        if interaction.user.id != mc.RUNNER_ID:
             return
 
         global run_command
@@ -67,7 +67,7 @@ class ExodusView(View):
 
     @discord.ui.button(label='Run', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green)
     async def run_button_callback(self, interaction, button):
-        if str(interaction.user.id) != f'{mc.RUNNER_ID}':
+        if interaction.user.id != mc.RUNNER_ID:
             return
 
         global run_command

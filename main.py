@@ -18,6 +18,7 @@ async def initialCogs(CLIENT_INPUT):
     log.warn('$ Loading Initial Cogs...')
     initial_cogs = ('cogs.cogManager',
                     'cogs.vampire.vampireRoll',
+                    'cogs.vampire.newVamp',  # ! Will change this back to vampireRoll when complete
                     'cogs.exonotes.exoNotes')
     forVar = 0
     for x in initial_cogs:
@@ -25,8 +26,8 @@ async def initialCogs(CLIENT_INPUT):
         try:
             await CLIENT_INPUT.load_extension(f'{target}')
         except Exception as e:
-            log.warn(f"<<<$ Failed to load {target} {e}>>>")
-            exit()
+            log.crit(f"<<<$ Failed to load {target} {e}>>>")
+            exit(000)
         forVar += 1
 
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
@@ -114,7 +115,7 @@ async def sync(ctx):  # ! Slash Commands Cog Essential
 
 @commands.command(hidden=True)
 async def kill(self, ctx):
-    if str(ctx.author.id) != f'{mc.RUNNER_ID}':
+    if ctx.author.id != mc.RUNNER_ID:
         return
     await CLIENT.close()
 

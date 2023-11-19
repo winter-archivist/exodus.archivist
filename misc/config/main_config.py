@@ -11,7 +11,7 @@ embed_colors = {
 
 # ? Should be changed
 RUNNER: str = f'.ashywinter'  # ? YOUR DISCORD NAME
-RUNNER_ID: str = '567819777209532418'  # ? YOUR DISCORD ID as a STRING
+RUNNER_ID: int = 567819777209532418  # ? YOUR DISCORD ID as an INTEGER
 
 # ? Should be kept the same
 DEVELOPER: str = '.ashywinter'  # ! if you need to contact who wrote this awful code
