@@ -15,27 +15,31 @@ import client_config as config
 
 
 async def initialCogs(CLIENT_INPUT):
-    log.warn('$ Loading Initial Cogs...')
+    log.info('$ Loading Initial Cogs...')
     initial_cogs = ('cogs.cogManager',
                     'cogs.vampire.vampireRoll',
-                    'cogs.vampire.newVamp',  # ! Will change this back to vampireRoll when complete
+                    'cogs.vampire.newVamp',  # ! Will remove before merging /w main
                     'cogs.exonotes.exoNotes')
     forVar = 0
     for x in initial_cogs:
-        target = initial_cogs[forVar]
+        targetedCog = initial_cogs[forVar]
         try:
-            await CLIENT_INPUT.load_extension(f'{target}')
+            await CLIENT_INPUT.load_extension(f'{targetedCog}')
+            log.debug(f'$ {targetedCog} Loaded')
         except Exception as e:
-            log.crit(f"<<<$ Failed to load {target} {e}>>>")
+            log.crit(f"<<<$ Failed to load {targetedCog} {e}>>>")
             exit(000)
         forVar += 1
+    log.info('$ Loaded Initial Cogs... Attempting Sync')
 
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
     try:
+        log.debug(f"$ Loading ddtr")
         await CLIENT_INPUT.load_extension('cogs.ddtr.ddtr')
     except Exception as e:
         log.warn(f"<<<$ {e} | REMOVE TRY STATEMENT IN main.py CONTAINING cogs.ddtr.ddtr >>>")
         exit()
+    log.debug(f"$ ddtr Loaded, real sync start.")
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
 
 
@@ -120,4 +124,4 @@ async def kill(self, ctx):
     await CLIENT.close()
 
 
-CLIENT.run(config.TOKEN)
+CLIENT.run(token=config.TOKEN, reconnect=True)
