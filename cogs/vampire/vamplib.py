@@ -110,7 +110,7 @@ async def ownerChecker(interaction: discord.Interaction):
 
     # ? READS the character owner's id in the proper character (Just insurance)
     db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite')
-    charOwnerResultGrab = db.cursor().execute('SELECT userID FROM charOwner')
+    charOwnerResultGrab = db.cursor().execute('SELECT userID FROM userInfo')
     char_owner_id = charOwnerResultGrab.fetchone()[0]
     char_owner_id: int = int(char_owner_id)
 
@@ -128,79 +128,7 @@ async def ownerChecker(interaction: discord.Interaction):
         return targetcharacter
 
 
-async def standardMake(ctx, cursor):
-    # Physical
-    cursor.execute('CREATE TABLE IF NOT EXISTS physicalAttributes(strength INTEGER, dexterity INTEGER, stamina INTEGER)')
-    cursor.execute(
-        'CREATE TABLE IF NOT EXISTS physicalSkills(athletics INTEGER, brawl INTEGER, craft INTEGER, drive INTEGER, '
-        'firearms INTEGER, larceny INTEGER, melee INTEGER, stealth INTEGER, survival INTEGER)')
-
-    # Social
-    cursor.execute(
-        'CREATE TABLE IF NOT EXISTS socialAttributes(charisma INTEGER, manipulation INTEGER, composure INTEGER)')
-    cursor.execute(
-        'CREATE TABLE IF NOT EXISTS socialSkills(animal_ken INTEGER, etiquette INTEGER, insight INTEGER, intimidation INTEGER, '
-        'leadership INTEGER, performance INTEGER, persuasion INTEGER, streetwise INTEGER, subterfuge INTEGER)')
-
-    # Mental
-    cursor.execute('CREATE TABLE IF NOT EXISTS mentalAttributes(intelligence INTEGER, wits INTEGER, resolve INTEGER)')
-    cursor.execute(
-        'CREATE TABLE IF NOT EXISTS mentalSkills(academics INTEGER, awareness INTEGER, finance INTEGER, investigation INTEGER, '
-        'medicine INTEGER, occult INTEGER, politics INTEGER, science INTEGER, technology INTEGER)')
-
-    # Disciplines
-    cursor.execute('CREATE TABLE IF NOT EXISTS disciplines('
-                   'obfuscate INTEGER, animalism INTEGER, potence INTEGER, dominate INTEGER, '
-                   'auspex INTEGER, protean INTEGER, fortitude INTEGER, thin_blood_alchemy, '
-                   'chemeristry INTEGER, seven INTEGER, myr INTEGER, selena INTEGER)')
-
-    # Other
-    cursor.execute(
-        'CREATE TABLE IF NOT EXISTS willpower(willpowerBase INTEGER, willpowerSUP INTEGER, willpowerAGG INTEGER)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS health(healthBase INTEGER, healthSUP INTEGER, healthAGG INTEGER)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS hunger(hungerCount INTEGER)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS charOwner(userID INTEGER, userNAME TEXT)')
-
-    # Basic Value Input into Blank Vampire DB
-
-    # Physical
-    cursor.execute('INSERT INTO physicalAttributes (strength, dexterity, stamina) VALUES(1,2,3)')
-    cursor.execute(
-        'INSERT INTO physicalSkills (athletics, brawl, craft, drive, firearms, larceny, melee, stealth, survival) '
-        'VALUES(1,2,3,4,5,6,7,8,9)')
-
-    # Social
-    cursor.execute('INSERT INTO socialAttributes (charisma, manipulation, composure) VALUES(1,2,3)')
-    cursor.execute('INSERT INTO socialSkills (animal_ken, etiquette, insight, intimidation, leadership, performance, '
-                   'persuasion, streetwise, subterfuge)'
-                   'VALUES(1,2,3,4,5,6,7,8,9)')
-
-    # Mental
-    cursor.execute('INSERT INTO mentalAttributes (intelligence, wits, resolve) VALUES(1,2,3)')
-    cursor.execute('INSERT INTO mentalSkills (academics, awareness, finance, investigation, medicine, occult, '
-                   'politics, science, technology)'
-                   'VALUES(1,2,3,4,5,6,7,8,9)')
-
-    # Disciplines
-    # seven is Temporis
-    # myr is Dementation
-    # selena is Nihilistics
-    cursor.execute('INSERT INTO disciplines('
-                   'obfuscate, animalism, potence, dominate, '
-                   'auspex, protean, fortitude, thin_blood_alchemy, '
-                   'chemeristry, seven, myr, selena)'
-                   'VALUES(1,1,1,1, 1,1,1,1, 1,1,1,1)')
-
-    # Other
-    cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
-    cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
-    cursor.execute('INSERT INTO hunger (hungerCount) VALUES(1)')
-
-    cursor.execute('INSERT INTO charOwner (userID, userNAME) VALUES(0, "nada")')
-    cursor.execute('UPDATE charOwner SET userID=?, userNAME=?', (int(ctx.author.id), f"{ctx.author}"))
-
-
-class DifficultySelectionView(View):
+class StandardStartSelectionView(View):
     def __init__(self, CLIENT):
         super().__init__()
         self.CLIENT = CLIENT
@@ -213,7 +141,17 @@ class DifficultySelectionView(View):
         elif targetcharacter is False:
             return
 
-        working_embed = selection_embed_base.set_field_at(index=0, name='Select Your:', value='Attribute')
+        db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
+        rollPoolGrab = cursor.execute('SELECT rollPool FROM commandvars')
+        roll_pool = int(rollPoolGrab.fetchone()[0])
+        rollPoolCompGrab = cursor.execute('SELECT poolComp from commandvars')  # ! ROLL COMP
+        roll_pool_composition = rollPoolCompGrab.fetchall()  # ! ROLL COMP FETCH
+        log.crit(f'{roll_pool_composition=}')
+        db.close()
+
+        working_embed = selection_embed_base.add_field(name='Initial Roll Information', value='')
+        working_embed.add_field(name='Roll Pool:', value=f'{roll_pool}')
+        working_embed.add_field(name='Roll Composition:', value=f'{roll_pool_composition}')  # ! THIS NEEDS TO ACTUALLY WORK
         await interaction.response.edit_message(embed=working_embed, view=StandardAttributeSelectionView(self.CLIENT))
 
     @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=4)
@@ -226,6 +164,8 @@ class DifficultySelectionView(View):
             return
 
         db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
+        hungerGrab = cursor.execute('SELECT hungerCount from hunger')
+
         rollPoolGrab = cursor.execute('SELECT rollPool FROM commandvars')
         new_roll_pool = int(rollPoolGrab.fetchone()[0] + 2)
         cursor.execute('UPDATE commandvars SET rollPool=?', (new_roll_pool,))
@@ -236,9 +176,7 @@ class DifficultySelectionView(View):
         button.style = discord.ButtonStyle.gray
         await interaction.response.edit_message(view=self)
 
-    @discord.ui.select(
-        placeholder='Select Difficulty',
-        options=difficulty_options)
+    @discord.ui.select(placeholder='Select Difficulty', options=difficulty_options)
     async def extra_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         if not await ownerChecker(interaction):
             return
