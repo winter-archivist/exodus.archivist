@@ -8,11 +8,12 @@ from cogs.vampire.selections import selections as s
 from misc.utils import yaml_utils as yu
 from misc.config import main_config as mc
 
-
 selection_embed_base = discord.Embed(title='', description=f'', color=mc.embed_colors["purple"])
 roll_embed_embed_base = discord.Embed(title='Roll', description=f'', color=mc.embed_colors["purple"])
-roll_details_embed_base = discord.Embed(title='Extra Details:',description=f'{mc.ISSUE_CONTACT}',color=mc.embed_colors["black"])
-not_enough_wp_embed_base = discord.Embed(title='Willpower Reroll', description=f'You don\'t have enough willpower. {mc.ISSUE_CONTACT}', color=mc.embed_colors["red"])
+roll_details_embed_base = discord.Embed(title='Extra Details:', description=f'{mc.ISSUE_CONTACT}', color=mc.embed_colors["black"])
+not_enough_wp_embed_base = discord.Embed(title='Willpower Reroll',
+                                         description=f'You don\'t have enough willpower. {mc.ISSUE_CONTACT}',
+                                         color=mc.embed_colors["red"])
 difficulty_options = [
     discord.SelectOption(
         label='Zero', value='0', emoji='<:snek:785811903938953227>'
@@ -62,11 +63,11 @@ async def rollInitialize(interaction, charactername):
     # ! Runs every time someone uses the /vroll command
     db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite')
     charOwnerResultGrab = db.cursor().execute('SELECT userID FROM charOwner')
-
-    if charOwnerResultGrab.fetchone()[0] != f'{interaction.user}':  # ? If interaction user doesn't own the character
+    char_owner_id = charOwnerResultGrab.fetchone()[0]
+    if char_owner_id != interaction.user.id:  # ? If interaction user doesn't own the character
         db.close()
-        await interaction.response.send_message(f'You don\'t own {charactername}')
-        return
+        await interaction.response.send_message(msg=f'You don\'t own {charactername}', ephemeral=True)
+        return False
 
     # ? Resets commandvars & reroll_info
     db.cursor().execute(
@@ -80,18 +81,18 @@ async def rollInitialize(interaction, charactername):
     db.commit(); db.close()  # ! DON'T REMOVE
 
     # ? Writes the name of the current user.id's targetcharacter
-    log.crit(f'{charactername=}')
     targetCache = f'cogs/vampire/characters/{str(interaction.user.id)}/{str(interaction.user.id)}.yaml'
     await yu.cacheClear(targetCache)
     await yu.cacheWrite(targetCache, dataInput={'characterName': f'{charactername}'})
 
 
-async def ownerChecker(interaction: discord.Interaction) -> bool:
+async def ownerChecker(interaction: discord.Interaction):
     # ! Runs basically any time someone does anything related to the vtm roller
     # ? Standard Usage:
     """
-    if not await ownerChecker(interaction):
-        return
+    targetcharacter = await ownerChecker(interaction)
+    if targetcharacter is str: pass
+    elif targetcharacter is False: return
     pass  # ! Real Code Here
     """
 
@@ -100,30 +101,31 @@ async def ownerChecker(interaction: discord.Interaction) -> bool:
     # ! Everytime this is used there is always some kind of custom logic when you return True
     # ! It's a not particularly great solution, but it works!
 
-    # ? Grabs the current targeted character name of the user interacting with the interaction
+    # ? READS targetcharacter from proper .yaml
     targetCache = f'cogs/vampire/characters/{str(interaction.user.id)}/{str(interaction.user.id)}.yaml'
     data = await yu.cacheRead(f'{targetCache}')
     use_data: dict = {}
     use_data.update(data)
     targetcharacter: str = str(use_data['characterName'])
 
-    # ? Grabs the character owner's ID from targeted character
+    # ? READS the character owner's id in the proper character (Just insurance)
     db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite')
     charOwnerResultGrab = db.cursor().execute('SELECT userID FROM charOwner')
-    char_owner: str = str(charOwnerResultGrab.fetchone()[0])
+    char_owner_id = charOwnerResultGrab.fetchone()[0]
+    char_owner_id: int = int(char_owner_id)
 
     # ? Checks if the user.id is the same as the character's ownerID
+    # ? If they DON'T, it just tells the person using the command that, and return False
+    # ? If they DO, then it returns the targetcharacter
     db.close()
-    if char_owner != interaction.user.id:  # ! User doesn't own the Character
-        await interaction.followup.send_message(f'> You don\'t own any characters named: `{targetcharacter}`. \n'
-                                                f'Please double check the name input and try again, '
-                                                f'otherwise please contact `{mc.RUNNER}` or `{mc.DEVELOPER}`')
+    if char_owner_id != interaction.user.id:  # ! User does __NOT__ own the Character
+        await interaction.response.send_message(f'> You don\'t own any characters named: `{targetcharacter}`.\n\n'
+                                                f'Please double check the name input and try again, otherwise please contact\n'
+                                                f'* Bot\'s Current Runner:`{mc.RUNNER}`\n'
+                                                f'* Bot\'s Current Developer: `{mc.DEVELOPER}`')
         return False
-    elif char_owner == interaction.user.id:  # ! User does own the Character
-        return True
-    else:
-        log.crit('>** ownerChecker() Err.001')
-        return False
+    elif char_owner_id == interaction.user.id:  # ! User __DOES__ own the Character
+        return targetcharacter
 
 
 async def standardMake(ctx, cursor):
@@ -205,17 +207,34 @@ class DifficultySelectionView(View):
 
     @discord.ui.button(label='Next Step', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=4)
     async def stepper_button_callback(self, interaction, button):
-        if not await ownerChecker(interaction):
+        targetcharacter = await ownerChecker(interaction)
+        if targetcharacter is str:
+            pass
+        elif targetcharacter is False:
             return
-        working_embed = 1
+
         working_embed = selection_embed_base.set_field_at(index=0, name='Select Your:', value='Attribute')
         await interaction.response.edit_message(embed=working_embed, view=StandardAttributeSelectionView(self.CLIENT))
 
-    @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=4)
+    @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=4)
     async def blood_surge_button_callback(self, interaction, button):
-        if not await ownerChecker(interaction):
+        # ! THIS NEEDS TO ALSO CHECK HUNGER AND MAKE A ROUSE!!!!
+        targetcharacter = await ownerChecker(interaction)
+        if targetcharacter is str:
+            pass
+        elif targetcharacter is False:
             return
-        pass
+
+        db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
+        rollPoolGrab = cursor.execute('SELECT rollPool FROM commandvars')
+        new_roll_pool = int(rollPoolGrab.fetchone()[0] + 2)
+        cursor.execute('UPDATE commandvars SET rollPool=?', (new_roll_pool,))
+        db.commit(); db.close()
+
+        button.disabled = True
+        button.label = 'Blood Surged'
+        button.style = discord.ButtonStyle.gray
+        await interaction.response.edit_message(view=self)
 
     @discord.ui.select(
         placeholder='Select Difficulty',
@@ -224,16 +243,19 @@ class DifficultySelectionView(View):
         if not await ownerChecker(interaction):
             return
         pass
+        """
 
-        global roll_pool
         forVar = 0
 
         for x in select.values:
             roll_pool += int(select.values[forVar])
             pool_composition.append(f'{int(select.values[forVar])}')
             forVar += 1
-
+        """
         await interaction.response.edit_message()
 
 
-
+class StandardAttributeSelectionView(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
