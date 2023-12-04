@@ -18,7 +18,6 @@ async def initialCogs(CLIENT_INPUT):
     log.info('$ Loading Initial Cogs...')
     initial_cogs = ('cogs.cogManager',
                     'cogs.vampire.vampireRoll',
-                    'cogs.vampire.newVamp',  # ! Will remove before merging /w main
                     'cogs.exonotes.exoNotes')
     forVar = 0
     for x in initial_cogs:
