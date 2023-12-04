@@ -3,12 +3,19 @@ from discord.ui import View
 from zenlog import log
 
 import sqlite3
+from random import randint
+import os
 
 from cogs.vampire.selections import selections as s
 from misc.utils import yaml_utils as yu
 from misc.config import main_config as mc
 
-selection_embed_base = discord.Embed(title='', description=f'', color=mc.embed_colors["purple"])
+selection_embed = discord.Embed(title='', description=f'', color=mc.embed_colors["purple"])
+selection_embed.add_field(name='Roll Information', value='', inline=False)
+selection_embed.add_field(name='Roll Pool:', value=f'N/A')
+selection_embed.add_field(name='Difficulty:', value=f'N/A')
+selection_embed.add_field(name='Roll Composition:', value=f'N/A')
+
 roll_embed_embed_base = discord.Embed(title='Roll', description=f'', color=mc.embed_colors["purple"])
 roll_details_embed_base = discord.Embed(title='Extra Details:', description=f'{mc.ISSUE_CONTACT}', color=mc.embed_colors["black"])
 not_enough_wp_embed_base = discord.Embed(title='Willpower Reroll',
@@ -59,31 +66,90 @@ difficulty_options = [
     )]
 
 
-async def rollInitialize(interaction, charactername):
+async def rouseCheck(interaction, targetcharacter) -> str:
+    with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        cursor = db.cursor()
+        hunger_grab = cursor.execute('SELECT hunger from charInfo')
+        hunger: int = int(hunger_grab.fetchone()[0])
+        rouse_num_result: int = randint(1, 10)
+        if hunger >= 5:
+            db.close()
+            if rouse_num_result <= 5:
+                return 'Frenzy'  # * Hunger Frenzy, No Hunger Gain Too High Already
+            return 'Hungry'
+
+        elif rouse_num_result >= 6:
+            db.close()
+            return 'Pass'  # * No Hunger Gain
+
+        elif rouse_num_result <= 5:
+            cursor.execute('UPDATE charInfo SET hunger=?', (str(int(hunger + 1))))
+            db.commit();
+            db.close()
+            return 'Fail'  # * Hunger Gain
+
+
+async def selectionEmbedSetter(interaction, targetcharacter) -> None:
+    db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
+    roll_pool_grab = cursor.execute('SELECT rollPool FROM commandVars')
+    roll_pool = int(roll_pool_grab.fetchone()[0])
+
+    difficulty_grab = cursor.execute('SELECT difficulty from commandVars')
+    difficulty: int = int(difficulty_grab.fetchone()[0])
+
+    roll_pool_comp_grab = cursor.execute('SELECT poolComp from commandVars')
+    roll_comp = roll_pool_comp_grab.fetchone()[0]
+
+    url_grab = cursor.execute('SELECT imgURL from charInfo')
+    url = url_grab.fetchone()[0]
+    db.close()
+
+    selection_embed.set_field_at(index=1, name='Roll Pool:', value=f'{roll_pool}')
+    selection_embed.set_field_at(index=2, name='Difficulty:', value=f'{difficulty}')
+    selection_embed.set_field_at(index=3, name='Roll Composition:', value=f'{roll_comp}')
+    selection_embed.set_thumbnail(url=f'{url}')
+
+
+async def rollInitialize(interaction, charactername) -> bool:
     # ! Runs every time someone uses the /vroll command
-    db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite')
-    charOwnerResultGrab = db.cursor().execute('SELECT userID FROM charOwner')
+    targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite'
+
+    log.debug(f'> Checking if [ `{targetDB}` ] exists')
+    if not os.path.exists(targetDB):
+        log.warn(f'*> Database [ `{targetDB}` ] does not exist')
+        await interaction.response.send_message(embed=discord.Embed(
+            title='Database Error', color=mc.embed_colors["red"], description=f'[ `{charactername}` ] Does not Exist. \n\n {mc.ISSUE_CONTACT}'), ephemeral=True)
+        return False
+    else:
+        log.debug(f'> Successful Connection to [ `{targetDB}` ]')
+
+    db = sqlite3.connect(targetDB); cursor = db.cursor()
+    charOwnerResultGrab = cursor.execute('SELECT userID FROM ownerInfo')
     char_owner_id = charOwnerResultGrab.fetchone()[0]
     if char_owner_id != interaction.user.id:  # ? If interaction user doesn't own the character
         db.close()
-        await interaction.response.send_message(msg=f'You don\'t own {charactername}', ephemeral=True)
+        await interaction.response.send_message(f'You don\'t own {charactername}', ephemeral=True)
         return False
 
     # ? Resets commandvars & reroll_info
-    db.cursor().execute(
-        'UPDATE commandvars SET difficulty=?, rollPool=?, result=?, pool_composition=?',
+    cursor.execute(
+        'UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?',
         (0, 0, 0, 'N/A'), )
-    db.cursor().execute(
-        'UPDATE reroll_info SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, '
+    cursor.execute(
+        'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, '
         'hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
         (0, 0, 0, 0, 0, 0, 0), )
 
-    db.commit(); db.close()  # ! DON'T REMOVE
+    url_grab = cursor.execute('SELECT imgURL from charInfo')
+    url = url_grab.fetchone()[0]
+    selection_embed.set_thumbnail(url=f'{url}')
 
-    # ? Writes the name of the current user.id's targetcharacter
+    db.commit(); db.close()
+
     targetCache = f'cogs/vampire/characters/{str(interaction.user.id)}/{str(interaction.user.id)}.yaml'
     await yu.cacheClear(targetCache)
     await yu.cacheWrite(targetCache, dataInput={'characterName': f'{charactername}'})
+    return True
 
 
 async def ownerChecker(interaction: discord.Interaction):
@@ -110,7 +176,7 @@ async def ownerChecker(interaction: discord.Interaction):
 
     # ? READS the character owner's id in the proper character (Just insurance)
     db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite')
-    charOwnerResultGrab = db.cursor().execute('SELECT userID FROM userInfo')
+    charOwnerResultGrab = db.cursor().execute('SELECT userID FROM ownerInfo')
     char_owner_id = charOwnerResultGrab.fetchone()[0]
     char_owner_id: int = int(char_owner_id)
 
@@ -141,22 +207,58 @@ class StandardStartSelectionView(View):
         elif targetcharacter is False:
             return
 
-        db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
-        rollPoolGrab = cursor.execute('SELECT rollPool FROM commandvars')
-        roll_pool = int(rollPoolGrab.fetchone()[0])
-        rollPoolCompGrab = cursor.execute('SELECT poolComp from commandvars')  # ! ROLL COMP
-        roll_pool_composition = rollPoolCompGrab.fetchall()  # ! ROLL COMP FETCH
-        log.crit(f'{roll_pool_composition=}')
-        db.close()
+        await selectionEmbedSetter(interaction, targetcharacter)
 
-        working_embed = selection_embed_base.add_field(name='Initial Roll Information', value='')
-        working_embed.add_field(name='Roll Pool:', value=f'{roll_pool}')
-        working_embed.add_field(name='Roll Composition:', value=f'{roll_pool_composition}')  # ! THIS NEEDS TO ACTUALLY WORK
-        await interaction.response.edit_message(embed=working_embed, view=StandardAttributeSelectionView(self.CLIENT))
+        await interaction.response.edit_message(embed=selection_embed, view=StandardAttributeSelectionView(self.CLIENT))
 
     @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=4)
     async def blood_surge_button_callback(self, interaction, button):
-        # ! THIS NEEDS TO ALSO CHECK HUNGER AND MAKE A ROUSE!!!!
+        targetcharacter = await ownerChecker(interaction)
+        if targetcharacter is str:
+            pass
+        elif targetcharacter is False:
+            return
+
+        rouse_result = await rouseCheck(interaction, targetcharacter)
+        if rouse_result in ('Frenzy', 'Hungry'):
+            button.disabled = True
+            button.style = discord.ButtonStyle.gray
+
+            if rouse_result == 'Frenzy':
+                button.label = 'Broken Chains.'
+                # ! DO FRENZY STUFF HERE
+
+            elif rouse_result == 'Hungry':
+                button.label = 'Too Hungry, Feast.'
+
+            await interaction.response.edit_message(view=self)
+            return
+        elif rouse_result == 'Pass':
+            button.label = 'The Beast\'s Lock Rattles, Hunger Avoided.'
+        elif rouse_result == 'Fail':
+            button.label = 'Blood Boils Within, Hunger Gained.'
+
+        db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
+
+        bp_grab = cursor.execute('SELECT blood_potency FROM charInfo')
+        bp: int = int(bp_grab.fetchone()[0])
+        bp_mapping = {1: 2,  2: 2,  3: 3,  4: 3,  5: 4,  6: 5}
+        bp_add = bp_mapping[bp]
+
+        roll_pool_grab = cursor.execute('SELECT rollPool FROM commandvars')
+        new_roll_pool: int = int(roll_pool_grab.fetchone()[0] + bp_add)
+        cursor.execute('UPDATE commandvars SET rollPool=?', (new_roll_pool,))
+        cursor.execute('UPDATE commandvars SET poolComp=?', (f"Blood Surge[{bp_add}], ", ))
+        db.commit(); db.close()
+
+        await selectionEmbedSetter(interaction, targetcharacter)
+
+        button.disabled = True
+        button.style = discord.ButtonStyle.gray
+        await interaction.response.edit_message(embed=selection_embed, view=self)
+
+    @discord.ui.select(placeholder='Select Difficulty', options=difficulty_options, max_values=1, min_values=1)
+    async def difficulty_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         targetcharacter = await ownerChecker(interaction)
         if targetcharacter is str:
             pass
@@ -164,33 +266,12 @@ class StandardStartSelectionView(View):
             return
 
         db = sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite'); cursor = db.cursor()
-        hungerGrab = cursor.execute('SELECT hungerCount from hunger')
-
-        rollPoolGrab = cursor.execute('SELECT rollPool FROM commandvars')
-        new_roll_pool = int(rollPoolGrab.fetchone()[0] + 2)
-        cursor.execute('UPDATE commandvars SET rollPool=?', (new_roll_pool,))
+        cursor.execute('UPDATE commandvars SET difficulty=?', select.values)
         db.commit(); db.close()
 
-        button.disabled = True
-        button.label = 'Blood Surged'
-        button.style = discord.ButtonStyle.gray
-        await interaction.response.edit_message(view=self)
+        await selectionEmbedSetter(interaction, targetcharacter)
 
-    @discord.ui.select(placeholder='Select Difficulty', options=difficulty_options)
-    async def extra_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        if not await ownerChecker(interaction):
-            return
-        pass
-        """
-
-        forVar = 0
-
-        for x in select.values:
-            roll_pool += int(select.values[forVar])
-            pool_composition.append(f'{int(select.values[forVar])}')
-            forVar += 1
-        """
-        await interaction.response.edit_message()
+        await interaction.response.edit_message(embed=selection_embed, view=self)
 
 
 class StandardAttributeSelectionView(View):
