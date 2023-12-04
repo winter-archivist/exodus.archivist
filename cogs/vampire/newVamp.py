@@ -29,12 +29,12 @@ class NewVampireRoll(commands.Cog):
     async def newRoll(self, interaction: discord.Interaction, choices: app_commands.Choice[str], charactername: str):
         match choices.value:
             case 'standard':
-                if await vl.rollInitialize(interaction, charactername):
+                if await vl.rollInitialize(interaction, charactername) is False:
                     return
-                working_embed = vl.selection_embed_base.add_field(name='Initial Roll Information', value='')
-                working_embed.add_field(name='Roll Pool:', value='0')
-                working_embed.add_field(name='Roll Composition:', value='None')
-                await interaction.response.send_message(embed=working_embed, view=vl.StandardStartSelectionView(self.CLIENT))
+                vl.selection_embed.set_field_at(index=1, name='Roll Pool:', value='0')
+                vl.selection_embed.set_field_at(index=2, name='Difficulty:', value=f'Unset')
+                vl.selection_embed.set_field_at(index=3, name='Roll Composition:', value=f'None')
+                await interaction.response.send_message(embed=vl.selection_embed, view=vl.StandardStartSelectionView(self.CLIENT))
             case 'frenzy_resist':
                 # frenzy resist calculations
                 frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
@@ -110,22 +110,30 @@ class NewVampireRoll(commands.Cog):
 
                 cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
                 cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
-                cursor.execute('INSERT INTO userInfo (userID, userNAME) VALUES(0, "nada")')
-                cursor.execute('UPDATE userInfo SET userID=?, userNAME=?', (int(ctx.author.id), f"{ctx.author}"))
+                cursor.execute('INSERT INTO ownerInfo (userID, userNAME) VALUES(0, "nada")')
+                cursor.execute('UPDATE ownerInfo SET userID=?, userNAME=?', (int(ctx.author.id), f"{ctx.author}"))
 
-                # !
+                # ! sep2
 
-                # CommandVars
                 cursor.execute('CREATE TABLE IF NOT EXISTS commandVars(difficulty INTEGER, rollPool INTEGER, result INTEGER, poolComp TEXT)')
+                cursor.execute('INSERT INTO commandVars (difficulty, rollPool, result, poolComp) VALUES(0, 0, 0, "Stuff, And, Things")')
 
                 cursor.execute('CREATE TABLE IF NOT EXISTS rerollInfo('
                                'regularCritDie INTEGER, hungerCritDie INTEGER, '
                                'regularSuccess INTEGER, hungerSuccess INTEGER, '
                                'regularFail INTEGER, hungerFail INTEGER, '
                                'hungerSkull INTEGER)')
+                cursor.execute('INSERT INTO rerollInfo ('
+                               'regularCritDie, hungerCritDie, '
+                               'regularSuccess, hungerSuccess, '
+                               'regularFail, hungerFail, '
+                               'hungerSkull) '
+                               'VALUES(0,0, 0,0, 0,0, 0)')
 
                 cursor.execute('CREATE TABLE IF NOT EXISTS charInfo(blood_potency INTEGER, clan TEXT, generation INTEGER, '
-                               'bane_severity INTEGER, hunger INTEGER)')
+                               'bane_severity INTEGER, hunger INTEGER, imgURL TEXT)')
+                cursor.execute('INSERT INTO charInfo (blood_potency, clan, generation, bane_severity, hunger, imgURL) VALUES(1, "ExampleClan", 10, 2, 0, "http")')
+
                 db.commit(); db.close()
                 await ctx.send('Make Complete')
             except Exception as e:
