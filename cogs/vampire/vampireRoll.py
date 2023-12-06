@@ -1,16 +1,15 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ui import View
 
 import sqlite3
-from random import randint
 from zenlog import log
 
 from misc.config import main_config as mc
-from misc.utils import interaction_utils as iu
-from misc.utils import yaml_utils as yu
-from cogs.vampire import vamplib as vl
+
+import cogs.vampire.vMisc.vampireFunctions as vF
+import cogs.vampire.vMisc.vampireEmbeds as vE
+import cogs.vampire.vMisc.vampireViews as vV
 
 
 class VampireRoll(commands.Cog):
@@ -28,10 +27,10 @@ class VampireRoll(commands.Cog):
     async def VampireRoll(self, interaction: discord.Interaction, choices: app_commands.Choice[str], charactername: str):
         match choices.value:
             case 'standard':
-                if await vl.rollInitialize(interaction, charactername) is False:
+                if await vF.rollInitialize(interaction, charactername) is False:
                     return
-                await vl.selectionEmbedSetter(interaction, charactername)
-                await interaction.response.send_message(embed=vl.selection_embed, view=vl.StandardStartSelectionView(self.CLIENT))
+                await vF.selectionEmbedSetter(interaction, charactername)
+                await interaction.response.send_message(embed=vE.selection_embed , view=vV.StandardStartSelectionView(self.CLIENT))
             case 'frenzy_resist':
                 # frenzy resist calculations
                 frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
@@ -53,6 +52,7 @@ class VampireRoll(commands.Cog):
 
     @commands.command(hidden=True)
     async def new(self, ctx, targetcharacter: str):
+        # ! I swear this command will be cleaned eventually
         if ctx.author.id == mc.RUNNER_ID:
             try:
                 with sqlite3.connect(f'cogs//vampire//characters//{str(ctx.user.id)}//{targetcharacter}.sqlite') as db:
