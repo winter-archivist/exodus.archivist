@@ -13,7 +13,7 @@ class StandardStartSelectionView(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Next Step', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=3)
+    @discord.ui.button(label='Next Step', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def stepper_button_callback(self, interaction, button):
         targetcharacter = await vF.ownerChecker(interaction)
         if targetcharacter is str:
@@ -25,7 +25,7 @@ class StandardStartSelectionView(View):
 
         await interaction.response.edit_message(embed=vE.selection_embed, view=StandardSelectionView(self.CLIENT))
 
-    @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=4)
+    @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
     async def blood_surge_button_callback(self, interaction, button):
         targetcharacter = await vF.ownerChecker(interaction)
         if targetcharacter is str:
@@ -73,7 +73,7 @@ class StandardStartSelectionView(View):
         except sqlite3.Error as e:
             log.error(f'blood_surge_button_callback | SQLITE3 ERROR | {e}')
 
-    @discord.ui.select(placeholder='Select Difficulty', options=vO.difficulty_options, max_values=1, min_values=1)
+    @discord.ui.select(placeholder='Select Difficulty', options=vO.difficulty_options, max_values=1, min_values=1, row=0)
     async def difficulty_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         targetcharacter = await vF.ownerChecker(interaction)
         if targetcharacter is str:
@@ -173,7 +173,7 @@ class StandardExtraSelectionView(View):
 
         await vF.selectionEmbedSetter(interaction, targetcharacter)
 
-        await interaction.response.edit_message(embed=vE.selection_embed, view=StandardExtraSelectionView(self.CLIENT))
+        await interaction.response.edit_message(embed=vE.selection_embed, view=StandardRollView(self.CLIENT))
 
     @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=4)
     async def roll_button_callback(self, interaction, button):
