@@ -348,7 +348,7 @@ async def normalRoller(interaction, self, targetcharacter):
     except sqlite3.Error as e:
         log.error(f'normalRoller_3 | SQLITE3 ERROR | {e}')
 
-    await interaction.response.send_message(embed=roll_embed, view=StandardRerollView(self.CLIENT))
+    await interaction.response.edit_message(embed=roll_embed, view=StandardRerollView(self.CLIENT))
 
 
 async def reRoller(interaction, self, targetcharacter):
@@ -360,14 +360,6 @@ async def reRoller(interaction, self, targetcharacter):
             wp_base = cursor.execute('SELECT willpowerBase FROM willpower').fetchone()[0]
             wp_SUP = cursor.execute('SELECT willpowerSUP FROM willpower').fetchone()[0]
             wp_AGG = cursor.execute('SELECT willpowerAGG FROM willpower').fetchone()[0]
-            if wp_base <= wp_AGG:
-                await interaction.response.edit_message(embed=not_enough_wp_embed, view=None, ephemeral=True)
-                return
-            elif wp_base <= wp_SUP:
-                db.cursor().execute('UPDATE willpower SET willpowerAGG=?', (str(wp_AGG + 1),))
-            else:
-                db.cursor().execute('UPDATE willpower SET willpowerSUP=?', (str(wp_SUP + 1),))
-            db.commit()
             hunger_crit = cursor.execute('SELECT hungerCritDie FROM rerollInfo').fetchone()[0]
             regular_crit = cursor.execute('SELECT regularCritDie FROM rerollInfo').fetchone()[0]
             regular_success = cursor.execute('SELECT regularSuccess FROM rerollInfo').fetchone()[0]
@@ -446,6 +438,15 @@ async def reRoller(interaction, self, targetcharacter):
         reroll_embed = discord.Embed(title='Roll Results', description=f'`{targetcharacter}` - `{interaction.user}`',
                                    color=mc.embed_colors["green"])
 
+    if wp_base <= wp_AGG:
+        await interaction.response.send_message(embed=not_enough_wp_embed, view=None, ephemeral=True)
+        return
+    elif wp_base <= wp_SUP:
+        db.cursor().execute('UPDATE willpower SET willpowerAGG=?', (str(wp_AGG + 1),))
+    else:
+        db.cursor().execute('UPDATE willpower SET willpowerSUP=?', (str(wp_SUP + 1),))
+    db.commit()
+
     try:
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
@@ -467,7 +468,7 @@ async def reRoller(interaction, self, targetcharacter):
     except sqlite3.Error as e:
         log.error(f'reRoller_3 | SQLITE3 ERROR | {e}')
 
-    await interaction.response.send_message(embed=reroll_embed)
+    await interaction.response.edit_message(embed=reroll_embed)
 
 
 async def simpleSelection(interaction, select, self, targetDB, func_callback):

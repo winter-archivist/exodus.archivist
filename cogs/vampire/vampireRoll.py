@@ -32,11 +32,6 @@ class VampireRoll(commands.Cog):
                     return
                 await vl.selectionEmbedSetter(interaction, charactername)
                 await interaction.response.send_message(embed=vl.selection_embed, view=vl.StandardStartSelectionView(self.CLIENT))
-                #
-                #
-                #
-                #
-                #
             case 'frenzy_resist':
                 # frenzy resist calculations
                 frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
