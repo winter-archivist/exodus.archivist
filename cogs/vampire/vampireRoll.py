@@ -104,79 +104,58 @@ class VampireRoll(commands.Cog):
                 with sqlite3.connect(f'cogs//vampire//characters//{str(ctx.author.id)}//{targetcharacter}.sqlite') as db:
                     cursor = db.cursor()
 
-                    cursor.execute('CREATE TABLE IF NOT EXISTS charAttributes('
-                                   'strength INTEGER, dexterity INTEGER, stamina INTEGER, '
-                                   'charisma INTEGER, manipulation INTEGER, composure INTEGER, '
-                                   'intelligence INTEGER, wits INTEGER, resolve INTEGER)')
+                    # ? charAttributes
+                    cursor.execute('CREATE TABLE IF NOT EXISTS charAttributes(strength INTEGER, dexterity INTEGER, stamina INTEGER, charisma INTEGER, manipulation INTEGER, composure INTEGER, intelligence INTEGER, wits INTEGER, resolve INTEGER)')
+                    cursor.execute('INSERT INTO charAttributes(strength, dexterity, stamina, charisma, manipulation, composure, intelligence, wits, resolve) VALUES(1,2,3, 1,2,3, 1,2,3)')
 
-                    cursor.execute(
-                        'CREATE TABLE IF NOT EXISTS physicalSkills(athletics INTEGER, brawl INTEGER, craft INTEGER, drive INTEGER, '
-                        'firearms INTEGER, larceny INTEGER, melee INTEGER, stealth INTEGER, survival INTEGER)')
-                    cursor.execute(
-                        'CREATE TABLE IF NOT EXISTS socialSkills(animal_ken INTEGER, etiquette INTEGER, insight INTEGER, intimidation INTEGER, '
-                        'leadership INTEGER, performance INTEGER, persuasion INTEGER, streetwise INTEGER, subterfuge INTEGER)')
-                    cursor.execute(
-                        'CREATE TABLE IF NOT EXISTS mentalSkills(academics INTEGER, awareness INTEGER, finance INTEGER, investigation INTEGER, '
-                        'medicine INTEGER, occult INTEGER, politics INTEGER, science INTEGER, technology INTEGER)')
+                    # ? charInfo
+                    cursor.execute('CREATE TABLE IF NOT EXISTS charInfo(blood_potency INTEGER, clan TEXT, generation INTEGER, '
+                                   'bane_severity INTEGER, hunger INTEGER, predator_type TEXT, imgURL TEXT)')
+                    cursor.execute('INSERT INTO charInfo (blood_potency, clan, generation, bane_severity, hunger, predator_type, imgURL) VALUES(1, "ExampleClan", 10, 2, 0, "nom", "http")')
 
-                    cursor.execute('CREATE TABLE IF NOT EXISTS disciplines('
-                                   'obfuscate INTEGER, animalism INTEGER, potence INTEGER, dominate INTEGER, '
-                                   'auspex INTEGER, protean INTEGER, presence INTEGER, fortitude INTEGER, thin_blood_alchemy INTEGER, blood_sorc INTEGER,'
-                                   'chemeristry INTEGER, seven INTEGER, myr INTEGER, selena INTEGER, nyct1 INTEGER, nyct2 INTEGER,'
-                                   'iilta INTEGER, elijah INTEGER)')
-
-                    cursor.execute(
-                        'CREATE TABLE IF NOT EXISTS willpower(willpowerBase INTEGER, willpowerSUP INTEGER, willpowerAGG INTEGER)')
-                    cursor.execute('CREATE TABLE IF NOT EXISTS health(healthBase INTEGER, healthSUP INTEGER, healthAGG INTEGER)')
-                    cursor.execute('CREATE TABLE IF NOT EXISTS ownerInfo(userID INTEGER, userNAME TEXT)')
-
-                    # ! Sep
-
-                    cursor.execute('INSERT INTO charAttributes('
-                                   'strength, dexterity, stamina, '
-                                   'charisma, manipulation, composure, '
-                                   'intelligence, wits, resolve) '
-                                   'VALUES(1,2,3, 1,2,3, 1,2,3)')
-
-                    cursor.execute('INSERT INTO physicalSkills ('
-                                   'athletics, brawl, craft, drive, firearms, larceny, '
-                                   'melee, stealth, survival) VALUES(1,2,3,4,5,6,7,8,9)')
-                    cursor.execute('INSERT INTO socialSkills (animal_ken, etiquette, insight, intimidation, leadership, performance, '
-                                   'persuasion, streetwise, subterfuge) VALUES(1,2,3,4,5,6,7,8,9)')
-                    cursor.execute('INSERT INTO mentalSkills (academics, awareness, finance, investigation, medicine, occult, '
-                                   'politics, science, technology) VALUES(1,2,3,4,5,6,7,8,9)')
-
-                    cursor.execute('INSERT INTO disciplines('
-                                   'obfuscate, animalism, potence, dominate, '
-                                   'auspex, protean, fortitude, thin_blood_alchemy, '
-                                   'chemeristry, seven, myr, selena)'
-                                   'VALUES(1,1,1,1, 1,1,1,1, 1,1,1,1)')
-
-                    cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
-                    cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
-                    cursor.execute('INSERT INTO ownerInfo (userID, userNAME) VALUES(0, "nada")')
-                    cursor.execute('UPDATE ownerInfo SET userID=?, userNAME=?', (int(ctx.author.id), f"{ctx.author}"))
-
-                    # ! sep2
-
+                    # ? commandVars
                     cursor.execute('CREATE TABLE IF NOT EXISTS commandVars(difficulty INTEGER, rollPool INTEGER, result INTEGER, poolComp TEXT)')
                     cursor.execute('INSERT INTO commandVars (difficulty, rollPool, result, poolComp) VALUES(0, 0, 0, "Stuff, And, Things")')
 
-                    cursor.execute('CREATE TABLE IF NOT EXISTS rerollInfo('
-                                   'regularCritDie INTEGER, hungerCritDie INTEGER, '
-                                   'regularSuccess INTEGER, hungerSuccess INTEGER, '
-                                   'regularFail INTEGER, hungerFail INTEGER, '
-                                   'hungerSkull INTEGER)')
-                    cursor.execute('INSERT INTO rerollInfo ('
-                                   'regularCritDie, hungerCritDie, '
-                                   'regularSuccess, hungerSuccess, '
-                                   'regularFail, hungerFail, '
-                                   'hungerSkull) '
-                                   'VALUES(0,0, 0,0, 0,0, 0)')
+                    # ? Disciplines
+                    cursor.execute('CREATE TABLE IF NOT EXISTS disciplines('
+                                   'obfuscate INTEGER, animalism INTEGER, potence INTEGER, dominate INTEGER, auspex INTEGER, protean INTEGER, presence INTEGER, fortitude INTEGER, '
+                                   'thin_blood_alchemy INTEGER, blood_sorc INTEGER, chemeristry INTEGER, '
+                                   'seven INTEGER, myr INTEGER, selena INTEGER, nyct1 INTEGER, nyct2 INTEGER, iilta INTEGER, elijah INTEGER)')
+                    cursor.execute('INSERT INTO disciplines('
+                                   'obfuscate, animalism, potence, dominate, auspex, protean, presence, fortitude, '
+                                   'thin_blood_alchemy, blood_sorc, chemeristry, '
+                                   'seven, myr, selena, nyct1, nyct2, iilta, elijah)'
+                                   'VALUES(1,1,1,1, 1,1,1,1, 1,1,1,1)')
 
-                    cursor.execute('CREATE TABLE IF NOT EXISTS charInfo(blood_potency INTEGER, clan TEXT, generation INTEGER, '
-                                   'bane_severity INTEGER, hunger INTEGER, imgURL TEXT)')
-                    cursor.execute('INSERT INTO charInfo (blood_potency, clan, generation, bane_severity, hunger, imgURL) VALUES(1, "ExampleClan", 10, 2, 0, "http")')
+                    # ? health
+                    cursor.execute('CREATE TABLE IF NOT EXISTS health(healthBase INTEGER, healthSUP INTEGER, healthAGG INTEGER)')
+                    cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
+
+                    # ? mentalSkills
+                    cursor.execute('CREATE TABLE IF NOT EXISTS mentalSkills(academics INTEGER, awareness INTEGER, finance INTEGER, investigation INTEGER, medicine INTEGER, occult INTEGER, politics INTEGER, science INTEGER, technology INTEGER)')
+                    cursor.execute('INSERT INTO mentalSkills (academics, awareness, finance, investigation, medicine, occult, politics, science, technology) VALUES(1,2,3,4,5,6,7,8,9)')
+
+                    # ? ownerInfo
+                    cursor.execute('CREATE TABLE IF NOT EXISTS ownerInfo(userID INTEGER, userNAME TEXT)')
+                    cursor.execute('INSERT INTO ownerInfo (userID, userNAME) VALUES(0, "nada")')
+                    cursor.execute('UPDATE ownerInfo SET userID=?, userNAME=?', (int(ctx.author.id), f"{ctx.author}"))
+
+                    # ? physicalSkills
+                    cursor.execute('CREATE TABLE IF NOT EXISTS physicalSkills(athletics INTEGER, brawl INTEGER, craft INTEGER, drive INTEGER, firearms INTEGER, larceny INTEGER, melee INTEGER, stealth INTEGER, survival INTEGER)')
+                    cursor.execute('INSERT INTO physicalSkills (athletics, brawl, craft, drive, firearms, larceny, melee, stealth, survival) VALUES(1,2,3,4,5,6,7,8,9)')
+
+                    # ? rerollInfo
+                    cursor.execute('CREATE TABLE IF NOT EXISTS rerollInfo(regularCritDie INTEGER, hungerCritDie INTEGER, regularSuccess INTEGER, hungerSuccess INTEGER, regularFail INTEGER, hungerFail INTEGER, hungerSkull INTEGER)')
+                    cursor.execute('INSERT INTO rerollInfo (regularCritDie, hungerCritDie, regularSuccess, hungerSuccess, regularFail, hungerFail, hungerSkull) VALUES(0,0, 0,0, 0,0, 0)')
+
+                    # ? socialSkills
+                    cursor.execute('CREATE TABLE IF NOT EXISTS socialSkills(animal_ken INTEGER, etiquette INTEGER, insight INTEGER, intimidation INTEGER, leadership INTEGER, performance INTEGER, persuasion INTEGER, streetwise INTEGER, subterfuge INTEGER)')
+                    cursor.execute('INSERT INTO socialSkills (animal_ken, etiquette, insight, intimidation, leadership, performance, persuasion, streetwise, subterfuge) VALUES(1,2,3,4,5,6,7,8,9)')
+
+                    # ? willpower
+                    cursor.execute('CREATE TABLE IF NOT EXISTS willpower(willpowerBase INTEGER, willpowerSUP INTEGER, willpowerAGG INTEGER)')
+                    cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
 
                     db.commit()
                     await ctx.send('Make Complete')
