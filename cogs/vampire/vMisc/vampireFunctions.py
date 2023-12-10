@@ -331,7 +331,7 @@ async def rollInitialize(interaction, charactername) -> bool:
         log.warn(f'*> Database [ `{targetDB}` ] does not exist')
         await interaction.response.send_message(embed=discord.Embed(
             title='Database Error', color=mc.embed_colors["red"],
-            description=f'[ `{charactername}` ] Does not Exist. \n\n {mc.ISSUE_CONTACT}'), ephemeral=True)
+            description=f'[ `{charactername}` ] Does Not Exist, Preventing Roll. \n\n {mc.ISSUE_CONTACT}'), ephemeral=True)
         return False
     else:
         log.debug(f'> Successful Connection to [ `{targetDB}` ]')

@@ -1,28 +1,70 @@
 import discord
-from discord import app_commands
+from discord import Embed, app_commands
 from discord.ext import commands
 
 import sqlite3
+from os import path
 from zenlog import log
 
 from misc.config import main_config as mc
 
+# from misc.utils import yaml_utils as yu
+
 import cogs.vampire.vMisc.vampireFunctions as vF
 import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
+# import cogs.vampire.vMisc.vampireMake as vM
 
 
 class VampireRoll(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    @app_commands.command(name='vampireroll', description='newRollTest')
+    # ! WIP FOR LATER
+    # @app_commands.command(name='vampire-make', description='Makes a character for `vampireroll`')
+    # @app_commands.describe(charactername='Character Name')
+    # async def VampireMake(self, interaction: discord.Interaction, charactername: str):
+    #     await yu.cacheClear(f'cogs/vampire/characters/{str(interaction.user.id)}/vampireMake.yaml')
+    #     await interaction.response.send_message(embed=vM.make_embed, view=vM.MakeStartView(self.CLIENT))"""
+
+    @app_commands.command(name='vampire-img', description='Sets the character img for `vampireroll`')
+    @app_commands.describe(charactername='Character Name')
+    @app_commands.describe(characterimgurl='Character Image URL')
+    async def VampireImgSet(self, interaction: discord.Interaction, charactername: str, characterimgurl: str):
+        url_set_embed = Embed(title='URL Set', description='', color=mc.embed_colors["green"])
+        url_set_embed.add_field(name='Success', value='', inline=False)
+        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite'
+        log.debug(f'> Checking if [ {targetDB} ] exist')
+        if not path.exists(targetDB):
+            log.warn(f'*> Database [ {targetDB} ] does not exist')
+
+            await interaction.response.send_message(embed=discord.Embed(
+                title='Database Error', color=mc.embed_colors["red"],
+                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mc.ISSUE_CONTACT}'), ephemeral=True)
+
+            return False
+        else:
+            log.debug(f'> Successful Connection to [ {targetDB} ] Setting URL')
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite') as db:
+            db.cursor().execute('UPDATE charInfo SET imgURL=?', (f'{characterimgurl}',))
+            db.commit()
+        log.debug(f'> [ {targetDB} ] URL Set to [ {characterimgurl} ]')
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite') as db:
+            url = db.cursor().execute('SELECT imgURL from charInfo').fetchone()[0]
+            url_set_embed.set_thumbnail(url=f'{url}')
+
+        await interaction.response.send_message(embed=url_set_embed)
+
+    @app_commands.command(name='vampire-roll', description='VTM v5 Dice Roller & Character Tracker!')
     @app_commands.choices(choices=[
-        app_commands.Choice(name="Standard", value="standard"),
-        app_commands.Choice(name="Frenzy Resist", value="frenzy_resist"),
-        app_commands.Choice(name="Predator Type Hunt", value="predator_type_hunt"),
-        app_commands.Choice(name="Rouse", value="rouse"),
-        app_commands.Choice(name="Remorse", value="remorse")])
+        app_commands.Choice(name='Standard', value='standard'),
+        app_commands.Choice(name='Frenzy Resist', value='frenzy_resist'),
+        app_commands.Choice(name='Hunt', value='hunt'),
+        app_commands.Choice(name='Rouse', value='rouse'),
+        app_commands.Choice(name='Remorse', value='remorse'),
+        app_commands.Choice(name='Discipline', value='discipline')])
     @app_commands.describe(charactername='Character Name')
     async def VampireRoll(self, interaction: discord.Interaction, choices: app_commands.Choice[str], charactername: str):
         match choices.value:
@@ -35,8 +77,8 @@ class VampireRoll(commands.Cog):
                 # frenzy resist calculations
                 frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
                 await interaction.response.send_message(embed=frenzy_resist_embed)
-            case 'predator_type_hunt':
-                # predator-type hunt calculations
+            case 'hunt':
+                # hunt calculations
                 predator_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
                 await interaction.response.send_message(embed=predator_embed)
             case 'rouse':
@@ -47,6 +89,10 @@ class VampireRoll(commands.Cog):
                 # remorse calculations
                 remorse_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
                 await interaction.response.send_message(embed=remorse_embed)
+            case 'discipline':
+                # discipline calculations
+                discipline_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                await interaction.response.send_message(embed=discipline_embed)
             case _:
                 await interaction.response.send_message(content=f'`ISSUE: /newRoll case _ {choices.value=}` | {mc.ISSUE_CONTACT}')
 
@@ -55,7 +101,7 @@ class VampireRoll(commands.Cog):
         # ! I swear this command will be cleaned eventually
         if ctx.author.id == mc.RUNNER_ID:
             try:
-                with sqlite3.connect(f'cogs//vampire//characters//{str(ctx.user.id)}//{targetcharacter}.sqlite') as db:
+                with sqlite3.connect(f'cogs//vampire//characters//{str(ctx.author.id)}//{targetcharacter}.sqlite') as db:
                     cursor = db.cursor()
 
                     cursor.execute('CREATE TABLE IF NOT EXISTS charAttributes('
@@ -75,8 +121,9 @@ class VampireRoll(commands.Cog):
 
                     cursor.execute('CREATE TABLE IF NOT EXISTS disciplines('
                                    'obfuscate INTEGER, animalism INTEGER, potence INTEGER, dominate INTEGER, '
-                                   'auspex INTEGER, protean INTEGER, fortitude INTEGER, thin_blood_alchemy, '
-                                   'chemeristry INTEGER, seven INTEGER, myr INTEGER, selena INTEGER)')
+                                   'auspex INTEGER, protean INTEGER, presence INTEGER, fortitude INTEGER, thin_blood_alchemy INTEGER, blood_sorc INTEGER,'
+                                   'chemeristry INTEGER, seven INTEGER, myr INTEGER, selena INTEGER, nyct1 INTEGER, nyct2 INTEGER,'
+                                   'iilta INTEGER, elijah INTEGER)')
 
                     cursor.execute(
                         'CREATE TABLE IF NOT EXISTS willpower(willpowerBase INTEGER, willpowerSUP INTEGER, willpowerAGG INTEGER)')
@@ -133,7 +180,7 @@ class VampireRoll(commands.Cog):
 
                     db.commit()
                     await ctx.send('Make Complete')
-            except Exception as e:
+            except sqlite3.Error as e:
                 log.crit(f'>* Error With Making New Character {targetcharacter}: {e}')
 
 

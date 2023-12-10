@@ -54,7 +54,7 @@ class NoteView(View):
 class EXONOTES(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
-
+    """
     @app_commands.command(name="note_make", description="exoNote Make")
     @app_commands.describe(title='Note Title')
     @app_commands.describe(handle='Note Handle')
@@ -97,6 +97,7 @@ class EXONOTES(commands.Cog):
             case _:
                 # ! use HANDLE
                 return
+    """
 
 
 async def setup(CLIENT):
