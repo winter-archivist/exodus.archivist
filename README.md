@@ -3,7 +3,7 @@ ExodusAutomaton Rewrite
 ---
 ## General
 
-Currently, I'm using pycharm community for development; though on Nov 29th I'll be applying for Pycharm Professional
+This bot is currently being developed with Pycharm Professional thanks to the free licenses for Open-Source-Projects
 > Primary Features: 
 >> * Project: 
 >>> * Easily Setup
@@ -14,11 +14,13 @@ Currently, I'm using pycharm community for development; though on Nov 29th I'll 
 >> * Client: 
 >>> * Slash Commands
 >>> * CogManager
->>> * V5 VTM Dice Roller /w Character Tracker [New and Improved]
+>>> * VTM v5 Toolbox
 
+> Active Development Features:
+>> * VTM v5 Toolbox
 
 > Heavily Work-In-Progress Features: 
->> * Notes System
+>> * Notes System [Currently on Pause]
 ---
 ## USE:
 <u>__NOTE:__  This bot is not directly intended for use by other people, but does support such use, please remember to follow the License! </u>
