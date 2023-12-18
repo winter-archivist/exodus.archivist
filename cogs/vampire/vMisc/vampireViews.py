@@ -53,7 +53,7 @@ class StandardStartSelectionView(View):
             button.label = 'Blood Boils Within, Hunger Gained.'
 
         try:
-            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
                 cursor = db.cursor()
 
                 bp = int(cursor.execute('SELECT blood_potency FROM charInfo').fetchone()[0])
@@ -81,7 +81,7 @@ class StandardStartSelectionView(View):
         elif targetcharacter is False:
             return
         try:
-            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
                 db.cursor().execute('UPDATE commandvars SET difficulty=?', (select.values))  # ! Parentheses are NOT redundant
                 db.commit()
 
@@ -194,7 +194,7 @@ class StandardExtraSelectionView(View):
             return
 
         try:
-            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
                 cursor = db.cursor()
 
                 roll_pool = int(cursor.execute('SELECT rollPool FROM commandvars').fetchone()[0])

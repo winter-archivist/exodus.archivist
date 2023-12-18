@@ -3,7 +3,7 @@ from discord import Embed, app_commands
 from discord.ext import commands
 
 import sqlite3
-from os import path
+import os as os
 from zenlog import log
 
 from misc.config import main_config as mc
@@ -14,6 +14,8 @@ import cogs.vampire.vMisc.vampireFunctions as vF
 import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
 # import cogs.vampire.vMisc.vampireMake as vM
+
+import cogs.vampire.vMake.trackerMisc as tM
 
 
 class VampireRoll(commands.Cog):
@@ -33,9 +35,9 @@ class VampireRoll(commands.Cog):
     async def VampireImgSet(self, interaction: discord.Interaction, charactername: str, characterimgurl: str):
         url_set_embed = Embed(title='URL Set', description='', color=mc.embed_colors["green"])
         url_set_embed.add_field(name='Success', value='', inline=False)
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite'
+        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite'
         log.debug(f'> Checking if [ {targetDB} ] exist')
-        if not path.exists(targetDB):
+        if not os.path.exists(targetDB):
             log.warn(f'*> Database [ {targetDB} ] does not exist')
 
             await interaction.response.send_message(embed=discord.Embed(
@@ -46,18 +48,19 @@ class VampireRoll(commands.Cog):
         else:
             log.debug(f'> Successful Connection to [ {targetDB} ] Setting URL')
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
             db.cursor().execute('UPDATE charInfo SET imgURL=?', (f'{characterimgurl}',))
             db.commit()
         log.debug(f'> [ {targetDB} ] URL Set to [ {characterimgurl} ]')
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite') as db:
-            url = db.cursor().execute('SELECT imgURL from charInfo').fetchone()[0]
-            url_set_embed.set_thumbnail(url=f'{url}')
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
+            found_url = db.cursor().execute('SELECT imgURL from charInfo').fetchone()[0]
+            url_set_embed.set_thumbnail(url=f'{found_url}')
+        log.debug(f'> Sending [ {characterimgurl} ] back to user')
 
         await interaction.response.send_message(embed=url_set_embed)
 
-    @app_commands.command(name='vampire-roll', description='VTM v5 Dice Roller & Character Tracker!')
+    @app_commands.command(name='vampire-roll', description='VTM v5 Dice Roller!')
     @app_commands.choices(choices=[
         app_commands.Choice(name='Standard', value='standard'),
         app_commands.Choice(name='Frenzy Resist', value='frenzy_resist'),
@@ -72,7 +75,7 @@ class VampireRoll(commands.Cog):
                 if await vF.rollInitialize(interaction, charactername) is False:
                     return
                 await vF.selectionEmbedSetter(interaction, charactername)
-                await interaction.response.send_message(embed=vE.selection_embed , view=vV.StandardStartSelectionView(self.CLIENT))
+                await interaction.response.send_message(embed=vE.selection_embed, view=vV.StandardStartSelectionView(self.CLIENT))
             case 'frenzy_resist':
                 # frenzy resist calculations
                 frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
@@ -96,28 +99,39 @@ class VampireRoll(commands.Cog):
             case _:
                 await interaction.response.send_message(content=f'`ISSUE: /newRoll case _ {choices.value=}` | {mc.ISSUE_CONTACT}')
 
+    @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
+    @app_commands.describe(charactername='Character Name')
+    async def VampireTracker(self, interaction: discord.Interaction, choices: app_commands.Choice[str], charactername: str):
+        await interaction.response.send_message(embed=tM.kindred_tracker_embed, view=vV.StandardStartSelectionView(self.CLIENT))
+
     @commands.command(hidden=True)
     async def new(self, ctx, targetcharacter: str):
         # ! I swear this command will be cleaned eventually
         if ctx.author.id == mc.RUNNER_ID:
             try:
-                with sqlite3.connect(f'cogs//vampire//characters//{str(ctx.author.id)}//{targetcharacter}.sqlite') as db:
-                    cursor = db.cursor()
+                createdDirectory = f'{os.getcwd()}//cogs//vampire//characters//{str(ctx.author.id)}//{targetcharacter}'
+                log.debug(f'Creating Directory [ {createdDirectory} ] if not created')
+                os.makedirs(createdDirectory, exist_ok=True)
+                log.debug(f'Directory [ {createdDirectory} ] Created')
 
-                    # ? charAttributes
+                with sqlite3.connect(f'cogs//vampire//characters//{str(ctx.author.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
+                    cursor = db.cursor()
+                    log.debug(f'Creation of [ {targetcharacter} ] Begun')
+                    # ? These were sorted by the listing order in DB Browser
+
+                    log.debug('Setting charAttributes')
                     cursor.execute('CREATE TABLE IF NOT EXISTS charAttributes(strength INTEGER, dexterity INTEGER, stamina INTEGER, charisma INTEGER, manipulation INTEGER, composure INTEGER, intelligence INTEGER, wits INTEGER, resolve INTEGER)')
                     cursor.execute('INSERT INTO charAttributes(strength, dexterity, stamina, charisma, manipulation, composure, intelligence, wits, resolve) VALUES(1,2,3, 1,2,3, 1,2,3)')
 
-                    # ? charInfo
-                    cursor.execute('CREATE TABLE IF NOT EXISTS charInfo(blood_potency INTEGER, clan TEXT, generation INTEGER, '
-                                   'bane_severity INTEGER, hunger INTEGER, predator_type TEXT, imgURL TEXT)')
-                    cursor.execute('INSERT INTO charInfo (blood_potency, clan, generation, bane_severity, hunger, predator_type, imgURL) VALUES(1, "ExampleClan", 10, 2, 0, "nom", "http")')
+                    log.debug('Setting charInfo')
+                    cursor.execute('CREATE TABLE IF NOT EXISTS charInfo(blood_potency INTEGER, clan TEXT, generation INTEGER, humanity INTEGER, bane_severity INTEGER, hunger INTEGER, predator_type TEXT, imgURL TEXT)')
+                    cursor.execute('INSERT INTO charInfo (blood_potency, clan, generation, humanity, bane_severity, hunger, predator_type, imgURL) VALUES(1, "ExampleClan", 10, 7, 2, 1, "nom", "https://cdn.discordapp.com/attachments/1145636416584429609/1181774388522143824/remix-be94809d-97fd-4654-9a6a-57b02abefb01.png?ex=658b82aa&is=65790daa&hm=39a5c62fdf1e8e0c43f8928b655fdb917fec7cb7807f702f4c257ab078ccd624&")')
 
-                    # ? commandVars
+                    log.debug('Setting commandVars')
                     cursor.execute('CREATE TABLE IF NOT EXISTS commandVars(difficulty INTEGER, rollPool INTEGER, result INTEGER, poolComp TEXT)')
                     cursor.execute('INSERT INTO commandVars (difficulty, rollPool, result, poolComp) VALUES(0, 0, 0, "Stuff, And, Things")')
 
-                    # ? Disciplines
+                    log.debug('Setting disciplines')
                     cursor.execute('CREATE TABLE IF NOT EXISTS disciplines('
                                    'obfuscate INTEGER, animalism INTEGER, potence INTEGER, dominate INTEGER, auspex INTEGER, protean INTEGER, presence INTEGER, fortitude INTEGER, '
                                    'thin_blood_alchemy INTEGER, blood_sorc INTEGER, chemeristry INTEGER, '
@@ -126,41 +140,44 @@ class VampireRoll(commands.Cog):
                                    'obfuscate, animalism, potence, dominate, auspex, protean, presence, fortitude, '
                                    'thin_blood_alchemy, blood_sorc, chemeristry, '
                                    'seven, myr, selena, nyct1, nyct2, iilta, elijah)'
-                                   'VALUES(1,1,1,1, 1,1,1,1, 1,1,1,1)')
+                                   'VALUES(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)')
 
-                    # ? health
+                    log.debug('Setting health')
                     cursor.execute('CREATE TABLE IF NOT EXISTS health(healthBase INTEGER, healthSUP INTEGER, healthAGG INTEGER)')
                     cursor.execute('INSERT INTO health (healthBase, healthSUP, healthAGG) VALUES(5,0,0)')
 
-                    # ? mentalSkills
+                    log.debug('Setting mentalSkills')
                     cursor.execute('CREATE TABLE IF NOT EXISTS mentalSkills(academics INTEGER, awareness INTEGER, finance INTEGER, investigation INTEGER, medicine INTEGER, occult INTEGER, politics INTEGER, science INTEGER, technology INTEGER)')
                     cursor.execute('INSERT INTO mentalSkills (academics, awareness, finance, investigation, medicine, occult, politics, science, technology) VALUES(1,2,3,4,5,6,7,8,9)')
 
-                    # ? ownerInfo
+                    log.debug('Setting ownerInfo')
                     cursor.execute('CREATE TABLE IF NOT EXISTS ownerInfo(userID INTEGER, userNAME TEXT)')
                     cursor.execute('INSERT INTO ownerInfo (userID, userNAME) VALUES(0, "nada")')
                     cursor.execute('UPDATE ownerInfo SET userID=?, userNAME=?', (int(ctx.author.id), f"{ctx.author}"))
 
-                    # ? physicalSkills
+                    log.debug('Setting physicalSkills')
                     cursor.execute('CREATE TABLE IF NOT EXISTS physicalSkills(athletics INTEGER, brawl INTEGER, craft INTEGER, drive INTEGER, firearms INTEGER, larceny INTEGER, melee INTEGER, stealth INTEGER, survival INTEGER)')
                     cursor.execute('INSERT INTO physicalSkills (athletics, brawl, craft, drive, firearms, larceny, melee, stealth, survival) VALUES(1,2,3,4,5,6,7,8,9)')
 
-                    # ? rerollInfo
+                    log.debug('Setting rerollInfo')
                     cursor.execute('CREATE TABLE IF NOT EXISTS rerollInfo(regularCritDie INTEGER, hungerCritDie INTEGER, regularSuccess INTEGER, hungerSuccess INTEGER, regularFail INTEGER, hungerFail INTEGER, hungerSkull INTEGER)')
                     cursor.execute('INSERT INTO rerollInfo (regularCritDie, hungerCritDie, regularSuccess, hungerSuccess, regularFail, hungerFail, hungerSkull) VALUES(0,0, 0,0, 0,0, 0)')
 
-                    # ? socialSkills
+                    log.debug('Setting socialSkills')
                     cursor.execute('CREATE TABLE IF NOT EXISTS socialSkills(animal_ken INTEGER, etiquette INTEGER, insight INTEGER, intimidation INTEGER, leadership INTEGER, performance INTEGER, persuasion INTEGER, streetwise INTEGER, subterfuge INTEGER)')
                     cursor.execute('INSERT INTO socialSkills (animal_ken, etiquette, insight, intimidation, leadership, performance, persuasion, streetwise, subterfuge) VALUES(1,2,3,4,5,6,7,8,9)')
 
-                    # ? willpower
+                    log.debug('Setting willpower')
                     cursor.execute('CREATE TABLE IF NOT EXISTS willpower(willpowerBase INTEGER, willpowerSUP INTEGER, willpowerAGG INTEGER)')
                     cursor.execute('INSERT INTO willpower (willpowerBase, willpowerSUP, willpowerAGG) VALUES(5,0,0)')
 
                     db.commit()
+                    db.close()
+
+                    log.debug(f'Creation of [ {targetcharacter} ] Successful')
                     await ctx.send('Make Complete')
             except sqlite3.Error as e:
-                log.crit(f'>* Error With Making New Character {targetcharacter}: {e}')
+                log.error(f'vampMaker | SQLITE3 ERROR | {e}')
 
 
 async def setup(CLIENT):

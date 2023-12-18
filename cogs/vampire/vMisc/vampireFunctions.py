@@ -13,7 +13,7 @@ from misc.config import main_config as mc
 
 async def normalRoller(interaction, self, targetcharacter):
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
             difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
@@ -50,7 +50,7 @@ async def normalRoller(interaction, self, targetcharacter):
 
         while_pool -= 1
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             cursor.execute(
                 'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
@@ -101,7 +101,7 @@ async def normalRoller(interaction, self, targetcharacter):
                                    color=mc.embed_colors["green"])
 
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
             url = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
@@ -119,7 +119,7 @@ async def normalRoller(interaction, self, targetcharacter):
 
 async def reRoller(interaction, self, targetcharacter, button):
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
             difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
@@ -158,7 +158,7 @@ async def reRoller(interaction, self, targetcharacter, button):
         rerolls -= 1
 
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             cursor.execute('UPDATE rerollInfo SET regularCritDie=?, regularSuccess=?, regularFail=?',
                            (roll_results['regular_crit'], roll_results['regular_success'], roll_results['regular_fail']))
@@ -219,7 +219,7 @@ async def reRoller(interaction, self, targetcharacter, button):
     db.commit()
 
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
             url = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
@@ -253,7 +253,7 @@ async def simpleSelection(interaction, select, self, targetDB, func_callback):
         return
 
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             for_var = 0
 
@@ -282,7 +282,7 @@ async def simpleSelection(interaction, select, self, targetDB, func_callback):
 
 async def rouseCheck(interaction, targetcharacter) -> str:
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
             rouse_num_result: int = randint(1, 10)
@@ -305,7 +305,7 @@ async def rouseCheck(interaction, targetcharacter) -> str:
 
 async def selectionEmbedSetter(interaction, targetcharacter) -> None:
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             cursor = db.cursor()
             roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
             difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
@@ -324,7 +324,7 @@ async def selectionEmbedSetter(interaction, targetcharacter) -> None:
 
 async def rollInitialize(interaction, charactername) -> bool:
     # ! Runs every time someone uses the /vroll command
-    targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}.sqlite'
+    targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite'
 
     log.debug(f'> Checking if [ `{targetDB}` ] exists')
     if not path.exists(targetDB):
@@ -384,7 +384,7 @@ async def ownerChecker(interaction: discord.Interaction):
     targetcharacter: str = str(use_data['characterName'])
 
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             char_owner_id = db.cursor().execute('SELECT userID FROM ownerInfo').fetchone()[0]
 
             if char_owner_id != interaction.user.id:  # ! User does __NOT__ own the Character
