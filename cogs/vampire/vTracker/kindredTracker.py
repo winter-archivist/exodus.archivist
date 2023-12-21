@@ -46,10 +46,6 @@ async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Trac
         use_data: dict = {}; use_data.update(await yU.cacheRead(f'{target_cache}'))
         character_name: str = str(use_data['characterName'])
 
-        user_info = {'user_name': interaction.user,
-                     'user_id': interaction.user.id,
-                     'user_avatar': interaction.user.display_avatar}
-
         return_embed = Embed(title='Kindred Tracker', description='If a button is __Gray__ that means its non-functional', colour=mC.embed_colors["mint"])
 
         # ? Resets Embed
@@ -59,7 +55,11 @@ async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Trac
             cursor = db.cursor()
 
             # ? Adds information seen on all pages.
+            user_info = {'user_name'  : interaction.user,
+                         'user_id'    : interaction.user.id,
+                         'user_avatar': interaction.user.display_avatar}
             character_avatar = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
+
             return_embed.set_thumbnail(url=character_avatar)
             return_embed.set_footer(text=f'{user_info["user_id"]}', icon_url=f'{user_info["user_avatar"]}')
             return_embed.set_author(name=f'{user_info["user_name"]}', icon_url=f'{user_info["user_avatar"]}')

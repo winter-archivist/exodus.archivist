@@ -9,7 +9,7 @@ class KTV_HOME(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -24,7 +24,7 @@ class KTV_HOME(View):
         response_embed, response_view = await kT.tevNav(interaction, 'hunger')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Attributes Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
+    @discord.ui.button(label='Attributes Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
     async def attributes_page_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'attributes')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -39,7 +39,7 @@ class KTV_HOME(View):
         response_embed, response_view = await kT.tevNav(interaction, 'discipline')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Extras Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=3)
+    @discord.ui.button(label='Extras Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
     async def extras_page_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'extras')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -50,7 +50,7 @@ class KTV_HPWP(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -81,7 +81,7 @@ class KTV_HUNGER(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -107,7 +107,7 @@ class KTV_ATTRIBUTE(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -124,7 +124,7 @@ class KTV_SKILL(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -156,7 +156,7 @@ class KTV_DISCIPLINE(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -173,7 +173,7 @@ class KTV_EXTRA(View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await kT.tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
