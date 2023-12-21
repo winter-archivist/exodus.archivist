@@ -2,6 +2,7 @@ from misc.config import mainConfig as mc
 from discord import Embed
 
 selection_embed = Embed(title='', description=f'', color=mc.embed_colors["purple"])
+selection_embed.add_field(name='Character Name', value=f'', inline=False)
 selection_embed.add_field(name='Roll Information', value='', inline=False)
 selection_embed.add_field(name='Roll Pool:', value=f'')
 selection_embed.add_field(name='Difficulty:', value=f'')

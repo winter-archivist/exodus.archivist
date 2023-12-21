@@ -310,14 +310,21 @@ async def selectionEmbedSetter(interaction, targetcharacter) -> None:
             roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
             difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
             roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
-            url = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
+            character_avatar = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
 
-            vE.selection_embed.set_field_at(index=0, name=f'Roll Information',
-                                            value=f'`{targetcharacter}` - `{interaction.user}`', inline=False)
-            vE.selection_embed.set_field_at(index=1, name='Roll Pool:', value=f'{roll_pool}')
-            vE.selection_embed.set_field_at(index=2, name='Difficulty:', value=f'{difficulty}')
-            vE.selection_embed.set_field_at(index=3, name='Roll Composition:', value=f'{roll_comp}')
-            vE.selection_embed.set_thumbnail(url=f'{url}')
+            vE.selection_embed.set_field_at(index=0, name='Character Name',value=f'{targetcharacter}', inline=False)
+            vE.selection_embed.set_field_at(index=1, name='Roll Information', value='', inline=False)
+            vE.selection_embed.set_field_at(index=2, name='Roll Pool:', value=f'{roll_pool}')
+            vE.selection_embed.set_field_at(index=3, name='Difficulty:', value=f'{difficulty}')
+            vE.selection_embed.set_field_at(index=4, name='Roll Composition:', value=f'{roll_comp}')
+
+            user_info = {'user_name'  : interaction.user,
+                         'user_id'    : interaction.user.id,
+                         'user_avatar': interaction.user.display_avatar}
+
+            vE.selection_embed.set_thumbnail(url=character_avatar)
+            vE.selection_embed.set_footer(text=f'{user_info["user_id"]}', icon_url=f'{user_info["user_avatar"]}')
+            vE.selection_embed.set_author(name=f'{user_info["user_name"]}', icon_url=f'{user_info["user_avatar"]}')
     except sqlite3.Error as e:
         log.error(f'selectionEmbedSetter | SQLITE3 ERROR | {e}')
 
