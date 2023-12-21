@@ -140,9 +140,13 @@ class VampireRoll(commands.Cog):
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(charactername='Character Name')
     async def VampireTracker(self, interaction: discord.Interaction, charactername: str):
+        if charactername == 'Nyctea':
+            nyctea_deny_embed = Embed(title='', description='Hidden', colour=mC.embed_colors["black"])
+            await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
+            return
         if await kT.trackerInitialize(interaction, charactername) is True:
             initial_embed, initial_view = await kT.tevNav(interaction, 'home')
-            await interaction.response.send_message(embed=initial_embed, view=initial_view(self.CLIENT))
+            await interaction.response.send_message(embed=initial_embed, view=initial_view(self.CLIENT), ephemeral=True)
 
     @commands.command(hidden=True)
     async def new(self, ctx, targetcharacter: str):
