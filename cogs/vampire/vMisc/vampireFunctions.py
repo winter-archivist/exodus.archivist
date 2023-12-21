@@ -8,7 +8,7 @@ import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
 
 from misc.utils import yaml_utils as yu
-from misc.config import main_config as mc
+from misc.config import mainConfig as mc
 
 
 async def normalRoller(interaction, self, targetcharacter):

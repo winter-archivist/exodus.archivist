@@ -1,4 +1,4 @@
-from misc.config import main_config as mc
+from misc.config import mainConfig as mc
 from discord import Embed
 
 selection_embed = Embed(title='', description=f'', color=mc.embed_colors["purple"])

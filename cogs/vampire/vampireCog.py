@@ -6,7 +6,7 @@ import sqlite3
 import os as os
 from zenlog import log
 
-from misc.config import main_config as mc
+from misc.config import mainConfig as mc
 
 # from misc.utils import yaml_utils as yu
 
@@ -15,7 +15,7 @@ import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
 # import cogs.vampire.vMisc.vampireMake as vM
 
-import cogs.vampire.vMake.trackerMisc as tM
+import cogs.vampire.vTracker.trackerMisc as tM
 
 
 class VampireRoll(commands.Cog):
@@ -99,10 +99,50 @@ class VampireRoll(commands.Cog):
             case _:
                 await interaction.response.send_message(content=f'`ISSUE: /newRoll case _ {choices.value=}` | {mc.ISSUE_CONTACT}')
 
+    @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
+    @app_commands.describe(charactername='Character Name')
+    async def VampireRouse(self, interaction: discord.Interaction, charactername: str):
+        rouse_result = await vF.rouseCheck(interaction, charactername)
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
+            cursor = db.cursor()
+            user_name = str(cursor.execute('SELECT userNAME from ownerInfo').fetchone()[0])
+            user_avatar = interaction.user.avatar
+            user_id = int(cursor.execute('SELECT userID from ownerInfo').fetchone()[0])
+            char_img = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
+            hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
+
+        hunger_emoji = ' <:hunger:1186602644748390470> '
+
+        # ? This will be cleaned /w a dict eventually
+        if rouse_result == 'Frenzy':
+            rouse_embed = Embed(title='Rouse Check Result', description=f'Broken Chains.', color=mc.embed_colors["red"])
+
+        elif rouse_result == 'Pass':
+            rouse_embed = Embed(title='Rouse Check Result', description=f'The Beast\'s Lock Rattles, Hunger Avoided.', color=mc.embed_colors["red"])
+
+        elif rouse_result == 'Fail':
+            rouse_embed = Embed(title='Rouse Check Result', description=f'Blood Boils Within, Hunger Gained.', color=mc.embed_colors["red"])
+
+        else:
+            rouse_embed = Embed(title='Rouse Check Result', description=f'Fate Unknown?', color=mc.embed_colors["red"])
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
+            cursor = db.cursor()
+
+        rouse_embed.set_author(name=f'{user_name}', icon_url=f'{user_avatar}')
+        rouse_embed.set_footer(text=f'{user_id}', icon_url=f'{user_avatar}')
+        rouse_embed.set_thumbnail(url=char_img)
+        rouse_embed.add_field(name='Character Name', value=f'{charactername}', inline=False)
+        rouse_embed.add_field(name='Hunger', value=f'{hunger_emoji * hunger}', inline=False)
+
+        await interaction.response.send_message(embed=rouse_embed)
+
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(charactername='Character Name')
-    async def VampireTracker(self, interaction: discord.Interaction, choices: app_commands.Choice[str], charactername: str):
-        await interaction.response.send_message(embed=tM.kindred_tracker_embed, view=vV.StandardStartSelectionView(self.CLIENT))
+    async def VampireTracker(self, interaction: discord.Interaction, charactername: str):
+        targ_kte = tM.extra_kte
+        await tM.trackerEmbedInitialize(interaction, charactername, targ_kte)
+        await interaction.response.send_message(embed=targ_kte, view=tM.KindredTrackerView(self.CLIENT))
 
     @commands.command(hidden=True)
     async def new(self, ctx, targetcharacter: str):

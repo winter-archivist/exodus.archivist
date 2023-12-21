@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ui import View
 
-from misc.config import main_config as mc
+from misc.config import mainConfig as mc
 
 cog_manager_embed = discord.Embed(title='Cog Manager', color=0x8A2BE2)
 cog_manager_embed.add_field(name='targetCog:', value=f'N/A', inline=True)
@@ -16,7 +16,7 @@ cog_selections = [
                 emoji='<a:pydis_pridespin:1113716405192376351>',
             ),
             discord.SelectOption(
-                label='Vampire', value='vampire.vampireRoll',
+                label='Vampire', value='vampire.vampireCog',
                 emoji='<:bloodT:555804549173084160>',
             ),
             discord.SelectOption(

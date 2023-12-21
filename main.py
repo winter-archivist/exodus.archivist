@@ -11,14 +11,14 @@ from discord.ext import commands
 
 from zenlog import log
 
-from misc.config import main_config as mc
+from misc.config import mainConfig as mc
 import client_config as config
 
 
 async def initialCogs(CLIENT_INPUT):
     log.info('$ Loading Initial Cogs...')
     initial_cogs = ('cogs.cogManager',
-                    'cogs.vampire.vampireRoll',
+                    'cogs.vampire.vampireCog',
                     'cogs.exonotes.exoNotes')
     forVar = 0
     for x in initial_cogs:
@@ -94,7 +94,7 @@ async def on_ready():
     if config.SLASH_MODE is True:
         try:
             synced = await CLIENT.tree.sync()
-            log.crit(f'$ Synced {len(synced)} command(s)')
+            log.info(f"Synced [ {len(synced)} ] command(s).")
         except Exception as e:
             log.crit(f'<<<$ Error Syncing Commands: {e}>>>')
             exit()
@@ -114,7 +114,7 @@ async def sync(ctx):  # ! Slash Commands Cog Essential
     if str(ctx.author.id) != f'{mc.RUNNER}':
         return
     synced = await CLIENT.tree.sync()
-    print(f"Synced {len(synced)} command(s).")
+    log.info(f"Synced [ {len(synced)} ] command(s).")
 
 
 @commands.command(hidden=True)

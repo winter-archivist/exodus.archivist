@@ -8,7 +8,7 @@ from zenlog import log
 import sqlite3
 import os
 
-from misc.config import main_config as mc
+from misc.config import mainConfig as mc
 
 selection_embed = (discord.Embed(title='Select',
                                  description='',
