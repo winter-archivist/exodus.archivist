@@ -8,7 +8,7 @@ from discord.ui import View
 from misc.utils import yamlUtils as yU
 from misc.config import mainConfig as mC
 
-import cogs.vampire.vTracker.trackerResources as tR
+import cogs.vampire.vTracker.trackerPageBuilders as tpb
 
 
 async def trackerInitialize(interaction, character_name):
@@ -37,197 +37,6 @@ async def trackerInitialize(interaction, character_name):
     return True
 
 
-# ? Until Functional, the button will be gray
-class KTV_HOME(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='HP/WP Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
-    async def hpwp_page_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'hp/wp')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Hunger Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
-    async def hunger_page_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'hunger')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Attributes Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
-    async def attributes_page_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'attributes')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
-    async def skills_page_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'skills')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Disciplines Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
-    async def disciplines_page_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'skills')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Extras Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=3)
-    async def extras_page_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'extras')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_HPWP(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Damage Health', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def health_damage_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Regain Health', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def health_regain_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Damage Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def willpower_damage_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Regain Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def willpower_regain_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_HUNGER(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Hunt [Predator-Type]', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def predhunt_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Hunt [Select]', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def hunt_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Rouse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def rouse_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_ATTRIBUTE(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def roll_button_callback(self, interaction, button):
-        # ! Send to Roller
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_SKILL(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Physical Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
-    async def physical_skills_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'physical_skills')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Social Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
-    async def social_skills_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'social_skills')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Mental Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
-    async def mental_skills_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'mental_skills')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
-    async def roll_button_callback(self, interaction, button):
-        # ! Send to Roller
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_DISCIPLINE(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def roll_button_callback(self, interaction, button):
-        # ! Send to Roller
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_EXTRA(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Diablerie', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def diablerie_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Remorse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def diablerie_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Path Rules', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def path_rules_button_callback(self, interaction, button):
-        response_embed, response_view = await tevNav(interaction, 'home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
 async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Tracker Embed-View Navigator
     allowed_targets = ('home', 'hp/wp', 'hunger', 'attributes', 'skills', 'physical_skills', 'social_skills', 'mental_skills', 'discipline', 'extras')
     log.debug(f'> tevNav Start. [ {target_page} ]')
@@ -242,7 +51,6 @@ async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Trac
                      'user_avatar': interaction.user.display_avatar}
 
         return_embed = Embed(title='Kindred Tracker', description='If a button is __Gray__ that means its non-functional', colour=mC.embed_colors["mint"])
-        return_view = KTV_HOME
 
         # ? Resets Embed
         return_embed.clear_fields()
@@ -260,111 +68,25 @@ async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Trac
             # ? Adds information based on target_page
             try:
                 if target_page == 'home':
-                    return_embed.add_field(name='Select Page', value='', inline=False)
-                    return_view = KTV_HOME
+                    return_embed, return_view = await tpb.homePageBuilder(return_embed)
                 elif target_page == 'hp/wp':
-                    # ! Needs a hp/wp add/remove
-                    # ? hc = health_count | wpc = willpower_count
-                    hc_full: str = str(tR.health_full_emoji * int(cursor.execute('SELECT healthBase from health').fetchone()[0]))
-                    hc_sup: str = str(tR.health_sup_emoji * int(cursor.execute('SELECT healthSUP from health').fetchone()[0]))
-                    hc_agg: str = str(tR.health_agg_emoji * int(cursor.execute('SELECT healthAGG from health').fetchone()[0]))
-                    wpc_full: str = str(tR.willpower_full_emoji * int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0]))
-                    wpc_sup: str = str(tR.willpower_sup_emoji * int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0]))
-                    wpc_agg: str = str(tR.willpower_agg_emoji * int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0]))
-
-                    return_embed.add_field(name='Health', value=f'{hc_full}{hc_sup}{hc_agg}', inline=False)
-                    return_embed.add_field(name='Willpower', value=f'{wpc_full}{wpc_sup}{wpc_agg}', inline=False)
-                    return_view = KTV_HPWP
+                    return_embed, return_view = await tpb.hpwpPageBuilder(return_embed, cursor)
                 elif target_page == 'hunger':
-                    # ! Needs a Hunt Button (Lets use Selected Pool or Pred Pool)
-                    hunger: str = str(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
-                    pred_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
-                    return_embed.add_field(name='Hunger', value=f'{hunger}', inline=False)
-                    return_embed.add_field(name='Predator Type', value=f'{pred_type}', inline=False)
-                    return_view = KTV_HUNGER
+                    return_embed, return_view = await tpb.hungerPageBuilder(return_embed, cursor)
                 elif target_page == 'attributes':
-                    # ! Needs to be affected by Impairment & Allow for Leveling
-                    attributes = ('Strength', 'Dexterity', 'Stamina',
-                                  'Charisma' , 'Manipulation', 'Composure',
-                                  'Intelligence', 'Wits', 'Resolve')
-
-                    for_var = 0
-                    for x in attributes:
-                        if for_var / 3 in (1, 2):
-                            return_embed.add_field(name='', value='', inline=False)
-                        count = int(cursor.execute(f'SELECT {attributes[for_var].lower()} from charAttributes').fetchone()[0])
-                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
-
-                        return_embed.add_field(name=f'{attributes[for_var]}', value=f'{emojis}', inline=True)
-                        for_var += 1
-
-                    return_view = KTV_ATTRIBUTE
+                    return_embed, return_view = await tpb.attributePageBuilder(return_embed, cursor)
                 elif target_page == 'skills':
-                    # ! Needs to allow for Leveling
-                    return_view = KTV_SKILL
+                    return_embed, return_view = await tpb.skillsPageBuilder(return_embed, cursor)
                 elif target_page == 'physical_skills':
-                    physical_skills = ('Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival')
-                    for_var = 0
-                    for x in physical_skills:
-                        if for_var / 3 in (1, 2):
-                            return_embed.add_field(name='', value='', inline=False)
-                        count = int(
-                            cursor.execute(f'SELECT {physical_skills[for_var].lower()} from physicalSkills').fetchone()[0])
-                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
-
-                        return_embed.add_field(name=f'{physical_skills[for_var]}', value=f'{emojis}', inline=True)
-                        for_var += 1
-                    return_view = KTV_SKILL
+                    return_embed, return_view = await tpb.physicalSkillsPageBuilder(return_embed, cursor)
                 elif target_page == 'social_skills':
-                    social_skills = ('Animal_Ken', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge')
-                    for_var = 0
-                    for x in social_skills:
-                        if for_var / 3 in (1, 2):
-                            return_embed.add_field(name='', value='', inline=False)
-                        count = int(
-                            cursor.execute(f'SELECT {social_skills[for_var].lower()} from socialSkills').fetchone()[0])
-                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
-
-                        return_embed.add_field(name=f'{social_skills[for_var]}', value=f'{emojis}', inline=True)
-                        for_var += 1
-                    return_view = KTV_SKILL
+                    return_embed, return_view = await tpb.socialSkillsPageBuilder(return_embed, cursor)
                 elif target_page == 'mental_skills':
-                    mental_skills = ('Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology')
-                    for_var = 0
-                    for x in mental_skills:
-                        if for_var / 3 in (1, 2):
-                            return_embed.add_field(name='', value='', inline=False)
-                        count = int(
-                            cursor.execute(f'SELECT {mental_skills[for_var].lower()} from mentalSkills').fetchone()[0])
-                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
-
-                        return_embed.add_field(name=f'{mental_skills[for_var]}', value=f'{emojis}', inline=True)
-                        for_var += 1
-                    return_view = KTV_SKILL
+                    return_embed, return_view = await tpb.mentalSkillsPageBuilder(return_embed, cursor)
                 elif target_page == 'discipline':
-                    return_view = KTV_DISCIPLINE
+                    return_embed, return_view = await tpb.disciplinePageBuilder(return_embed, cursor)
                 elif target_page == 'extras':
-                    # ! Needs Diablerie Button [Clan & Generation]
-                    # ! Needs Stain/Remorse Button [Humanity & Stains]
-                    # ! Needs PoE Rule Checker [Path of Enlightenment]
-                    clan: str = cursor.execute(f'SELECT clan from charInfo').fetchone()[0]
-                    gen: int = cursor.execute(f'SELECT generation from charInfo').fetchone()[0]
-                    bp: int = cursor.execute(f'SELECT blood_potency FROM charInfo').fetchone()[0]
-                    humanity: int = cursor.execute(f'SELECT humanity from charInfo').fetchone()[0]
-                    stains: int = cursor.execute(f'SELECT stains from charInfo').fetchone()[0]
-                    path_of_enlightenment = cursor.execute(f'SELECT path_of_enlightenment from charInfo').fetchone()[0]
-                    return_embed.add_field(name='Clan', value=f'{clan}', inline=True)
-
-                    return_embed.add_field(name='', value=f'', inline=False)
-
-                    return_embed.add_field(name='Generation', value=f'{gen * tR.dot_full_emoji}', inline=True)
-                    return_embed.add_field(name='Blood Potency', value=f'{bp * tR.dot_full_emoji}', inline=True)
-
-                    return_embed.add_field(name='', value=f'', inline=False)
-
-                    return_embed.add_field(name='Humanity', value=f'{humanity * tR.dot_full_emoji} {stains * tR.dot_empty_emoji}', inline=True)
-                    return_embed.add_field(name='Path of Enlightenment', value=f'{path_of_enlightenment}', inline=True)
-                    return_view = KTV_EXTRA
+                    return_embed, return_view = await tpb.extrasPageBuilder(return_embed, cursor)
             except sqlite3.Error as e:
                 log.error(f'**> tevNav | SQLITE3 ERROR | {e}')
 
