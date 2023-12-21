@@ -82,6 +82,9 @@ async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Trac
         return_embed = KTE_TEMPLATE
         return_view = KTV_HOME
 
+        # ? Resets Embed
+        return_embed.clear_fields()
+
         # ? Adds information seen on all pages.
         return_embed.set_thumbnail(url=mC.placeholder_img)
         return_embed.set_footer(text=f'{user_info["user_id"]}', icon_url=f'{user_info["user_avatar"]}')
