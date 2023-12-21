@@ -10,6 +10,8 @@ import cogs.vampire.vMisc.vampireViews as vV
 from misc.utils import yamlUtils as yu
 from misc.config import mainConfig as mc
 
+# TODO: ! FIX THIS !
+
 
 async def normalRoller(interaction, self, targetcharacter):
     try:
