@@ -7,7 +7,8 @@ embed_colors = {
     "blue": 0x0000FF,
     "dark_yellow": 0x8B8000,
     "cyan": 0x00FFF,
-    "green": 0x00FF00
+    "green": 0x00FF00,
+    "mint": 0x3EB489
 }
 
 # ? Should be changed
