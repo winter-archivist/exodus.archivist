@@ -111,8 +111,6 @@ class VampireRoll(commands.Cog):
             char_img = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
             hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
 
-        hunger_emoji = ' <:hunger:1186602644748390470> '
-
         # ? This will be cleaned /w a dict eventually
         if rouse_result == 'Frenzy':
             rouse_embed = Embed(title='Rouse Check Result', description=f'Broken Chains.', color=mC.embed_colors["red"])
@@ -133,7 +131,7 @@ class VampireRoll(commands.Cog):
         rouse_embed.set_footer(text=f'{user_id}', icon_url=f'{user_avatar}')
         rouse_embed.set_thumbnail(url=char_img)
         rouse_embed.add_field(name='Character Name', value=f'{charactername}', inline=False)
-        rouse_embed.add_field(name='Hunger', value=f'{hunger_emoji * hunger}', inline=False)
+        rouse_embed.add_field(name='Hunger', value=f'{mC.hunger_emoji * hunger}', inline=False)
 
         await interaction.response.send_message(embed=rouse_embed)
 

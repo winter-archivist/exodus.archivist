@@ -28,7 +28,7 @@ async def hungerPageBuilder(return_embed, cursor):
     # ! Needs a Hunt Button (Lets use Selected Pool or Pred Pool)
     hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
     pred_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
-    return_embed.add_field(name='Hunger', value=f'{hunger * mC.dot_full_emoji} {abs(hunger - 5) * mC.dot_empty_emoji}', inline=False)
+    return_embed.add_field(name='Hunger', value=f'{hunger * mC.hunger_emoji}', inline=False)
     return_embed.add_field(name='Predator Type', value=f'{pred_type}', inline=False)
     return_view = tV.KTV_HUNGER
     return return_embed, return_view
@@ -143,7 +143,7 @@ async def extrasPageBuilder(return_embed, cursor):
     return_embed.add_field(name='', value=f'', inline=False)
 
     return_embed.add_field(name='Generation', value=f'{gen * mC.dot_full_emoji}', inline=True)
-    return_embed.add_field(name='Blood Potency', value=f'{bp * mC.dot_full_emoji}', inline=True)
+    return_embed.add_field(name='Blood Potency', value=f'{bp * mC.hunger_emoji}', inline=True)
 
     return_embed.add_field(name='', value=f'', inline=False)
 
