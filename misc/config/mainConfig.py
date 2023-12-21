@@ -10,6 +10,7 @@ embed_colors = {
     "green": 0x00FF00,
     "mint": 0x3EB489
 }
+placeholder_img = 'https://cdn.discordapp.com/attachments/1112082402077052939/1186553925978042418/xBmTDu3.png?ex=6593ab75&is=65813675&hm=57765ab8a90864f4f85807fd5812d95ec4962ab644c6ea9ba05ed4b2efa145e9&'
 
 # ? Should be changed
 RUNNER: str = f'.ashywinter'  # ? YOUR DISCORD NAME
