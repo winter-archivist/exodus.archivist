@@ -7,7 +7,7 @@ from random import randint
 import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
 
-from misc.utils import yaml_utils as yu
+from misc.utils import yamlUtils as yu
 from misc.config import mainConfig as mc
 
 

@@ -6,7 +6,7 @@ import sqlite3
 import os as os
 from zenlog import log
 
-from misc.config import mainConfig as mc
+from misc.config import mainConfig as mC
 
 # from misc.utils import yaml_utils as yu
 
@@ -15,7 +15,7 @@ import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
 # import cogs.vampire.vMisc.vampireMake as vM
 
-import cogs.vampire.vTracker.trackerMisc as tM
+import cogs.vampire.vTracker.kindredTracker as kT
 
 
 class VampireRoll(commands.Cog):
@@ -33,7 +33,7 @@ class VampireRoll(commands.Cog):
     @app_commands.describe(charactername='Character Name')
     @app_commands.describe(characterimgurl='Character Image URL')
     async def VampireImgSet(self, interaction: discord.Interaction, charactername: str, characterimgurl: str):
-        url_set_embed = Embed(title='URL Set', description='', color=mc.embed_colors["green"])
+        url_set_embed = Embed(title='URL Set', description='', color=mC.embed_colors["green"])
         url_set_embed.add_field(name='Success', value='', inline=False)
         targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite'
         log.debug(f'> Checking if [ {targetDB} ] exist')
@@ -41,8 +41,8 @@ class VampireRoll(commands.Cog):
             log.warn(f'*> Database [ {targetDB} ] does not exist')
 
             await interaction.response.send_message(embed=discord.Embed(
-                title='Database Error', color=mc.embed_colors["red"],
-                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mc.ISSUE_CONTACT}'), ephemeral=True)
+                title='Database Error', color=mC.embed_colors["red"],
+                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mC.ISSUE_CONTACT}'), ephemeral=True)
 
             return False
         else:
@@ -78,26 +78,26 @@ class VampireRoll(commands.Cog):
                 await interaction.response.send_message(embed=vE.selection_embed, view=vV.StandardStartSelectionView(self.CLIENT))
             case 'frenzy_resist':
                 # frenzy resist calculations
-                frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
                 await interaction.response.send_message(embed=frenzy_resist_embed)
             case 'hunt':
                 # hunt calculations
-                predator_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                predator_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
                 await interaction.response.send_message(embed=predator_embed)
             case 'rouse':
                 # remorse calculations
-                rouse_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                rouse_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
                 await interaction.response.send_message(embed=rouse_embed)
             case 'remorse':
                 # remorse calculations
-                remorse_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                remorse_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
                 await interaction.response.send_message(embed=remorse_embed)
             case 'discipline':
                 # discipline calculations
-                discipline_embed = (discord.Embed(title='', description=f'', color=mc.embed_colors["purple"]))
+                discipline_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
                 await interaction.response.send_message(embed=discipline_embed)
             case _:
-                await interaction.response.send_message(content=f'`ISSUE: /newRoll case _ {choices.value=}` | {mc.ISSUE_CONTACT}')
+                await interaction.response.send_message(content=f'`ISSUE: /newRoll case _ {choices.value=}` | {mC.ISSUE_CONTACT}')
 
     @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
     @app_commands.describe(charactername='Character Name')
@@ -115,16 +115,16 @@ class VampireRoll(commands.Cog):
 
         # ? This will be cleaned /w a dict eventually
         if rouse_result == 'Frenzy':
-            rouse_embed = Embed(title='Rouse Check Result', description=f'Broken Chains.', color=mc.embed_colors["red"])
+            rouse_embed = Embed(title='Rouse Check Result', description=f'Broken Chains.', color=mC.embed_colors["red"])
 
         elif rouse_result == 'Pass':
-            rouse_embed = Embed(title='Rouse Check Result', description=f'The Beast\'s Lock Rattles, Hunger Avoided.', color=mc.embed_colors["red"])
+            rouse_embed = Embed(title='Rouse Check Result', description=f'The Beast\'s Lock Rattles, Hunger Avoided.', color=mC.embed_colors["red"])
 
         elif rouse_result == 'Fail':
-            rouse_embed = Embed(title='Rouse Check Result', description=f'Blood Boils Within, Hunger Gained.', color=mc.embed_colors["red"])
+            rouse_embed = Embed(title='Rouse Check Result', description=f'Blood Boils Within, Hunger Gained.', color=mC.embed_colors["red"])
 
         else:
-            rouse_embed = Embed(title='Rouse Check Result', description=f'Fate Unknown?', color=mc.embed_colors["red"])
+            rouse_embed = Embed(title='Rouse Check Result', description=f'Fate Unknown?', color=mC.embed_colors["red"])
 
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
             cursor = db.cursor()
@@ -140,14 +140,14 @@ class VampireRoll(commands.Cog):
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(charactername='Character Name')
     async def VampireTracker(self, interaction: discord.Interaction, charactername: str):
-        targ_kte = tM.extra_kte
-        await tM.trackerEmbedInitialize(interaction, charactername, targ_kte)
-        await interaction.response.send_message(embed=targ_kte, view=tM.KindredTrackerView(self.CLIENT))
+        if await kT.trackerInitialize(interaction, charactername) is True:
+            initial_embed, initial_view = await kT.tevNav(interaction, 'home')
+            await interaction.response.send_message(embed=initial_embed, view=initial_view(self.CLIENT))
 
     @commands.command(hidden=True)
     async def new(self, ctx, targetcharacter: str):
         # ! I swear this command will be cleaned eventually
-        if ctx.author.id == mc.RUNNER_ID:
+        if ctx.author.id == mC.RUNNER_ID:
             try:
                 createdDirectory = f'{os.getcwd()}//cogs//vampire//characters//{str(ctx.author.id)}//{targetcharacter}'
                 log.debug(f'Creating Directory [ {createdDirectory} ] if not created')
