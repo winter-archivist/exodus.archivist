@@ -63,7 +63,7 @@ class KTV_HOME(View):
         response_embed, response_view = await tevNav(interaction, 'attributes')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
+    @discord.ui.button(label='Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
     async def skills_page_button_callback(self, interaction, button):
         response_embed, response_view = await tevNav(interaction, 'skills')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -163,7 +163,22 @@ class KTV_SKILL(View):
         response_embed, response_view = await tevNav(interaction, 'home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Physical Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
+    async def physical_skills_button_callback(self, interaction, button):
+        response_embed, response_view = await tevNav(interaction, 'physical_skills')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Social Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
+    async def social_skills_button_callback(self, interaction, button):
+        response_embed, response_view = await tevNav(interaction, 'social_skills')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Mental Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
+    async def mental_skills_button_callback(self, interaction, button):
+        response_embed, response_view = await tevNav(interaction, 'mental_skills')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
     async def roll_button_callback(self, interaction, button):
         # ! Send to Roller
         response_embed, response_view = await tevNav(interaction, 'home')
@@ -214,7 +229,7 @@ class KTV_EXTRA(View):
 
 
 async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Tracker Embed-View Navigator
-    allowed_targets = ('home', 'hp/wp', 'hunger', 'attributes', 'skills', 'discipline', 'extras')
+    allowed_targets = ('home', 'hp/wp', 'hunger', 'attributes', 'skills', 'physical_skills', 'social_skills', 'mental_skills', 'discipline', 'extras')
     log.debug(f'> tevNav Start. [ {target_page} ]')
     if target_page.lower() in allowed_targets:
         # ? Find name of the intended character
@@ -285,6 +300,46 @@ async def tevNav(interaction, target_page) -> Embed and View:  # ? tevNav = Trac
 
                     return_view = KTV_ATTRIBUTE
                 elif target_page == 'skills':
+                    # ! Needs to allow for Leveling
+                    return_view = KTV_SKILL
+                elif target_page == 'physical_skills':
+                    physical_skills = ('Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival')
+                    for_var = 0
+                    for x in physical_skills:
+                        if for_var / 3 in (1, 2):
+                            return_embed.add_field(name='', value='', inline=False)
+                        count = int(
+                            cursor.execute(f'SELECT {physical_skills[for_var].lower()} from physicalSkills').fetchone()[0])
+                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
+
+                        return_embed.add_field(name=f'{physical_skills[for_var]}', value=f'{emojis}', inline=True)
+                        for_var += 1
+                    return_view = KTV_SKILL
+                elif target_page == 'social_skills':
+                    social_skills = ('Animal_Ken', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge')
+                    for_var = 0
+                    for x in social_skills:
+                        if for_var / 3 in (1, 2):
+                            return_embed.add_field(name='', value='', inline=False)
+                        count = int(
+                            cursor.execute(f'SELECT {social_skills[for_var].lower()} from socialSkills').fetchone()[0])
+                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
+
+                        return_embed.add_field(name=f'{social_skills[for_var]}', value=f'{emojis}', inline=True)
+                        for_var += 1
+                    return_view = KTV_SKILL
+                elif target_page == 'mental_skills':
+                    mental_skills = ('Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology')
+                    for_var = 0
+                    for x in mental_skills:
+                        if for_var / 3 in (1, 2):
+                            return_embed.add_field(name='', value='', inline=False)
+                        count = int(
+                            cursor.execute(f'SELECT {mental_skills[for_var].lower()} from mentalSkills').fetchone()[0])
+                        emojis = f'{count * tR.dot_full_emoji} {abs(count - 5) * tR.dot_empty_emoji}'
+
+                        return_embed.add_field(name=f'{mental_skills[for_var]}', value=f'{emojis}', inline=True)
+                        for_var += 1
                     return_view = KTV_SKILL
                 elif target_page == 'discipline':
                     return_view = KTV_DISCIPLINE
