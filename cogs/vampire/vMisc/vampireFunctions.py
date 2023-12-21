@@ -19,7 +19,7 @@ async def normalRoller(interaction, self, targetcharacter):
             difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
             hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
     except sqlite3.Error as e:
-        log.error(f'normalRoller_1 | SQLITE3 ERROR | {e}')
+        log.error(f'*> normalRoller_1 | SQLITE3 ERROR | {e}')
 
     result: dict = {'regular_crit': 0, 'hunger_crit': 0, 'regular_success': 0, 'hunger_success': 0, 'regular_fail': 0,
                     'hunger_fail' : 0, 'hunger_skull': 0}
