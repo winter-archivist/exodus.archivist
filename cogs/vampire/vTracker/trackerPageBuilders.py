@@ -26,9 +26,9 @@ async def hpwpPageBuilder(return_embed, cursor):
 
 async def hungerPageBuilder(return_embed, cursor):
     # ! Needs a Hunt Button (Lets use Selected Pool or Pred Pool)
-    hunger: str = str(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
+    hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
     pred_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
-    return_embed.add_field(name='Hunger', value=f'{hunger}', inline=False)
+    return_embed.add_field(name='Hunger', value=f'{hunger * tR.dot_full_emoji} {abs(hunger - 5) * tR.dot_empty_emoji}', inline=False)
     return_embed.add_field(name='Predator Type', value=f'{pred_type}', inline=False)
     return_view = tV.KTV_HUNGER
     return return_embed, return_view
