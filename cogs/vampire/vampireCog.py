@@ -219,6 +219,34 @@ class VampireRoll(commands.Cog):
             except sqlite3.Error as e:
                 log.error(f'vampMaker | SQLITE3 ERROR | {e}')
 
+    @commands.command(hidden=True)
+    async def dbUpdate(self, ctx, targetcharacter):
+        if ctx.author.id == mC.RUNNER_ID:
+            try:
+                id_list = (250241031646347264, 270700184374083585, 437056607063375873, 455365688358600705, 506774892444647434, 635515446015164417)
+                char_list = ('Nyctea', 'Selena', 'Valeriye', 'Iilta', 'Elijah', 'Myr')
+
+                for_var_one = 0
+                for x in id_list:
+                    createdDirectory = f'{os.getcwd()}//cogs//vampire//characters//{id_list[for_var_one]}//{char_list[for_var_one]}'
+                    os.makedirs(createdDirectory, exist_ok=True)
+
+                    with sqlite3.connect(f'cogs//vampire//characters//{id_list[for_var_one]}//{char_list[for_var_one]}//{char_list[for_var_one]}.sqlite') as db:
+                        cursor = db.cursor()
+                        new_columns = ('stains', 'path_of_enlightenment')
+                        new_columns_type = ('INTEGER', 'TEXT')
+
+                        for_var = 0
+                        for x in new_columns:
+                            cursor.execute(f'ALTER TABLE charInfo ADD COLUMN {new_columns[for_var]} {new_columns_type[for_var]}')
+                            for_var += 1
+
+                        cursor.execute('UPDATE charInfo SET stains=?, path_of_enlightenment=?', (0, 'Standard'))
+                        db.commit()
+                        for_var_one += 1
+            except sqlite3.Error as e:
+                log.error(f'vampMaker | SQLITE3 ERROR | {e}')
+
 
 async def setup(CLIENT):
     await CLIENT.add_cog(VampireRoll(CLIENT))
