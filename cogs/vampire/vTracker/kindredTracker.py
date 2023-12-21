@@ -30,6 +30,10 @@ async def trackerInitialize(interaction, character_name):
             await interaction.response.send_message(f'You don\'t own {character_name}', ephemeral=True)
             return False
 
+        targetCache = f'cogs/vampire/characters/{str(interaction.user.id)}/{str(interaction.user.id)}.yaml'
+        await yU.cacheClear(targetCache)
+        await yU.cacheWrite(targetCache, dataInput={'characterName': f'{character_name}'})
+
     return True
 
 
