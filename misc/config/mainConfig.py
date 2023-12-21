@@ -24,6 +24,8 @@ health_agg_emoji = ' <:agg_hp:1186583405631123538> '
 dot_full_emoji = ' <:dot_full:1187292963164926013>  '
 dot_empty_emoji = ' <:dot_empty:1187292937650970665> '
 
+hunger_emoji = ' <:hunger:1186602644748390470> '
+
 
 # ? Should be changed
 RUNNER: str = f'.ashywinter'  # ? YOUR DISCORD NAME
