@@ -13,11 +13,13 @@ import cogs.vampire.vRoller.rollerPageBuilders as rPB
 async def vampirePageCommand(self, interaction, character_name, initial_target_page_name):
     if await vU.writeCharacterName(interaction, character_name) is True:
         initial_embed, initial_view = await pageEVNav(interaction, initial_target_page_name)
+        if 'roller' in initial_target_page_name:
+            await rPB.rollerBasicPageInformation(interaction, initial_embed)
         await interaction.response.send_message(embed=initial_embed, view=initial_view(self.CLIENT), ephemeral=True)
 
 
 async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? pageEVNav = Page Embed-View Navigator
-    roller_targets = ('roller.attribute', 'roller.difficulty', 'roller.difficulty_selection')
+    roller_targets = ('roller.attribute', 'roller.difficulty')
     tracker_targets = ('tracker.home', 'tracker.hp/wp', 'tracker.hunger', 'tracker.attributes', 'tracker.skills',
                        'tracker.physical_skills', 'tracker.social_skills', 'tracker.mental_skills', 'tracker.discipline', 'tracker.extras')
     allowed_targets = roller_targets + tracker_targets

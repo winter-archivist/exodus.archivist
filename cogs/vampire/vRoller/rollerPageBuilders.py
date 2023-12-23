@@ -17,7 +17,7 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
                 case 'roller.difficulty':
                     return_page, return_view = await difficultyPageBuilder(initial_page)
                 case 'roller.attribute':
-                    return_page, return_view = await attributePageBuilder(initial_page, cursor)
+                    return_page, return_view = await attributePageBuilder(initial_page)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
                     raise Exception('Provided target_page_name does not exist.')
@@ -26,7 +26,7 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
         log.error(f'**> rollerPageDecider | SQLITE3 ERROR | {e}')
 
 
-async def rollerBasicPageInformation(interaction, return_embed):
+async def rollerBasicPageInformation(interaction, return_page):
     character_name = await vU.getCharacterName(interaction)
 
     with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
@@ -35,12 +35,12 @@ async def rollerBasicPageInformation(interaction, return_embed):
         difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
         roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
 
-    return_embed.add_field(name='Roll Information', value='', inline=False)
-    return_embed.add_field(name='Roll Pool:', value=f'{roll_pool}')
-    return_embed.add_field(name='Difficulty:', value=f'{difficulty}')
-    return_embed.add_field(name='Roll Composition:', value=f'{roll_comp}')
+    return_page.add_field(name='Roll Information', value='', inline=False)
+    return_page.add_field(name='Roll Pool:', value=f'{roll_pool}')
+    return_page.add_field(name='Difficulty:', value=f'{difficulty}')
+    return_page.add_field(name='Roll Composition:', value=f'{roll_comp}')
 
-    return return_embed
+    return return_page
 
 
 async def difficultyPageBuilder(return_page) -> Embed and View:
@@ -49,6 +49,8 @@ async def difficultyPageBuilder(return_page) -> Embed and View:
     return return_page, return_view
 
 
-async def attributePageBuilder(return_embed, cursor):
-    return 1, 1
+async def attributePageBuilder(return_page):
+    return_page.add_field(name='Select Attribute(s).', value='', inline=False)
+    return_view = rV.KRV_ATTRIBUTE
+    return return_page, return_view
 
