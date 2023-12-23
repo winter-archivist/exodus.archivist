@@ -15,8 +15,8 @@ import cogs.vampire.vMisc.vampireEmbeds as vE
 import cogs.vampire.vMisc.vampireViews as vV
 # import cogs.vampire.vMisc.vampireMake as vM
 
-import cogs.vampire.vTracker.kindredTracker as kT
-
+import cogs.vampire.vMisc.vampireUtils as vU
+import cogs.vampire.vMisc.vampirePageSystem as vPS
 
 class VampireRoll(commands.Cog):
     def __init__(self, CLIENT):
@@ -29,80 +29,25 @@ class VampireRoll(commands.Cog):
     #     await yu.cacheClear(f'cogs/vampire/characters/{str(interaction.user.id)}/vampireMake.yaml')
     #     await interaction.response.send_message(embed=vM.make_embed, view=vM.MakeStartView(self.CLIENT))"""
 
-    @app_commands.command(name='vampire-img', description='Sets the character img for `vampireroll`')
-    @app_commands.describe(charactername='Character Name')
-    @app_commands.describe(characterimgurl='Character Image URL')
-    async def VampireImgSet(self, interaction: discord.Interaction, charactername: str, characterimgurl: str):
-        url_set_embed = Embed(title='URL Set', description='', color=mC.embed_colors["green"])
-        url_set_embed.add_field(name='Success', value='', inline=False)
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite'
-        log.debug(f'> Checking if [ {targetDB} ] exist')
-        if not os.path.exists(targetDB):
-            log.warn(f'*> Database [ {targetDB} ] does not exist')
-
-            await interaction.response.send_message(embed=discord.Embed(
-                title='Database Error', color=mC.embed_colors["red"],
-                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mC.ISSUE_CONTACT}'), ephemeral=True)
-
-            return False
-        else:
-            log.debug(f'> Successful Connection to [ {targetDB} ] Setting URL')
-
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
-            db.cursor().execute('UPDATE charInfo SET imgURL=?', (f'{characterimgurl}',))
-            db.commit()
-        log.debug(f'> [ {targetDB} ] URL Set to [ {characterimgurl} ]')
-
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
-            found_url = db.cursor().execute('SELECT imgURL from charInfo').fetchone()[0]
-            url_set_embed.set_thumbnail(url=f'{found_url}')
-        log.debug(f'> Sending [ {characterimgurl} ] back to user')
-
-        await interaction.response.send_message(embed=url_set_embed)
-
     @app_commands.command(name='vampire-roll', description='VTM v5 Dice Roller!')
-    @app_commands.choices(choices=[
-        app_commands.Choice(name='Standard', value='standard'),
-        app_commands.Choice(name='Frenzy Resist', value='frenzy_resist'),
-        app_commands.Choice(name='Hunt', value='hunt'),
-        app_commands.Choice(name='Rouse', value='rouse'),
-        app_commands.Choice(name='Remorse', value='remorse'),
-        app_commands.Choice(name='Discipline', value='discipline')])
     @app_commands.describe(charactername='Character Name')
-    async def VampireRoll(self, interaction: discord.Interaction, choices: app_commands.Choice[str], charactername: str):
-        match choices.value:
-            case 'standard':
-                if await vF.rollInitialize(interaction, charactername) is False:
-                    return
-                await vF.selectionEmbedSetter(interaction, charactername)
-                await interaction.response.send_message(embed=vE.selection_embed, view=vV.StandardStartSelectionView(self.CLIENT))
-            case 'frenzy_resist':
-                # frenzy resist calculations
-                frenzy_resist_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
-                await interaction.response.send_message(embed=frenzy_resist_embed)
-            case 'hunt':
-                # hunt calculations
-                predator_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
-                await interaction.response.send_message(embed=predator_embed)
-            case 'rouse':
-                # remorse calculations
-                rouse_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
-                await interaction.response.send_message(embed=rouse_embed)
-            case 'remorse':
-                # remorse calculations
-                remorse_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
-                await interaction.response.send_message(embed=remorse_embed)
-            case 'discipline':
-                # discipline calculations
-                discipline_embed = (discord.Embed(title='', description=f'', color=mC.embed_colors["purple"]))
-                await interaction.response.send_message(embed=discipline_embed)
-            case _:
-                await interaction.response.send_message(content=f'`ISSUE: /newRoll case _ {choices.value=}` | {mC.ISSUE_CONTACT}')
+    async def VampireRoll(self, interaction: discord.Interaction, charactername: str):
+        await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty')
+
+    @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
+    @app_commands.describe(charactername='Character Name')
+    async def VampireTracker(self, interaction: discord.Interaction, charactername: str):
+        if charactername == 'Nyctea':
+            nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.embed_colors["black"])
+            await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
+            return
+
+        await vPS.vampirePageCommand(self, interaction, charactername, 'tracker.home')
 
     @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
     @app_commands.describe(charactername='Character Name')
     async def VampireRouse(self, interaction: discord.Interaction, charactername: str):
-        rouse_result = await vF.rouseCheck(interaction, charactername)
+        rouse_result = await vU.rouseCheck(interaction, charactername)
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
             cursor = db.cursor()
             user_name = str(cursor.execute('SELECT userNAME from ownerInfo').fetchone()[0])
@@ -135,16 +80,36 @@ class VampireRoll(commands.Cog):
 
         await interaction.response.send_message(embed=rouse_embed)
 
-    @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
+    @app_commands.command(name='vampire-img', description='Sets the character img for `vampire`')
     @app_commands.describe(charactername='Character Name')
-    async def VampireTracker(self, interaction: discord.Interaction, charactername: str):
-        if charactername == 'Nyctea':
-            nyctea_deny_embed = Embed(title='', description='Hidden', colour=mC.embed_colors["black"])
-            await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
-            return
-        if await kT.trackerInitialize(interaction, charactername) is True:
-            initial_embed, initial_view = await kT.tevNav(interaction, 'home')
-            await interaction.response.send_message(embed=initial_embed, view=initial_view(self.CLIENT), ephemeral=True)
+    @app_commands.describe(characterimgurl='Character Image URL')
+    async def VampireImgSet(self, interaction: discord.Interaction, charactername: str, characterimgurl: str):
+        url_set_embed = Embed(title='URL Set', description='', color=mC.embed_colors["green"])
+        url_set_embed.add_field(name='Success', value='', inline=False)
+        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite'
+        log.debug(f'> Checking if [ {targetDB} ] exist')
+        if not os.path.exists(targetDB):
+            log.warn(f'*> Database [ {targetDB} ] does not exist')
+
+            await interaction.response.send_message(embed=discord.Embed(
+                title='Database Error', color=mC.embed_colors["red"],
+                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mC.ISSUE_CONTACT}'), ephemeral=True)
+
+            return False
+        else:
+            log.debug(f'> Successful Connection to [ {targetDB} ] Setting URL')
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
+            db.cursor().execute('UPDATE charInfo SET imgURL=?', (f'{characterimgurl}',))
+            db.commit()
+        log.debug(f'> [ {targetDB} ] URL Set to [ {characterimgurl} ]')
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
+            found_url = db.cursor().execute('SELECT imgURL from charInfo').fetchone()[0]
+            url_set_embed.set_thumbnail(url=f'{found_url}')
+        log.debug(f'> Sending [ {characterimgurl} ] back to user')
+
+        await interaction.response.send_message(embed=url_set_embed)
 
     @commands.command(hidden=True)
     async def new(self, ctx, targetcharacter: str):

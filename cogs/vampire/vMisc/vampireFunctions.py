@@ -282,29 +282,6 @@ async def simpleSelection(interaction, select, self, targetDB, func_callback):
         log.error(f'{func_callback} | SQLITE3 ERROR | {e}')
 
 
-async def rouseCheck(interaction, targetcharacter) -> str:
-    try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
-            cursor = db.cursor()
-            hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
-            rouse_num_result: int = randint(1, 10)
-
-            if hunger >= 5:
-                if rouse_num_result <= 5:
-                    return 'Frenzy'  # * Hunger Frenzy, No Hunger Gain Too High Already
-                return 'Hungry'
-
-            elif rouse_num_result >= 6:
-                return 'Pass'  # * No Hunger Gain
-
-            elif rouse_num_result <= 5:
-                cursor.execute('UPDATE charInfo SET hunger=?', (str(int(hunger + 1))))
-                db.commit()
-                return 'Fail'  # * Hunger Gain
-    except sqlite3.Error as e:
-        log.error(f'rouseCheck | SQLITE3 ERROR | {e}')
-
-
 async def selectionEmbedSetter(interaction, targetcharacter) -> None:
     try:
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
@@ -314,7 +291,7 @@ async def selectionEmbedSetter(interaction, targetcharacter) -> None:
             roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
             character_avatar = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
 
-            vE.selection_embed.set_field_at(index=0, name='Character Name',value=f'{targetcharacter}', inline=False)
+            vE.selection_embed.set_field_at(index=0, name='Character Name', value=f'{targetcharacter}', inline=False)
             vE.selection_embed.set_field_at(index=1, name='Roll Information', value='', inline=False)
             vE.selection_embed.set_field_at(index=2, name='Roll Pool:', value=f'{roll_pool}')
             vE.selection_embed.set_field_at(index=3, name='Difficulty:', value=f'{difficulty}')
@@ -391,7 +368,7 @@ async def ownerChecker(interaction: discord.Interaction):
     use_data: dict = {}
     use_data.update(await yu.cacheRead(f'{targetCache}'))
     targetcharacter: str = str(use_data['characterName'])
-
+    targetcharacter = await vU.getCharacterName()
     try:
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
             char_owner_id = db.cursor().execute('SELECT userID FROM ownerInfo').fetchone()[0]
