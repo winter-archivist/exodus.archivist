@@ -18,6 +18,16 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
                     return_page, return_view = await difficultyPageBuilder(initial_page)
                 case 'roller.attribute':
                     return_page, return_view = await attributePageBuilder(initial_page)
+                case 'roller.physical':
+                    return_page, return_view = await physicalPageBuilder(initial_page)
+                case 'roller.social':
+                    return_page, return_view = await socialPageBuilder(initial_page)
+                case 'roller.mental':
+                    return_page, return_view = await mentalPageBuilder(initial_page)
+                case 'roller.discipline':
+                    return_page, return_view = await disciplinePageBuilder(initial_page)
+                case 'roller.extras':
+                    return_page, return_view = await extrasPageBuilder(initial_page)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
                     raise Exception('Provided target_page_name does not exist.')
@@ -50,7 +60,36 @@ async def difficultyPageBuilder(return_page) -> Embed and View:
 
 
 async def attributePageBuilder(return_page):
-    return_page.add_field(name='Select Attribute(s).', value='', inline=False)
     return_view = rV.KRV_ATTRIBUTE
+    return return_page, return_view
+
+
+async def physicalPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_PHYSICAL
+    return return_page, return_view
+
+
+async def socialPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_SOCIAL
+    return return_page, return_view
+
+
+async def mentalPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_MENTAL
+    return return_page, return_view
+
+
+async def disciplinePageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_DISCIPLINE
+    return return_page, return_view
+
+
+async def extrasPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_EXTRAS
+    return return_page, return_view
+
+
+async def rolledPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_ROLLED
     return return_page, return_view
 
