@@ -28,6 +28,10 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
                     return_page, return_view = await disciplinePageBuilder(initial_page)
                 case 'roller.extras':
                     return_page, return_view = await extrasPageBuilder(initial_page)
+                case 'roller.rolled':
+                    return_page, return_view = await rolledPageBuilder(initial_page)
+                case 'roller.rerolled':
+                    return_page, return_view = await rerolledPageBuilder(initial_page)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
                     raise Exception('Provided target_page_name does not exist.')
@@ -45,7 +49,6 @@ async def rollerBasicPageInformation(interaction, return_page):
         difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
         roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
 
-    return_page.add_field(name='Roll Information', value='', inline=False)
     return_page.add_field(name='Roll Pool:', value=f'{roll_pool}')
     return_page.add_field(name='Difficulty:', value=f'{difficulty}')
     return_page.add_field(name='Roll Composition:', value=f'{roll_comp}')
@@ -54,7 +57,6 @@ async def rollerBasicPageInformation(interaction, return_page):
 
 
 async def difficultyPageBuilder(return_page) -> Embed and View:
-    return_page.add_field(name='Select Difficulty.', value='', inline=False)
     return_view = rV.KRV_DIFFICULTY
     return return_page, return_view
 
@@ -91,5 +93,10 @@ async def extrasPageBuilder(return_page) -> Embed and View:
 
 async def rolledPageBuilder(return_page) -> Embed and View:
     return_view = rV.KRV_ROLLED
+    return return_page, return_view
+
+
+async def rerolledPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_REROLLED
     return return_page, return_view
 

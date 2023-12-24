@@ -8,15 +8,9 @@ from zenlog import log
 
 from misc.config import mainConfig as mC
 
-# from misc.utils import yaml_utils as yu
-
-import cogs.vampire.vMisc.vampireFunctions as vF
-import cogs.vampire.vMisc.vampireEmbeds as vE
-import cogs.vampire.vMisc.vampireViews as vV
-# import cogs.vampire.vMisc.vampireMake as vM
-
 import cogs.vampire.vMisc.vampireUtils as vU
 import cogs.vampire.vMisc.vampirePageSystem as vPS
+
 
 class VampireRoll(commands.Cog):
     def __init__(self, CLIENT):
