@@ -10,7 +10,7 @@ This bot is currently being developed with Pycharm Professional thanks to the fr
 >>> * Open Source [GNUGPL 3.0]
 >>> * Logging /w "Syntax" [See Below]
 >>> * Dangerously Cheesy [so much spaghetti]
->>> * In Active Development [DEC 2023]
+>>> * In Active Development [JAN 2024]
 >> * Client: 
 >>> * Slash Commands
 >>> * CogManager
