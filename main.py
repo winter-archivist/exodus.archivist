@@ -1,7 +1,6 @@
 # ! ## ------------ ## #
-# ? ## BRANCH: newRoll ## #
+# ? ## BRANCH: Main ## #
 # ! ## ------------ ## #
-# * Post-Optimization I will push to main
 
 import typing
 import time
@@ -11,8 +10,7 @@ from discord.ext import commands
 
 from zenlog import log
 
-from misc.config import mainConfig as mc
-import client_config as config
+from misc.config import mainConfig as mC, clientConfig as cC
 
 
 async def initialCogs(CLIENT_INPUT):
@@ -70,16 +68,16 @@ class ExodusClient(commands.Bot):
 
 
 INTENTS = discord.Intents.all()
-CLIENT = ExodusClient(command_prefix=config.PREFIX, intents=INTENTS)
+CLIENT = ExodusClient(command_prefix=cC.PREFIX, intents=INTENTS)
 
 
-# ? Error Handler
+# ? Error "Handler"
 @CLIENT.event
 async def on_command_error(ctx, error):
     """Error Handling"""
     await ctx.send(f'> `{error}` \n'
-                   f'Screenshot this and send it to `{mc.RUNNER}`, the host of this bot. \n'
-                   f'To contact the original bot writer: `{mc.DEVELOPER}` and/or visit `{mc.GITREPO}`')
+                   f'Screenshot this and send it to `{mC.RUNNER}`, the host of this bot. \n'
+                   f'To contact the original bot writer: `{mC.DEVELOPER}` and/or visit `{mC.GITREPO}`')
 
 
 @CLIENT.event
@@ -91,14 +89,14 @@ async def on_ready():
     await initialCogs(CLIENT)
 
     # ! Slash Commands Setup
-    if config.SLASH_MODE is True:
+    if cC.SLASH_MODE is True:
         try:
             synced = await CLIENT.tree.sync()
             log.info(f"Synced [ {len(synced)} ] command(s).")
         except Exception as e:
             log.crit(f'<<<$ Error Syncing Commands: {e}>>>')
             exit()
-    elif config.SLASH_MODE is False:
+    elif cC.SLASH_MODE is False:
         log.crit('$ SLASH_MODE is False.')
     else:
         log.warn('<<<$ Startup Error: SLASH_MODE IS NOT TRUE OR FALSE >>>')
@@ -111,7 +109,7 @@ async def on_ready():
 
 @CLIENT.command(name="sync")
 async def sync(ctx):  # ! Slash Commands Cog Essential
-    if str(ctx.author.id) != f'{mc.RUNNER}':
+    if str(ctx.author.id) != f'{mC.RUNNER}':
         return
     synced = await CLIENT.tree.sync()
     log.info(f"Synced [ {len(synced)} ] command(s).")
@@ -119,9 +117,9 @@ async def sync(ctx):  # ! Slash Commands Cog Essential
 
 @commands.command(hidden=True)
 async def kill(self, ctx):
-    if ctx.author.id != mc.RUNNER_ID:
+    if ctx.author.id != mC.RUNNER_ID:
         return
     await CLIENT.close()
 
 
-CLIENT.run(token=config.TOKEN, reconnect=True)
+CLIENT.run(token=cC.TOKEN, reconnect=True)
