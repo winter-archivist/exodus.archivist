@@ -36,14 +36,17 @@ class VampireRoll(commands.Cog):
         await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty')
 
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
-    @app_commands.describe(charactername='Character Name')
-    async def VampireTracker(self, interaction: discord.Interaction, charactername: str):
-        if charactername == 'Nyctea':
+    @app_commands.describe(character_name='Character Name')
+    async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
+        if character_name == 'Nyctea':
             nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.embed_colors["black"])
             await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
             return
 
-        await vPS.vampirePageCommand(self, interaction, charactername, 'tracker.home')
+        elif await vU.writeCharacterName(interaction, character_name) is False:
+            return
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home')
 
     @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
     @app_commands.describe(charactername='Character Name')
