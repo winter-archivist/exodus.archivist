@@ -3,29 +3,31 @@ ExodusAutomaton Rewrite
 ---
 ## General
 
-Currently, I'm using pycharm community for development; though on Nov 29th I'll be applying for Pycharm Professional
+This bot is currently being developed with Pycharm Professional thanks to the free licenses for Open-Source-Projects
 > Primary Features: 
 >> * Project: 
 >>> * Easily Setup
 >>> * Open Source [GNUGPL 3.0]
->>> * Logging /w "Syntax"
+>>> * Logging /w "Syntax" [See Below]
 >>> * Dangerously Cheesy [so much spaghetti]
->>> * In Active Development [NOV 2023]
+>>> * In Active Development [JAN 2024]
 >> * Client: 
 >>> * Slash Commands
 >>> * CogManager
->>> * V5 VTM Dice Roller /w Character Tracker
+>>> * VTM v5 Toolbox
 
+> Active Development Features:
+>> * VTM v5 Toolbox [Currently Implementing "Page" System. pageEVNav]
 
 > Heavily Work-In-Progress Features: 
->> * Notes System
+>> * Notes System [Currently on Pause]
 ---
 ## USE:
-Below are things just for this bot, I am not going to explain python, discord.py, or how to use discord dev tools
-* This bot is not *meant* to be installed & used by other people, I am merely sharing its source-code.
-* Change the Bot's TOKEN [client_config.py]
-* Change the Bot's RUNNER and RUNNER_ID [misc/config/main_config.py]
+<u>__NOTE:__  This bot is not directly intended for use by other people, but does support such use, please remember to follow the License! </u>
 
+Before using the bot please ensure you understand python, discord.py, and the discord developer tools, none of those will be explained here.
+* Change the Bot's TOKEN [found in: client_config.py]
+* Change the Bot's RUNNER and RUNNER_ID [found in: misc/config/main_config.py]
 ---
 ## LOGGING
 When things are logged they should have a "reason" or prefix attached to the beginning these can be "stacked". \
