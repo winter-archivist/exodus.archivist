@@ -308,9 +308,9 @@ class KRV_DIFFICULTY(View):
     async def roll_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
-        # Actual Button Logic End
+        # Actual Button Logic
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
@@ -356,9 +356,9 @@ class KRV_ATTRIBUTE(View):
     async def roll_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
-        # Actual Button Logic End
+        # Actual Button Logic
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
@@ -404,9 +404,9 @@ class KRV_PHYSICAL(View):
     async def roll_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
-        # Actual Button Logic End
+        # Actual Button Logic
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
@@ -452,9 +452,9 @@ class KRV_SOCIAL(View):
     async def roll_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
-        # Actual Button Logic End
+        # Actual Button Logic
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
@@ -500,9 +500,9 @@ class KRV_MENTAL(View):
     async def roll_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
-        # Actual Button Logic End
+        # Actual Button Logic
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
@@ -548,9 +548,9 @@ class KRV_DISCIPLINE(View):
     async def roll_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
-        # Actual Button Logic End
+        # Actual Button Logic
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
@@ -575,6 +575,28 @@ class KRV_EXTRAS(View):
     @discord.ui.button(label='Back', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def back_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.difficulty')
+        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
+
+        # Actual Button Logic
+        response_page = await normalRoller(interaction, response_page)
+        # Actual Button Logic
+
+        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Clear', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def clear_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.difficulty')
+
+        # Actual Button Logic
+        await clearDBRollInfo(interaction)
+        # Actual Button Logic
+
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
@@ -609,27 +631,17 @@ class KRV_EXTRAS(View):
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
-    async def roll_button_callback(self, interaction, button):
-        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
+    @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
+    async def blood_surge_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await normalRoller(interaction, response_page)
         # Actual Button Logic End
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Clear', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
-    async def clear_button_callback(self, interaction, button):
-        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.difficulty')
-
-        # Actual Logic of the Selection
-        await clearDBRollInfo(interaction)
-        # Actual Logic of the Selection
-
-        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
-        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
 
 class KRV_ROLLED(View):
@@ -641,7 +653,7 @@ class KRV_ROLLED(View):
     async def back_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rerolled')
 
-        # Actual Button Logic Start
+        # Actual Button Logic
         response_page = await reRoller(self, interaction, button, response_page)
         # Actual Button Logic End
 
