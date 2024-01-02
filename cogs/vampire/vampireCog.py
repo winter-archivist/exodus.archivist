@@ -33,7 +33,7 @@ class VampireRoll(commands.Cog):
             cursor.execute('UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',(0, 0, 0, 0, 0, 0, 0), )
             db.commit()
 
-        await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty')
+        await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty', False)
 
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(character_name='Character Name')
@@ -46,7 +46,7 @@ class VampireRoll(commands.Cog):
         elif await vU.writeCharacterName(interaction, character_name) is False:
             return
 
-        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home')
+        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
 
     @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
     @app_commands.describe(charactername='Character Name')
