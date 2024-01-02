@@ -1,5 +1,5 @@
 # ! ## ------------ ## #
-# ? ## BRANCH: MAIN ## #
+# ? ## BRANCH: Main ## #
 # ! ## ------------ ## #
 
 import typing
@@ -10,31 +10,34 @@ from discord.ext import commands
 
 from zenlog import log
 
-from misc.config import main_config as mc
-import client_config as config
+from misc.config import mainConfig as mC, clientConfig as cC
 
 
 async def initialCogs(CLIENT_INPUT):
-    log.warn('$ Loading Initial Cogs...')
+    log.info('$ Loading Initial Cogs...')
     initial_cogs = ('cogs.cogManager',
-                    'cogs.vampire.vampireRoll',
+                    'cogs.vampire.vampireCog',
                     'cogs.exonotes.exoNotes')
     forVar = 0
     for x in initial_cogs:
-        target = initial_cogs[forVar]
+        targetedCog = initial_cogs[forVar]
         try:
-            await CLIENT_INPUT.load_extension(f'{target}')
+            await CLIENT_INPUT.load_extension(f'{targetedCog}')
+            log.debug(f'$ {targetedCog} Loaded')
         except Exception as e:
-            log.warn(f"<<<$ Failed to load {target} {e}>>>")
-            exit()
+            log.crit(f"<<<$ Failed to load {targetedCog} {e}>>>")
+            exit(000)
         forVar += 1
+    log.info('$ Loaded Initial Cogs... Attempting Sync')
 
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
     try:
+        log.debug(f"$ Loading ddtr")
         await CLIENT_INPUT.load_extension('cogs.ddtr.ddtr')
     except Exception as e:
         log.warn(f"<<<$ {e} | REMOVE TRY STATEMENT IN main.py CONTAINING cogs.ddtr.ddtr >>>")
         exit()
+    log.debug(f"$ ddtr Loaded, real sync start.")
     # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
 
 
@@ -65,16 +68,16 @@ class ExodusClient(commands.Bot):
 
 
 INTENTS = discord.Intents.all()
-CLIENT = ExodusClient(command_prefix=config.PREFIX, intents=INTENTS)
+CLIENT = ExodusClient(command_prefix=cC.PREFIX, intents=INTENTS)
 
 
-# ? Error Handler
+# ? Error "Handler"
 @CLIENT.event
 async def on_command_error(ctx, error):
     """Error Handling"""
     await ctx.send(f'> `{error}` \n'
-                   f'Screenshot this and send it to `{mc.RUNNER}`, the host of this bot. \n'
-                   f'To contact the original bot writer: `{mc.DEVELOPER}` and/or visit `{mc.GITREPO}`')
+                   f'Screenshot this and send it to `{mC.RUNNER}`, the host of this bot. \n'
+                   f'To contact the original bot writer: `{mC.DEVELOPER}` and/or visit `{mC.GITREPO}`')
 
 
 @CLIENT.event
@@ -86,14 +89,14 @@ async def on_ready():
     await initialCogs(CLIENT)
 
     # ! Slash Commands Setup
-    if config.SLASH_MODE is True:
+    if cC.SLASH_MODE is True:
         try:
             synced = await CLIENT.tree.sync()
-            log.crit(f'$ Synced {len(synced)} command(s)')
+            log.info(f"Synced [ {len(synced)} ] command(s).")
         except Exception as e:
             log.crit(f'<<<$ Error Syncing Commands: {e}>>>')
             exit()
-    elif config.SLASH_MODE is False:
+    elif cC.SLASH_MODE is False:
         log.crit('$ SLASH_MODE is False.')
     else:
         log.warn('<<<$ Startup Error: SLASH_MODE IS NOT TRUE OR FALSE >>>')
@@ -106,17 +109,17 @@ async def on_ready():
 
 @CLIENT.command(name="sync")
 async def sync(ctx):  # ! Slash Commands Cog Essential
-    if str(ctx.author.id) != f'{mc.RUNNER}':
+    if str(ctx.author.id) != f'{mC.RUNNER}':
         return
     synced = await CLIENT.tree.sync()
-    print(f"Synced {len(synced)} command(s).")
+    log.info(f"Synced [ {len(synced)} ] command(s).")
 
 
 @commands.command(hidden=True)
 async def kill(self, ctx):
-    if str(ctx.author.id) != f'{mc.RUNNER_ID}':
+    if ctx.author.id != mC.RUNNER_ID:
         return
     await CLIENT.close()
 
 
-CLIENT.run(config.TOKEN)
+CLIENT.run(token=cC.TOKEN, reconnect=True)
