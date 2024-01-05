@@ -51,8 +51,9 @@ async def rouseCheck(interaction, targetcharacter) -> str:
 
             if hunger >= 5:
                 if rouse_num_result <= 5:
+                    # TODO: HANDLE FRENZY STUFF
                     return 'Frenzy'  # * Hunger Frenzy, No Hunger Gain Too High Already
-                return 'Hungry'
+                return 'Pass'
 
             elif rouse_num_result >= 6:
                 return 'Pass'  # * No Hunger Gain

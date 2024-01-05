@@ -1,6 +1,11 @@
 import discord
 from discord.ui import View
+import sqlite3
+
 import cogs.vampire.vMisc.vampirePageSystem as vPS
+import cogs.vampire.vMisc.vampireUtils as vU
+
+from misc.config import mainConfig as mC
 
 
 # ? Until Functional, the button will be gray
@@ -51,24 +56,24 @@ class KTV_HPWP(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Damage Health', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def health_damage_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Regain Health', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Regain Health', emoji=f'{mC.health_full_emoji}', style=discord.ButtonStyle.green, row=1)
     async def health_regain_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.regain_health')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Damage Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def willpower_damage_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+    @discord.ui.button(label='Damage Health', emoji=f'{mC.health_sup_emoji}', style=discord.ButtonStyle.red, row=1)
+    async def health_damage_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_health')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Regain Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Regain Willpower', emoji=f'{mC.willpower_full_emoji}', style=discord.ButtonStyle.green, row=2)
     async def willpower_regain_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.regain_willpower')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Damage Willpower', emoji=f'{mC.willpower_sup_emoji}', style=discord.ButtonStyle.red, row=2)
+    async def willpower_damage_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_willpower')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
 
@@ -188,3 +193,98 @@ class KTV_EXTRA(View):
     async def path_rules_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+
+class KTV_HPREGAIN(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def home_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Mend', emoji=f'{mC.hunger_emoji}', style=discord.ButtonStyle.red, row=1)
+    async def mend_button_callback(self, interaction, button):
+
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()
+            blood_potency = int(cursor.execute('SELECT blood_potency from charInfo').fetchone()[0])
+            hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
+
+        # Prevents a Rouse from occurring if no health can be gained.
+        if hc_sup == 0:
+            response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+            response_embed.add_field(name='No Superficial Health to Regain', value='')
+            await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+            return
+        else:
+            rouse_result = await vU.rouseCheck(interaction, character_name)
+
+        if rouse_result == 'Frenzy':  # rouseCheck handles responding
+            return
+
+        if blood_potency <= 1: mend_amount = 1
+        elif blood_potency <= 3: mend_amount = 2
+        elif blood_potency <= 7: mend_amount = 3
+        elif blood_potency <= 9: mend_amount = 4
+        elif blood_potency == 10: mend_amount = 5
+        else: return
+
+        # Can't heal damage you don't have
+        if mend_amount > hc_sup:
+            mend_amount = hc_sup
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()
+            cursor.execute('UPDATE health SET healthSUP=?', (str(int(hc_sup) - mend_amount),))
+            new_hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
+            db.commit()
+
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.regain_health')
+        response_embed.add_field(name=f'Rouse {rouse_result}', value=f'`{mend_amount}` Health Regained. Current Hunger: `{new_hunger}`')
+
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+
+class KTV_HPDAMAGE(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def home_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.select(placeholder='Take Superficial Damage',
+                       options=[discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>')],
+                       max_values=1, min_values=1, row=1)
+    async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_health')
+        character_name = await vU.getCharacterName(interaction)
+
+        # Actual Logic of the Selection
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()
+            hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])  # 5
+            hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])  # 2
+            hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])  # 3
+
+            if hc_base == hc_sup:
+                cursor.execute('UPDATE commandvars SET difficulty=?', (select.values))  # ! Parentheses are NOT redundant
+                pass
+
+
+            cursor.execute('UPDATE commandvars SET difficulty=?', (select.values))  # ! Parentheses are NOT redundant
+            db.commit()
+        # Actual Logic of the Selection
+
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+

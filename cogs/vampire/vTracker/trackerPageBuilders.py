@@ -35,6 +35,14 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
                     return_page, return_view = await disciplinePageBuilder(initial_page, cursor)
                 case 'tracker.extras':
                     return_page, return_view = await extrasPageBuilder(initial_page, cursor)
+                case 'tracker.regain_health':
+                    return_page, return_view = await regainhealthPageBuilder(initial_page, cursor)
+                case 'tracker.damage_health':
+                    return_page, return_view = await damagehealthPageBuilder(initial_page, cursor)
+                case 'tracker.regain_willpower':
+                    return_page, return_view = await regainwillpowerPageBuilder(initial_page, cursor)
+                case 'tracker.damage_willpower':
+                    return_page, return_view = await damagewillpowerPageBuilder(initial_page, cursor)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
                     raise Exception('Provided target_page_name does not exist.')
@@ -50,17 +58,26 @@ async def homePageBuilder(return_page):
 
 
 async def hpwpPageBuilder(return_embed, cursor):
-    # ! Needs a hp/wp add/remove
     # ? hc = health_count | wpc = willpower_count
-    hc_full: str = str(mC.health_full_emoji * int(cursor.execute('SELECT healthBase from health').fetchone()[0]))
-    hc_sup: str = str(mC.health_sup_emoji * int(cursor.execute('SELECT healthSUP from health').fetchone()[0]))
-    hc_agg: str = str(mC.health_agg_emoji * int(cursor.execute('SELECT healthAGG from health').fetchone()[0]))
-    wpc_full: str = str(mC.willpower_full_emoji * int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0]))
-    wpc_sup: str = str(mC.willpower_sup_emoji * int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0]))
-    wpc_agg: str = str(mC.willpower_agg_emoji * int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0]))
+    hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+    hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
+    hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
+    wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+    wpc_sup: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
+    wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
 
-    return_embed.add_field(name='Health', value=f'{hc_full}{hc_sup}{hc_agg}', inline=False)
-    return_embed.add_field(name='Willpower', value=f'{wpc_full}{wpc_sup}{wpc_agg}', inline=False)
+    actual_health = hc_base - hc_sup - hc_agg
+    full_health = str(mC.health_full_emoji * actual_health)
+    sup_health = str(mC.health_sup_emoji * hc_sup)
+    agg_health = str(mC.health_agg_emoji * hc_agg)
+
+    actual_willpower = wpc_base - wpc_sup - wpc_agg
+    full_willpower = str(mC.willpower_full_emoji * actual_willpower)
+    sup_willpower = str(mC.willpower_sup_emoji * wpc_sup)
+    agg_willpower = str(mC.willpower_agg_emoji * wpc_agg)
+
+    return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
+    return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
     return_view = tV.KTV_HPWP
     return return_embed, return_view
 
@@ -192,4 +209,80 @@ async def extrasPageBuilder(return_embed, cursor):
     return_embed.add_field(name='Path of Enlightenment', value=f'{path_of_enlightenment}', inline=True)
     return_view = tV.KTV_EXTRA
     return return_embed, return_view
+
+
+async def regainhealthPageBuilder(return_embed, cursor):
+    # ? hc = health_count
+    hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+    hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
+    hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
+
+    actual_health = hc_base - hc_sup - hc_agg
+    full_health = str(mC.health_full_emoji * actual_health)
+    sup_health = str(mC.health_sup_emoji * hc_sup)
+    agg_health = str(mC.health_agg_emoji * hc_agg)
+
+    if hc_sup == hc_base and hc_agg > 1:
+        sup_health = str(mC.health_sup_emoji * int(hc_sup - hc_agg))
+
+    return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
+
+    return_view = tV.KTV_HPREGAIN
+    return return_embed, return_view
+
+
+async def damagehealthPageBuilder(return_embed, cursor):
+    # ? hc = health_count
+    hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+    hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
+    hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
+
+    actual_health = hc_base - hc_sup - hc_agg
+    full_health = str(mC.health_full_emoji * actual_health)
+    sup_health = str(mC.health_sup_emoji * hc_sup)
+    agg_health = str(mC.health_agg_emoji * hc_agg)
+
+    if hc_sup == hc_base and hc_agg > 1:
+        sup_health = str(mC.health_sup_emoji * int(hc_sup - hc_agg))
+
+    return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
+
+    return_view = tV.KTV_HPDAMAGE
+    return return_embed, return_view
+
+
+async def regainwillpowerPageBuilder(return_embed, cursor):
+    # ? wpc = willpower_count
+    wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+    wpc_sup: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
+    wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
+
+    actual_willpower = wpc_base - wpc_sup - wpc_agg
+    full_willpower = str(mC.willpower_full_emoji * actual_willpower)
+    sup_willpower = str(mC.willpower_sup_emoji * wpc_sup)
+    agg_willpower = str(mC.willpower_agg_emoji * wpc_agg)
+
+    if wpc_sup == wpc_base and wpc_agg > 1:
+        sup_health = str(mC.willpower_sup_emoji * int(wpc_sup - wpc_agg))
+
+    return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
+    return_view = tV.KTV_WPREGAIN
+    return return_embed, return_view
+
+
+async def damagewillpowerPageBuilder(return_embed, cursor):
+    # ? wpc = willpower_count
+    wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+    wpc_sup: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
+    wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
+
+    actual_willpower = wpc_base - wpc_sup - wpc_agg
+    full_willpower = str(mC.willpower_full_emoji * actual_willpower)
+    sup_willpower = str(mC.willpower_sup_emoji * wpc_sup)
+    agg_willpower = str(mC.willpower_agg_emoji * wpc_agg)
+
+    return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
+    return_view = tV.KTV_WPDAMAGE
+    return return_embed, return_view
+
 

@@ -21,7 +21,8 @@ async def vampirePageCommand(self, interaction, character_name: str, initial_tar
 async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? pageEVNav = Page Embed-View Navigator
     roller_targets = ('roller.difficulty', 'roller.attribute', 'roller.physical', 'roller.social' , 'roller.mental', 'roller.discipline' , 'roller.extras', 'roller.rolled', 'roller.rerolled')
     tracker_targets = ('tracker.home', 'tracker.hp/wp', 'tracker.hunger', 'tracker.attributes', 'tracker.skills',
-                       'tracker.physical_skills', 'tracker.social_skills', 'tracker.mental_skills', 'tracker.discipline', 'tracker.extras')
+                       'tracker.physical_skills', 'tracker.social_skills', 'tracker.mental_skills', 'tracker.discipline', 'tracker.extras',
+                       'tracker.regain_health', 'tracker.damage_health', 'tracker.regain_willpower', 'tracker.damage_willpower')
     allowed_targets = roller_targets + tracker_targets
 
     if target_page_name.lower() not in allowed_targets:
@@ -40,7 +41,7 @@ async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? 
 
 
 async def basicPageBuilder(interaction, page_title: str, page_description: str, page_color: str) -> Embed:
-    # Makes the base embed, then clears it for safety & because I'm stupid <3
+    # Makes the base embed, then clears it
     base_page = Embed(title=page_title, description=page_description, colour=mC.embed_colors[f"{page_color.lower()}"])
     base_page.clear_fields()
 
@@ -62,6 +63,6 @@ async def basicPageBuilder(interaction, page_title: str, page_description: str, 
     base_page.set_author(name=f'{user_info["user_name"]}', icon_url=f'{user_info["user_avatar"]}')
     base_page.add_field(name='Character Name', value=f'{character_name}', inline=False)
 
-    # Returns Embed
+    # Returns Embed (now considered a "Page")
     return base_page
 

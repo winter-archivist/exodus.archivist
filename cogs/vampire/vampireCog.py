@@ -36,7 +36,7 @@ class VampireRoll(commands.Cog):
             await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
             return
 
-        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
+        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', False)
 
     @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
     @app_commands.describe(charactername='Character Name')
@@ -62,9 +62,6 @@ class VampireRoll(commands.Cog):
 
         else:
             rouse_embed = Embed(title='Rouse Check Result', description=f'Fate Unknown?', color=mC.embed_colors["red"])
-
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
-            cursor = db.cursor()
 
         rouse_embed.set_author(name=f'{user_name}', icon_url=f'{user_avatar}')
         rouse_embed.set_footer(text=f'{user_id}', icon_url=f'{user_avatar}')
