@@ -10,7 +10,7 @@ import cogs.vampire.vTracker.trackerPageBuilders as tPB
 import cogs.vampire.vRoller.rollerPageBuilders as rPB
 
 
-async def vampirePageCommand(self, interaction, character_name, initial_target_page_name, ephemeral):
+async def vampirePageCommand(self, interaction, character_name: str, initial_target_page_name: str, ephemeral: bool):
     if await vU.writeCharacterName(interaction, character_name) is True:
         initial_embed, initial_view = await pageEVNav(interaction, initial_target_page_name)
         if 'roller' in initial_target_page_name:
@@ -30,7 +30,7 @@ async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? 
 
     elif target_page_name.lower() in tracker_targets:
         initial_page = await basicPageBuilder(interaction, 'Kindred Tracker', 'If a button is __Gray__ that means its non-functional', 'cyan')
-        return_page, return_view = await tPB.trackerPageDecider(interaction, target_page_name, initial_page)
+        return_page, return_view = await tPB.trackerPageDecider(interaction, target_page_name.lower(), initial_page)
         return return_page, return_view
 
     elif target_page_name.lower() in roller_targets:
