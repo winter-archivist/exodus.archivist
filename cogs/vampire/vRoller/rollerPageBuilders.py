@@ -3,7 +3,6 @@ from discord import Embed
 from discord.ui import View
 from zenlog import log
 
-import misc.config.mainConfig as mC
 import cogs.vampire.vMisc.vampireUtils as vU
 import cogs.vampire.vRoller.rollerViews as rV
 
@@ -99,4 +98,3 @@ async def rolledPageBuilder(return_page) -> Embed and View:
 async def rerolledPageBuilder(return_page) -> Embed and View:
     return_view = rV.KRV_REROLLED
     return return_page, return_view
-
