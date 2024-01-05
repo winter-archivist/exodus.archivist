@@ -290,11 +290,11 @@ class KTV_HPDAMAGE(View):
                     quit()
                 elif hc_sup == hc_base:
                     # Deals AGG Damage
-                    cursor.execute('UPDATE health SET healthAGG=?', (str(int(hc_agg + 1))))  # ! Parentheses are NOT redundant
+                    cursor.execute('UPDATE health SET healthAGG=?', ((str(int(hc_agg + 1))),))  # ! Parentheses are NOT redundant
                     damage_amount -= 1
                 else:
                     # Deals SUP Damage
-                    cursor.execute('UPDATE health SET healthSUP=?', (str(int(hc_sup + 1))))  # ! Parentheses are NOT redundant
+                    cursor.execute('UPDATE health SET healthSUP=?', ((str(int(hc_sup + 1))),))  # ! Parentheses are NOT redundant
                     damage_amount -= 1
 
                 db.commit()
