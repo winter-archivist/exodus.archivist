@@ -41,9 +41,8 @@ async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? 
 
 
 async def basicPageBuilder(interaction, page_title: str, page_description: str, page_color: str) -> Embed:
-    # Makes the base embed, then clears it
+    # Makes the base embed
     base_page = Embed(title=page_title, description=page_description, colour=mC.embed_colors[f"{page_color.lower()}"])
-    base_page.clear_fields()
 
     # Assigns basic user information
     user_info = {'user_name'  : interaction.user,
