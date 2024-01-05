@@ -1,6 +1,7 @@
 import discord
 from discord.ui import View
 import sqlite3
+from zenlog import log
 
 import cogs.vampire.vMisc.vampirePageSystem as vPS
 import cogs.vampire.vMisc.vampireUtils as vU
@@ -264,27 +265,40 @@ class KTV_HPDAMAGE(View):
                        options=[discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
                                 discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
                                 discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>')],
+                                discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                                discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')],
                        max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_health')
-        character_name = await vU.getCharacterName(interaction)
+        character_name: str = await vU.getCharacterName(interaction)
+        damage_amount: int = int(select.values[0])
 
-        # Actual Logic of the Selection
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
-            hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])  # 5
-            hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])  # 2
-            hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])  # 3
+            hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
 
-            if hc_base == hc_sup:
-                cursor.execute('UPDATE commandvars SET difficulty=?', (select.values))  # ! Parentheses are NOT redundant
-                pass
+            while damage_amount > 0:
+                hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
+                hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
 
+                if hc_base == hc_agg:
+                    # Set up torpor logic later
+                    # ! ENTER TORPOR
+                    log.crit('Someone Torpor\'d')
+                    quit()
+                elif hc_sup == hc_base:
+                    # Deals AGG Damage
+                    cursor.execute('UPDATE health SET healthAGG=?', (str(int(hc_agg + 1))))  # ! Parentheses are NOT redundant
+                    damage_amount -= 1
+                else:
+                    # Deals SUP Damage
+                    cursor.execute('UPDATE health SET healthSUP=?', (str(int(hc_sup + 1))))  # ! Parentheses are NOT redundant
+                    damage_amount -= 1
 
-            cursor.execute('UPDATE commandvars SET difficulty=?', (select.values))  # ! Parentheses are NOT redundant
-            db.commit()
-        # Actual Logic of the Selection
+                db.commit()
 
+        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
