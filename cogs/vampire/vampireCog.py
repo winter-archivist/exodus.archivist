@@ -36,7 +36,7 @@ class VampireRoll(commands.Cog):
             await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
             return
 
-        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', False)
+        await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
 
     @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
     @app_commands.describe(charactername='Character Name')
