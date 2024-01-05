@@ -16,21 +16,14 @@ class VampireRoll(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    # ! WIP FOR LATER
-    # @app_commands.command(name='vampire-make', description='Makes a character for `vampireroll`')
-    # @app_commands.describe(charactername='Character Name')
-    # async def VampireMake(self, interaction: discord.Interaction, charactername: str):
-    #     await yu.cacheClear(f'cogs/vampire/characters/{str(interaction.user.id)}/vampireMake.yaml')
-    #     await interaction.response.send_message(embed=vM.make_embed, view=vM.MakeStartView(self.CLIENT))"""
-
     @app_commands.command(name='vampire-roll', description='VTM v5 Dice Roller!')
     @app_commands.describe(charactername='Character Name')
     async def VampireRoll(self, interaction: discord.Interaction, charactername: str):
 
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
-            cursor = db.cursor() # ? Resets commandvars & reroll_info
-            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?',(0, 0, 0, 'Base[0]'), )
-            cursor.execute('UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',(0, 0, 0, 0, 0, 0, 0), )
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute('UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?', (0, 0, 0, 0, 0, 0, 0), )
             db.commit()
 
         await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty', False)
@@ -41,9 +34,6 @@ class VampireRoll(commands.Cog):
         if character_name == 'Nyctea':
             nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.embed_colors["black"])
             await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
-            return
-
-        elif await vU.writeCharacterName(interaction, character_name) is False:
             return
 
         await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
@@ -191,7 +181,7 @@ class VampireRoll(commands.Cog):
                 log.error(f'vampMaker | SQLITE3 ERROR | {e}')
 
     @commands.command(hidden=True)
-    async def dbUpdate(self, ctx, targetcharacter):
+    async def dbUpdate(self, ctx, target_char):
         if ctx.author.id == mC.RUNNER_ID:
             try:
                 id_list = (250241031646347264, 270700184374083585, 437056607063375873, 455365688358600705, 506774892444647434, 635515446015164417)
@@ -208,7 +198,7 @@ class VampireRoll(commands.Cog):
                         new_columns_type = ('INTEGER', 'TEXT')
 
                         for_var = 0
-                        for x in new_columns:
+                        for y in new_columns:
                             cursor.execute(f'ALTER TABLE charInfo ADD COLUMN {new_columns[for_var]} {new_columns_type[for_var]}')
                             for_var += 1
 
