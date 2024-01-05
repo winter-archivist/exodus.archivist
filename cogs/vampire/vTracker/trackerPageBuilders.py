@@ -71,6 +71,9 @@ async def hpwpPageBuilder(return_embed, cursor):
     sup_health = str(mC.health_sup_emoji * hc_sup)
     agg_health = str(mC.health_agg_emoji * hc_agg)
 
+    if hc_sup == hc_base and hc_agg > 1:
+        sup_health = str(mC.health_sup_emoji * int(hc_sup - hc_agg))
+
     actual_willpower = wpc_base - wpc_sup - wpc_agg
     full_willpower = str(mC.willpower_full_emoji * actual_willpower)
     sup_willpower = str(mC.willpower_sup_emoji * wpc_sup)
@@ -263,7 +266,7 @@ async def regainwillpowerPageBuilder(return_embed, cursor):
     agg_willpower = str(mC.willpower_agg_emoji * wpc_agg)
 
     if wpc_sup == wpc_base and wpc_agg > 1:
-        sup_health = str(mC.willpower_sup_emoji * int(wpc_sup - wpc_agg))
+        sup_health = str(mC.health_sup_emoji * int(wpc_sup - wpc_agg))
 
     return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
     return_view = tV.KTV_WPREGAIN

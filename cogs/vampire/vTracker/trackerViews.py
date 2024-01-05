@@ -8,6 +8,15 @@ import cogs.vampire.vMisc.vampireUtils as vU
 
 from misc.config import mainConfig as mC
 
+damage_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
+
 
 # ? Until Functional, the button will be gray
 # ? KTV = KINDRED_TRACKER_VIEW
@@ -261,16 +270,7 @@ class KTV_HPDAMAGE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Superficial Damage',
-                       options=[discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
-                                discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')],
-                       max_values=1, min_values=1, row=1)
+    @discord.ui.select(placeholder='Take Superficial Damage', options=damage_options, max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
@@ -291,12 +291,38 @@ class KTV_HPDAMAGE(View):
                 elif hc_sup == hc_base:
                     # Deals AGG Damage
                     cursor.execute('UPDATE health SET healthAGG=?', ((str(int(hc_agg + 1))),))  # ! Parentheses are NOT redundant
-                    damage_amount -= 1
                 else:
                     # Deals SUP Damage
                     cursor.execute('UPDATE health SET healthSUP=?', ((str(int(hc_sup + 1))),))  # ! Parentheses are NOT redundant
-                    damage_amount -= 1
 
+                damage_amount -= 1
+                db.commit()
+
+        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.select(placeholder='Take Aggravated Damage', options=damage_options, max_values=1, min_values=1, row=2)
+    async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        character_name: str = await vU.getCharacterName(interaction)
+        damage_amount: int = int(select.values[0])
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()
+            hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+
+            while damage_amount > 0:
+                hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
+
+                if hc_base == hc_agg:
+                    # Set up torpor logic later
+                    # ! ENTER TORPOR
+                    log.crit('Someone Torpor\'d')
+                    quit()
+
+                # Deals AGG Damage
+                cursor.execute('UPDATE health SET healthAGG=?', ((str(int(hc_agg + 1))),))  # ! Parentheses are NOT redundant
+
+                damage_amount -= 1
                 db.commit()
 
         response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
