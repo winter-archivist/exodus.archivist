@@ -8,17 +8,17 @@ import cogs.vampire.vMisc.vampireUtils as vU
 
 from misc.config import mainConfig as mC
 
-damage_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
-                  discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
+template_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                    discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
 
 
-# ? Until Functional, the button will be gray
+# ? Until Functional, buttons will be gray
 # ? KTV = KINDRED_TRACKER_VIEW
 class KTV_HOME(View):
     def __init__(self, CLIENT):
@@ -74,11 +74,6 @@ class KTV_HPWP(View):
     @discord.ui.button(label='Damage Health', emoji=f'{mC.health_sup_emoji}', style=discord.ButtonStyle.red, row=1)
     async def health_damage_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_health')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-    @discord.ui.button(label='Regain Willpower', emoji=f'{mC.willpower_full_emoji}', style=discord.ButtonStyle.green, row=2)
-    async def willpower_regain_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.regain_willpower')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
     @discord.ui.button(label='Damage Willpower', emoji=f'{mC.willpower_sup_emoji}', style=discord.ButtonStyle.red, row=2)
@@ -270,7 +265,7 @@ class KTV_HPDAMAGE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Superficial Damage', options=damage_options, max_values=1, min_values=1, row=1)
+    @discord.ui.select(placeholder='Take Superficial Damage', options=template_options, max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
@@ -301,7 +296,7 @@ class KTV_HPDAMAGE(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Aggravated Damage', options=damage_options, max_values=1, min_values=1, row=2)
+    @discord.ui.select(placeholder='Take Aggravated Damage', options=template_options, max_values=1, min_values=1, row=2)
     async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
@@ -327,4 +322,77 @@ class KTV_HPDAMAGE(View):
 
         response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+
+class KTV_WPDAMAGE(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def home_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.select(placeholder='Take Superficial Damage', options=template_options, max_values=1, min_values=1, row=1)
+    async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        character_name: str = await vU.getCharacterName(interaction)
+        damage_amount: int = int(select.values[0])
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()
+            wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+
+            while damage_amount > 0:
+                wpc_sup: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
+                wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
+
+                if wpc_sup == wpc_base:
+                    # Deals AGG Damage
+                    cursor.execute('UPDATE willpower SET willpowerAGG=?', ((str(int(wpc_agg + 1))),))  # ! Parentheses are NOT redundant
+                else:
+                    # Deals SUP Damage
+                    cursor.execute('UPDATE willpower SET willpowerSUP=?', ((str(int(wpc_sup + 1))),))  # ! Parentheses are NOT redundant
+
+                damage_amount -= 1
+                db.commit()
+
+        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.select(placeholder='Take Aggravated Damage', options=template_options, max_values=1, min_values=1, row=2)
+    async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        character_name: str = await vU.getCharacterName(interaction)
+        damage_amount: int = int(select.values[0])
+
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()
+            wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+
+            while damage_amount > 0:
+                wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
+
+                if wpc_agg > wpc_base:
+                    return
+
+                # Deals AGG Damage
+                cursor.execute('UPDATE willpower SET willpowerAGG=?', ((str(int(wpc_agg + 1))),))  # ! Parentheses are NOT redundant
+
+                damage_amount -= 1
+                db.commit()
+
+        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+
+class KTV_CLAN(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def home_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
 
