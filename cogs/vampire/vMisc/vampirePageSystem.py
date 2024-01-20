@@ -41,7 +41,8 @@ async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? 
                        'tracker.hp/wp', 'tracker.hunger', 'tracker.attributes', 'tracker.discipline', 'tracker.extras',
                        'tracker.skills', 'tracker.physical_skills', 'tracker.social_skills', 'tracker.mental_skills',
                        'tracker.regain_health', 'tracker.damage_health', 'tracker.damage_willpower',
-                       'tracker.clan')
+                       'tracker.clan',
+                       'tracker.hunt')
     allowed_targets = roller_targets + tracker_targets
 
     if target_page_name.lower() not in allowed_targets:

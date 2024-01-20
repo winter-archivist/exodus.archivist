@@ -19,8 +19,12 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
                     return_page, return_view = await homePageBuilder(initial_page)
                 case 'tracker.hp/wp':
                     return_page, return_view = await hpwpPageBuilder(initial_page, cursor)
+
                 case 'tracker.hunger':
                     return_page, return_view = await hungerPageBuilder(initial_page, cursor)
+                case 'tracker.hunt':
+                    return_page, return_view = await huntPageBuilder(initial_page, cursor)
+
                 case 'tracker.attributes':
                     return_page, return_view = await attributePageBuilder(initial_page, cursor)
                 case 'tracker.discipline':
@@ -46,6 +50,7 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
 
                 case 'tracker.clan':
                     return_page, return_view = await clanPageBuilder(initial_page, cursor)
+
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
                     raise Exception('Provided target_page_name does not exist.')
@@ -89,11 +94,114 @@ async def hpwpPageBuilder(return_embed, cursor):
 
 
 async def hungerPageBuilder(return_embed, cursor):
-    # ! Needs a Hunt Button (Lets use Selected Pool or Pred Pool)
     hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
-    pred_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
-    return_embed.add_field(name='Hunger', value=f'{hunger * mC.hunger_emoji}', inline=False)
-    return_embed.add_field(name='Predator Type', value=f'{pred_type}', inline=False)
+    predator_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
+    supported_pred_types: tuple = ('HIDDEN_PRED_TYPE', 'Grim Reaper', 'Sandman', 'Cryptid', 'Alleycat',
+                                   'Grave Robber', 'Trapdoor')
+
+    if predator_type not in supported_pred_types:
+        log.error('**> Bad predator_type given to hungerPageBuilder()')
+        return
+
+    # pt = predator type
+    match predator_type:
+        case 'HIDDEN_PRED_TYPE':
+            pt_pool: str = ''  # Mechanical Stuff
+            pt_desc: str = ''
+            pt_disciplines: str = ''  # The potential disciplines gained from the predator type
+            pt_spec: str = ''  # Specialty/ies from pt
+            pt_merit: str = ''  # Advantages/Merits given by pt
+            pt_flaws: str = ''  # Flaws given by pt
+
+        case 'Grim Reaper':
+            pt_pool: str = 'Intelligence + Awareness/Medicine in order to find victims.'
+            pt_desc: str = ('Hunting inside hospice care facilities, assisted living homes, and other places where those'
+                            ' who are near death reside. Grim Reapers are constantly on the move in an effort to locate '
+                            'new victims near the end of their lives to feed from. Hunting in this style may also earn a'
+                            ' taste for specific diseases making them easier to identify. ')
+            pt_disciplines: str = 'Auspex or Oblivion (Necromancy/Obtenebration)'
+            pt_spec: str = 'Awareness (Death) or Larceny (Forgery)'
+            pt_merit: str = 'One dot of Allies or Influence associated with the medical community & Gain 1 Humanity'
+            pt_flaws: str = '(•) Prey Exclusion (Healthy Mortals)'
+
+        case 'Sandman':
+            pt_pool: str = 'Dexterity + Stealth is for casing a location, breaking in and feeding without leaving a trace.'
+            pt_desc: str = ('If they never wake during the feed it never happened, right? Sandman prefers to hunt on '
+                            'sleeping mortals than anyone else by using stealth or Disciplines to feed from their '
+                            'victims they are rarely caught in the act, though when they are, problems are sure to occur'
+                            '. Maybe they were anti-social in life or perhaps they find the route of seduction or '
+                            'violence too much for them and find comfort in the silence of this feeding style. ')
+            pt_disciplines: str = 'Auspex or Obfuscate'
+            pt_spec: str = 'Medicine (Anesthetics) or Stealth (Break-in)'
+            pt_merit: str = 'Gain one dot of Resources'
+            pt_flaws: str = 'None!'
+
+        case 'Cryptid':
+            pt_pool: str = ''
+            pt_desc: str = ('Nobody believes in vampires, right? Well, not "nobody", exactly. Know what nobody-nobody '
+                            'believes in? Aliens, chupacabras, and sasquatches. You have concocted some incredibly '
+                            'fanciful identity for yourself in which you present yourself as some obscure piece of '
+                            'occult apocrypha. True Believers are so ready to believe in ghosts or mermaids or whatever,'
+                            ' that it will never occur to them you\')re a vampire. Some even seek to serve their '
+                            'paranormal masters. "After the probe, the alien took blood samples." "The chupacabra jumped'
+                            ' out of nowhere! It got my dog!" "The succubus appears at midnight, and it feels sooo good!"'
+                            ' "The Delaware Water Gap Mermaid? That\'s just a tourist legend, still, be careful if you '
+                            'swim or boat at night."')
+            pt_disciplines: str = 'Obfuscate, Dominate, or Clan Specific'
+            pt_spec: str = 'Occult (Cryptids) or Performance (Impersonating Urban Legends)'
+            pt_merit: str = 'Three Dots to spend between Herd and/or Retainer'
+            pt_flaws: str = 'Stalkers & Suspect'
+
+        case 'Alleycat':
+            pt_pool: str = 'Strength + Brawl is to take blood by force or threat. Wits + Streetwise can be used to find criminals as if a vigilante figure.'
+            pt_desc: str = ('Those who find violence to be the quickest way to get what they want might gravitate '
+                            'towards this hunting style. Alleycats are a vampire who feeds by brute force and outright '
+                            'attack and feeds from whomever they can when they can. Intimidation is a route easily taken'
+                            ' to make their victims cower or even Dominating the victims to not report the attack or '
+                            'mask it as something else entirely.')
+            pt_disciplines: str = 'Celerity or Potence'
+            pt_spec: str = 'Intimidation (Stickups) or Brawl (Grappling)'
+            pt_merit: str = 'Gain three dots of Criminal Contacts'
+            pt_flaws: str = 'Lose 1 Humanity'
+
+        case 'Grave Robber':
+            pt_pool: str = ('Resolve + Medicine for sifting through the dead for a body with blood. Manipulation + '
+                            'Insight for moving among miserable mortals.')
+            pt_desc: str = ('Similar to Baggers these kindred understand there\'s no good in wasting good blood, even if'
+                            ' others cannot consume it. Often they find themselves digging up corpses or working or '
+                            'mortuaries to obtain their bodies, yet regardless of what the name suggests, they prefer '
+                            'feeding from mourners at a gravesite or a hospital. This Predator Type often requires a '
+                            'haven or other connections to a church, hospital, or morgue as a way to obtain the bodies. ')
+            pt_disciplines: str = 'Fortitude or Oblivion (Necromancy)'
+            pt_spec: str = 'Occult (Grave Rituals) or Medicine (Cadavers)'
+            pt_merit: str = 'Feeding Merit (•••) Iron Gullet & Haven Advantage (•)'
+            pt_flaws: str = 'Herd Flaw: (••) Obvious Predator'
+
+        case 'Trapdoor':
+            pt_pool: str = ('Charisma + Stealth for the victims that enter expecting a fun-filled night. Dexterity + '
+                            'Stealth to feed upon trespassers. Wits + Awareness + Haven dots is used to navigate the '
+                            'maze of the den itself. ')
+            pt_desc: str = ('Much like the spider, this vampire builds a nest and lures their prey inside. Be it an '
+                            'amusement park, an abandoned house, or an underground club, the victim comes to them. '
+                            'There the trapdoor might only play with their mind and terrorize them, imprison them to '
+                            'drain them slowly, or take a deep drink and then send them home. ')
+            pt_disciplines: str = 'Protean or Obfuscate'
+            pt_spec: str = 'Persuasion (Marketing) or Stealth (Ambushes or Traps)'
+            pt_merit: str = 'Gain one dot of Haven & Gain one dot of either Retainers or Herd, or a second Haven dot.'
+            pt_flaws: str = 'Gain one Haven Flaw, either (•) Creepy or (•) Haunted.'
+
+        case _:
+            log.error('**> Bad predator_type #2')
+            return
+
+    return_embed.add_field(name='Hunger', value=f'{hunger * mC.hunger_emoji}', inline=True)
+    return_embed.add_field(name='Predator Type', value=f'{predator_type}', inline=True)
+    return_embed.add_field(name='PT Pool', value=f'{pt_pool}', inline=False)
+    return_embed.add_field(name='PT Description', value=f'{pt_desc}', inline=False)
+    return_embed.add_field(name='PT Discipline(s)', value=f'{pt_disciplines}', inline=True)
+    return_embed.add_field(name='PT Specialty(ies)', value=f'{pt_spec}', inline=True)
+    return_embed.add_field(name='PT Merit(s)', value=f'{pt_merit}', inline=True)
+    return_embed.add_field(name='PT Flaw(s)', value=f'{pt_flaws}', inline=True)
     return_view = tV.KTV_HUNGER
     return return_embed, return_view
 
@@ -399,7 +507,8 @@ async def clanPageBuilder(return_embed, cursor):
     return return_embed, return_view
 
 
-async def huntingPageBuilder(return_embed, cursor):
+async def huntPageBuilder(return_embed, cursor):
 
-    return_view = tV.KTV_HUNTING
+    return_view = tV.KTV_HUNT
     return return_embed, return_view
+
