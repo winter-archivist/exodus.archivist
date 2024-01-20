@@ -17,7 +17,7 @@ This bot is currently being developed with Pycharm Professional thanks to the fr
 >>> * VTM v5 Toolbox
 
 > Active Development Features:
->> * VTM v5 Toolbox [Currently Implementing "Page" System. pageEVNav]
+>> * VTM v5 Toolbox [Currently: Adding Extra Features to /kindred-tracker]
 
 > Heavily Work-In-Progress Features: 
 >> * Notes System [Currently on Pause]
