@@ -279,7 +279,7 @@ async def clanPageBuilder(return_embed, cursor):
     if character_clan not in supported_clans:
         log.error(f'**> character_clan provided is not supported.')
         return
-    clan_bane_two = False
+    clan_bane_two = 'False'
     match character_clan:
         case 'ExampleCase':
             clan_description: str = ''  # Internal Desc
@@ -313,7 +313,7 @@ async def clanPageBuilder(return_embed, cursor):
 
     return_embed.add_field(name='', value='', inline=False)
     return_embed.add_field(name='Clan Bane', value=f'{clan_bane}', inline=True)
-    if clan_bane_two is not False:
+    if clan_bane_two == 'False':
         return_embed.add_field(name='Clan Bane #2', value=f'{clan_bane_two}', inline=True)
 
     return_view = tV.KTV_CLAN
