@@ -20,6 +20,7 @@ template_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:7
 
 # ? Until Functional, buttons will be gray
 # ? KTV = KINDRED_TRACKER_VIEW
+# ! I do plan on optimizing the repeats, but just not until complete
 class KTV_HOME(View):
     def __init__(self, CLIENT):
         super().__init__()
@@ -197,6 +198,11 @@ class KTV_EXTRA(View):
     @discord.ui.button(label='Path Rules', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def path_rules_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Clan Information', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=2)
+    async def clan_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.clan')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
 
@@ -386,6 +392,17 @@ class KTV_WPDAMAGE(View):
 
 
 class KTV_CLAN(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def home_button_callback(self, interaction, button):
+        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
+        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+
+class KTV_HUNTING(View):
     def __init__(self, CLIENT):
         super().__init__()
         self.CLIENT = CLIENT

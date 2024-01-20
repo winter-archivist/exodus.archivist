@@ -275,31 +275,107 @@ async def damagewillpowerPageBuilder(return_embed, cursor):
 
 async def clanPageBuilder(return_embed, cursor):
     character_clan: str = str(cursor.execute('SELECT clan from charInfo').fetchone()[0])
-    supported_clans = ('ExampleCase', 'Nagaraja', 'Ravnos')
+    supported_clans = ('ExampleCase', 'True Brujah', 'Tremere', 'REMOVED_UNTIL_CLAN_REVEAL', 'Tzimisce', 'Nosferatu',
+                       'Thin-Blood', 'Ravnos', 'Nagaraja')
     if character_clan not in supported_clans:
         log.error(f'**> character_clan provided is not supported.')
         return
-    # test-push
     clan_bane_two = 'False'
     match character_clan:
         case 'ExampleCase':
-            clan_description: str = ''  # Internal Desc
-            clan_reputation: str = ''  # Outside Desc
-            clan_status: str = ''  # High/Low
-            clan_bane: str = ''  # Mechanical Stuff
-            clan_bane_two: str = ''  # Mechanical Stuff #2
-        case 'Nagaraja':
+            clan_description: str = ''  # "Internal" Desc
+            clan_reputation: str = ''  # "Outside" Desc
+            clan_status: str = ''  # High/Low Clan
+            clan_compulsion: str = ''  # Mechanical Stuff
+            clan_bane: str = ''  # Mechanical Stuff #2
+            clan_bane_two: str = ''  # Mechanical Stuff #3
+            clan_disciplines: str = ''  # What Players can expect those in the clan to have
+        case 'True Brujah':
             clan_description: str = ''
             clan_reputation: str = ''
             clan_status: str = ''
+            clan_compulsion: str = ''
             clan_bane: str = ''
             clan_bane_two: str = ''
+            clan_disciplines: str = ''
+        case 'Tremere':
+            clan_description: str = ''
+            clan_reputation: str = ''
+            clan_status: str = ''
+            clan_compulsion: str = ''
+            clan_bane: str = ''
+            clan_bane_two: str = ''
+            clan_disciplines: str = ''
+        case 'REMOVED_UNTIL_CLAN_REVEAL':
+            clan_description: str = 'REMOVED_UNTIL_CLAN_REVEAL'
+            clan_reputation: str = 'REMOVED_UNTIL_CLAN_REVEAL'
+            clan_status: str = 'REMOVED_UNTIL_CLAN_REVEAL'
+            clan_compulsion: str = ''
+            clan_bane: str = 'REMOVED_UNTIL_CLAN_REVEAL'
+            clan_bane_two: str = 'REMOVED_UNTIL_CLAN_REVEAL'
+            clan_disciplines: str = ''
+        case 'Tzimisce':
+            clan_description: str = ''
+            clan_reputation: str = ''
+            clan_status: str = ''
+            clan_compulsion: str = ''
+            clan_bane: str = ''
+            clan_bane_two: str = ''
+            clan_disciplines: str = ''
+        case 'Nosferatu':
+            clan_description: str = ''
+            clan_reputation: str = ''
+            clan_status: str = ''
+            clan_compulsion: str = ''
+            clan_bane: str = ''
+            clan_bane_two: str = ''
+            clan_disciplines: str = ''
+        case 'Thin-Blood':
+            clan_description: str = ''
+            clan_reputation: str = ''
+            clan_status: str = ''
+            clan_compulsion: str = ''
+            clan_bane: str = ''
+            clan_bane_two: str = ''
+            clan_disciplines: str = ''
         case 'Ravnos':
             clan_description: str = ''
             clan_reputation: str = ''
-            clan_status: str = ''
-            clan_bane: str = ''
-            clan_bane_two: str = ''
+            clan_status: str = 'Low Clan'
+            clan_compulsion: str = ('Tempting Fate: The vampire is driven by their Blood to court danger. '
+                                    'Haunted as they are by righteous fire burning its way up their lineage, why not? '
+                                    'The next time the vampire is faced with a problem to solve, any attempt at a '
+                                    'solution short of the most daring or dangerous incurs a two-dice penalty. '
+                                    '(Suitably flashy and risky attempts can even merit bonus dice for this occasion.) '
+                                    'The Daredevil is free to convince any fellows to do things their way, but is just '
+                                    'as likely to go at it alone. The Compulsion persists until the problem is solved or'
+                                    ' further attempts become impossible.')
+            clan_bane: str = ('Doomed: The Ravnos are doomed. The sun’s fire that incinerated their founder rages through '
+                              'the Blood of the clan, erupting from their very flesh if they ever settle down for long. '
+                              'If they slumber in the same place more than once in four nights, roll a number of dice '
+                              'equal to their Bane Severity. They receive aggravated damage equal to the number of 10’s '
+                              '(critical results) rolled as they are scorched from within. This happens every time they '
+                              'spend the day in a location they’ve already slumbered less than four days before. Two '
+                              'resting places need to be at least a mile apart to avoid triggering the Bane. '
+                              'Furthermore, a mobile haven, such as a movers’ truck, is safe so long as the place where '
+                              'the truck is parked is at least a mile from the last location')
+            clan_bane_two: str = ('Unbirth Name: If a Ravnos’ unbirth name is used against them, the name-wielding '
+                                  'opponent receives a bonus equal to the Ravnos’ Bane Severity to resist their '
+                                  'Discipline powers. Additionally, the Ravnos affected receives the same penalty to '
+                                  'resist supernatural powers used by the opponent.[')
+            clan_disciplines: str = 'Chemeristry + Charlatan (Auspex, Presence), Vulture (Obfuscate, Animalism), Trickster (Presence, Obfuscate), Nomad (Animalism, Fortitude))'
+        case 'Nagaraja':
+            clan_description: str = ('The Nagaraja, The Clan of Necromancers, are unlike other Kindred in that they must '
+                                     'consume flesh, making them among the most reviled and "unnatural" of the bloodlines. '
+                                     'They have pointed, irregular teeth, rather than the usual retractable fangs. '
+                                     'This means that they seldom smile, and they tend to speak quietly around mortals – unless they plan to eat them. ')
+            clan_reputation: str = ('Outliers & Death-Worshipers, most refuse to work with the Camarilla, '
+                                    'some work with Anarchs closely, but more work outside of the two primary sects, '
+                                    'their realm is that of the Autarkis, the Independent.')
+            clan_status: str = 'Low Clan'
+            clan_compulsion: str = 'Technically WIP'
+            clan_bane: str = 'Technically WIP'
+            clan_disciplines: str = 'Auspex, Dominate, Nihilistics'
         case _:
             log.error(f'**> Bad character_clan retrieved in clanPageBuilder(), {character_clan}')
             return
@@ -313,9 +389,17 @@ async def clanPageBuilder(return_embed, cursor):
     return_embed.add_field(name='Clan "Status"', value=f'{clan_status}', inline=True)
 
     return_embed.add_field(name='', value='', inline=False)
+    return_embed.add_field(name='Clan Compulsion', value=f'{clan_compulsion}', inline=True)
     return_embed.add_field(name='Clan Bane', value=f'{clan_bane}', inline=True)
-    if clan_bane_two == 'False':
+    if clan_bane_two != 'False':
         return_embed.add_field(name='Clan Bane #2', value=f'{clan_bane_two}', inline=True)
+    return_embed.add_field(name='Clan Disciplines', value=f'{clan_disciplines}', inline=True)
 
     return_view = tV.KTV_CLAN
+    return return_embed, return_view
+
+
+async def huntingPageBuilder(return_embed, cursor):
+
+    return_view = tV.KTV_HUNTING
     return return_embed, return_view
