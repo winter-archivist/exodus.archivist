@@ -10,6 +10,23 @@ import cogs.vampire.vTracker.trackerPageBuilders as tPB
 import cogs.vampire.vRoller.rollerPageBuilders as rPB
 
 
+# Felt this may be useful for looking at the horrid Vampire Page System. These two are the two most common circumstances
+# that the VPS is used
+#
+# Command Used
+# - vampirePageCommand()
+# -- writeCharacterName()
+# Buttons using VPS start here
+# -- pageEVNav()  # Assumes the user has used a VPS command before this point (basically impossible to not do)
+# --- basicPageBuilder()  # The Embed/Page Doesn't Exist Until This Function; Color is Determined Here
+# ---- getCharacterName()
+# ---- ____Universal Page Alterations Here____
+# --- chosenPageDecider()
+# ---- ____Page "Tab" Alterations Here____
+# ---- chosenPageBuilder()
+# ----- ___Specific Page Alterations Here____
+
+
 async def vampirePageCommand(self, interaction, character_name: str, initial_target_page_name: str, ephemeral: bool):
     if await vU.writeCharacterName(interaction, character_name) is True:
         initial_embed, initial_view = await pageEVNav(interaction, initial_target_page_name)
