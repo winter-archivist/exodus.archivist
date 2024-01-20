@@ -23,6 +23,11 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
                     return_page, return_view = await hungerPageBuilder(initial_page, cursor)
                 case 'tracker.attributes':
                     return_page, return_view = await attributePageBuilder(initial_page, cursor)
+                case 'tracker.discipline':
+                    return_page, return_view = await disciplinePageBuilder(initial_page, cursor)
+                case 'tracker.extras':
+                    return_page, return_view = await extrasPageBuilder(initial_page, cursor)
+
                 case 'tracker.skills':
                     return_page, return_view = await skillsPageBuilder(initial_page, cursor)
                 case 'tracker.physical_skills':
@@ -31,16 +36,16 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
                     return_page, return_view = await socialSkillsPageBuilder(initial_page, cursor)
                 case 'tracker.mental_skills':
                     return_page, return_view = await mentalSkillsPageBuilder(initial_page, cursor)
-                case 'tracker.discipline':
-                    return_page, return_view = await disciplinePageBuilder(initial_page, cursor)
-                case 'tracker.extras':
-                    return_page, return_view = await extrasPageBuilder(initial_page, cursor)
+
                 case 'tracker.regain_health':
                     return_page, return_view = await regainhealthPageBuilder(initial_page, cursor)
                 case 'tracker.damage_health':
                     return_page, return_view = await damagehealthPageBuilder(initial_page, cursor)
                 case 'tracker.damage_willpower':
                     return_page, return_view = await damagewillpowerPageBuilder(initial_page, cursor)
+
+                case 'tracker.clan':
+                    return_page, return_view = await clanPageBuilder(initial_page, cursor)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
                     raise Exception('Provided target_page_name does not exist.')
@@ -268,3 +273,48 @@ async def damagewillpowerPageBuilder(return_embed, cursor):
     return return_embed, return_view
 
 
+async def clanPageBuilder(return_embed, cursor):
+    character_clan: str = str(cursor.execute('SELECT clan from charInfo').fetchone()[0])
+    supported_clans = ('ExampleCase', 'Nagaraja', 'Ravnos')
+    if character_clan not in supported_clans:
+        log.error(f'**> character_clan provided is not supported.')
+        return
+    clan_bane_two = False
+    match character_clan:
+        case 'ExampleCase':
+            clan_description: str = ''  # Internal Desc
+            clan_reputation: str = ''  # Outside Desc
+            clan_status: str = ''  # High/Low
+            clan_bane: str = ''  # Mechanical Stuff
+            clan_bane_two: str = ''  # Mechanical Stuff #2
+        case 'Nagaraja':
+            clan_description: str = ''
+            clan_reputation: str = ''
+            clan_status: str = ''
+            clan_bane: str = ''
+            clan_bane_two: str = ''
+        case 'Ravnos':
+            clan_description: str = ''
+            clan_reputation: str = ''
+            clan_status: str = ''
+            clan_bane: str = ''
+            clan_bane_two: str = ''
+        case _:
+            log.error(f'**> Bad character_clan retrieved in clanPageBuilder(), {character_clan}')
+            return
+    return_embed.add_field(name='Clan', value=f'{character_clan}', inline=True)
+
+    return_embed.add_field(name='', value='', inline=False)
+    return_embed.add_field(name='Clan Description', value=f'{clan_description}', inline=True)
+
+    return_embed.add_field(name='', value='', inline=False)
+    return_embed.add_field(name='Clan Reputation', value=f'{clan_reputation}', inline=True)
+    return_embed.add_field(name='Clan "Status"', value=f'{clan_status}', inline=True)
+
+    return_embed.add_field(name='', value='', inline=False)
+    return_embed.add_field(name='Clan Bane', value=f'{clan_bane}', inline=True)
+    if clan_bane_two is not False:
+        return_embed.add_field(name='Clan Bane #2', value=f'{clan_bane_two}', inline=True)
+
+    return_view = tV.KTV_CLAN
+    return return_embed, return_view
