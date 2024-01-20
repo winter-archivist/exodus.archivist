@@ -279,6 +279,7 @@ async def clanPageBuilder(return_embed, cursor):
     if character_clan not in supported_clans:
         log.error(f'**> character_clan provided is not supported.')
         return
+    # test-push
     clan_bane_two = 'False'
     match character_clan:
         case 'ExampleCase':
