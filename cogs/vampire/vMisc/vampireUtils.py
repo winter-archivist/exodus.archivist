@@ -42,9 +42,10 @@ async def getCharacterName(interaction) -> str:
     return character_name
 
 
-async def rouseCheck(interaction, targetcharacter) -> str:
+async def rouseCheck(interaction) -> str:
+    character_name: str = await getCharacterName(interaction)
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{targetcharacter}//{targetcharacter}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
             rouse_num_result: int = randint(1, 10)
