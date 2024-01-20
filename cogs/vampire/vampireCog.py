@@ -38,39 +38,6 @@ class VampireRoll(commands.Cog):
 
         await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
 
-    @app_commands.command(name='vampire-rouse', description='VTM v5 Rouse!')
-    @app_commands.describe(charactername='Character Name')
-    async def VampireRouse(self, interaction: discord.Interaction, charactername: str):
-        rouse_result = await vU.rouseCheck(interaction, charactername)
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
-            cursor = db.cursor()
-            user_name = str(cursor.execute('SELECT userNAME from ownerInfo').fetchone()[0])
-            user_avatar = interaction.user.avatar
-            user_id = int(cursor.execute('SELECT userID from ownerInfo').fetchone()[0])
-            char_img = cursor.execute('SELECT imgURL from charInfo').fetchone()[0]
-            hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
-
-        # ? This will be cleaned /w a dict eventually
-        if rouse_result == 'Frenzy':
-            rouse_embed = Embed(title='Rouse Check Result', description=f'Broken Chains.', color=mC.embed_colors["red"])
-
-        elif rouse_result == 'Pass':
-            rouse_embed = Embed(title='Rouse Check Result', description=f'The Beast\'s Lock Rattles, Hunger Avoided.', color=mC.embed_colors["red"])
-
-        elif rouse_result == 'Fail':
-            rouse_embed = Embed(title='Rouse Check Result', description=f'Blood Boils Within, Hunger Gained.', color=mC.embed_colors["red"])
-
-        else:
-            rouse_embed = Embed(title='Rouse Check Result', description=f'Fate Unknown?', color=mC.embed_colors["red"])
-
-        rouse_embed.set_author(name=f'{user_name}', icon_url=f'{user_avatar}')
-        rouse_embed.set_footer(text=f'{user_id}', icon_url=f'{user_avatar}')
-        rouse_embed.set_thumbnail(url=char_img)
-        rouse_embed.add_field(name='Character Name', value=f'{charactername}', inline=False)
-        rouse_embed.add_field(name='Hunger', value=f'{mC.hunger_emoji * hunger}', inline=False)
-
-        await interaction.response.send_message(embed=rouse_embed)
-
     @app_commands.command(name='vampire-img', description='Sets the character img for `vampire`')
     @app_commands.describe(charactername='Character Name')
     @app_commands.describe(characterimgurl='Character Image URL')
