@@ -20,11 +20,11 @@ import cogs.vampire.vRoller.rollerPageBuilders as rPB
 # -- pageEVNav()  # Assumes the user has used a VPS command before this point (basically impossible to not do)
 # --- basicPageBuilder()  # The Embed/Page Doesn't Exist Until This Function; Color is Determined Here
 # ---- getCharacterName()
-# ---- ____Universal Page Alterations Here____
+# ---- ____UNIVERSAL Page Alterations Here____
 # --- chosenPageDecider()
-# ---- ____Page "Tab" Alterations Here____
+# ---- ____Chosen Page GROUP Alterations Here____
 # ---- chosenPageBuilder()
-# ----- ___Specific Page Alterations Here____
+# ----- ___Chosen Page SPECIFIC Alterations Here____
 
 
 async def vampirePageCommand(self, interaction, character_name: str, initial_target_page_name: str, ephemeral: bool):
