@@ -207,16 +207,39 @@ async def hungerPageBuilder(return_embed, cursor):
 
 
 async def attributePageBuilder(return_embed, cursor):
-    # ! Needs to be affected by Impairment & Allow for Leveling
+    # ! Allow for Leveling
     attributes = ('Strength', 'Dexterity', 'Stamina',
                   'Charisma', 'Manipulation', 'Composure',
                   'Intelligence', 'Wits', 'Resolve')
+
+    physical_impairment_flag: bool = False
+    health_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+    health_sup_damage: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
+    if health_base <= health_sup_damage:
+        return_embed.add_field(name='Physically Impaired.', value='-1 to Physical Dice Pools', inline=False)
+        physical_impairment_flag = True
+
+    mental_impairment_flag: bool = False
+    willpower_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+    willpower_sup_damage: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
+    if willpower_base <= willpower_sup_damage:
+        return_embed.add_field(name='Mentally Impaired', value='-1 to Social & Mental Dice Pools', inline=False)
+        mental_impairment_flag = True
 
     for_var = 0
     for x in attributes:
         if for_var / 3 in (1, 2):
             return_embed.add_field(name='', value='', inline=False)
         count = int(cursor.execute(f'SELECT {attributes[for_var].lower()} from charAttributes').fetchone()[0])
+
+        # don't like this, but will cope
+        if physical_impairment_flag is True or mental_impairment_flag is True:
+            if attributes[for_var].lower() in ('strength', 'dexterity', 'stamina'):
+                count -= 1  # Removes one from PHYSICAL attributes since the character is PHYSICALLY impaired.
+
+            elif attributes[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
+                count -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
+
         emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
 
         return_embed.add_field(name=f'{attributes[for_var]}', value=f'{emojis}', inline=True)
