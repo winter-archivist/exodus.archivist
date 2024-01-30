@@ -10,8 +10,8 @@ import cogs.vampire.vTracker.trackerPageBuilders as tPB
 import cogs.vampire.vRoller.rollerPageBuilders as rPB
 
 
-# Felt this may be useful for looking at the horrid Vampire Page System. These two are the two most common circumstances
-# that the VPS is used
+# Felt this may be useful for looking at the horrid Vampire Page System.
+# These two are the two most common circumstances that the VPS is used
 #
 # Command Used
 # - vampirePageCommand()
