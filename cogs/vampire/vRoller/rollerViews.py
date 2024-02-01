@@ -10,6 +10,8 @@ import cogs.vampire.vMisc.vampireUtils as vU
 import cogs.vampire.vRoller.rollerPageBuilders as rPB
 import cogs.vampire.vRoller.rollerOptions as rO
 
+from misc.config import mainConfig as mC
+
 
 async def basicSelection(select, targetDB, targetTable):
     with sqlite3.connect(targetDB) as db:
@@ -631,17 +633,47 @@ class KRV_EXTRAS(View):
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
+    @discord.ui.button(label='Blood Surge [Rolls]', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def blood_surge_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
 
         # Actual Button Logic
+        character_name = await vU.getCharacterName(interaction)
+        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+
+        with sqlite3.connect(targetDB) as db:
+            cursor = db.cursor()
+
+            roll_pool = cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0]
+            roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
+
+            hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
+            hunger_emoji = str(mC.hunger_emoji * hunger)
+
+            rouse_result = await vU.rouseCheck(interaction)
+            if rouse_result == 'Fail':
+                response_page.add_field(name='Blood Surge Rouse Failed', value=f'{hunger_emoji}')
+                response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+                await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+                return
+            elif rouse_result == 'Frenzy':
+                response_page.add_field(name='Blood Surge Rouse __Frenzy__', value=f'{hunger_emoji}')
+                response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+                await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+                return
+
+            roll_pool += 2
+            roll_comp = f'{roll_comp} + Blood Surge[2]'
+
+            cursor.execute('UPDATE commandvars SET poolComp=?', (roll_comp,))
+            cursor.execute('UPDATE commandvars SET rollPool=?', (roll_pool,))
+            db.commit()
+
         response_page = await normalRoller(interaction, response_page)
         # Actual Button Logic End
 
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
-
 
 
 class KRV_ROLLED(View):
