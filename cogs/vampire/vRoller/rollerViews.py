@@ -136,7 +136,7 @@ async def normalRoller(interaction, return_page):
 
     # Assigns Information
     return_page.add_field(name='Roll Result:', value=f'{total_successes} | {flag}')
-    log.crit(f'{total_successes} | {crits} | {difficulty}')
+    log.crit(f'{total_successes=} | {crits=} | {difficulty=}')
     return return_page
 
 
@@ -239,7 +239,7 @@ async def reRoller(self, interaction, button, return_page):
 
     # Assigns Information
     return_page.add_field(name='Roll Result:', value=f'{total_successes} | {flag}')
-    log.crit(f'{total_successes} | {crits} | {difficulty}')
+    log.crit(f'{total_successes=} | {crits=} | {difficulty=}')
     return return_page
 
 
@@ -635,7 +635,6 @@ class KRV_EXTRAS(View):
 
     @discord.ui.button(label='Blood Surge [Rolls]', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def blood_surge_button_callback(self, interaction, button):
-        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
 
         # Actual Button Logic
         character_name = await vU.getCharacterName(interaction)
@@ -652,15 +651,21 @@ class KRV_EXTRAS(View):
 
             rouse_result = await vU.rouseCheck(interaction)
             if rouse_result == 'Fail':
+                response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
                 response_page.add_field(name='Blood Surge Rouse Failed', value=f'{hunger_emoji}')
                 response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
                 await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
                 return
+
             elif rouse_result == 'Frenzy':
+                # Should be moved away from roller.extras when Frenzy stuff is completed
+                response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
                 response_page.add_field(name='Blood Surge Rouse __Frenzy__', value=f'{hunger_emoji}')
                 response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
                 await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
                 return
+
+            response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
 
             roll_pool += 2
             roll_comp = f'{roll_comp} + Blood Surge[2]'
