@@ -641,6 +641,9 @@ class KRV_EXTRAS(View):
         targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         with sqlite3.connect(targetDB) as db:
+            response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
+
+            # Actual Button Logic Start
             cursor = db.cursor()
 
             roll_pool = cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0]
@@ -650,22 +653,21 @@ class KRV_EXTRAS(View):
             hunger_emoji = str(mC.hunger_emoji * hunger)
 
             rouse_result = await vU.rouseCheck(interaction)
-            if rouse_result == 'Fail':
-                response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
-                response_page.add_field(name='Blood Surge Rouse Failed', value=f'{hunger_emoji}')
-                response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
-                await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
-                return
 
-            elif rouse_result == 'Frenzy':
+            if rouse_result == 'Frenzy':
                 # Should be moved away from roller.extras when Frenzy stuff is completed
                 response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
-                response_page.add_field(name='Blood Surge Rouse __Frenzy__', value=f'{hunger_emoji}')
                 response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+
+                response_page.add_field(name='Blood Surge Rouse __Frenzy__', value=f'{hunger_emoji}')
                 await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
                 return
 
-            response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
+            if rouse_result == 'Fail':
+                response_page.add_field(name='Blood Surge Rouse Failed', value=f'{hunger_emoji}')
+
+            elif rouse_result == 'Pass':
+                response_page.add_field(name='Blood Surge Rouse Passed', value=f'{hunger_emoji}')
 
             roll_pool += 2
             roll_comp = f'{roll_comp} + Blood Surge[2]'
