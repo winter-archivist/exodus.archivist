@@ -3,14 +3,14 @@ ExodusAutomaton Rewrite
 ---
 ## General
 
-This bot is currently being developed with Pycharm Professional thanks to the free licenses for Open-Source-Projects
+As of now ExodusAutomaton Rewrite is being solo developed by me with Pycharm Professional. \
 > Primary Features: 
 >> * Project: 
 >>> * Easily Setup
 >>> * Open Source [GNUGPL 3.0]
 >>> * Logging /w "Syntax" [See Below]
 >>> * Dangerously Cheesy [so much spaghetti]
->>> * In Active Development [JAN 2024]
+>>> * In Active Development [FEB 2024]
 >> * Client: 
 >>> * Slash Commands
 >>> * CogManager
@@ -18,6 +18,8 @@ This bot is currently being developed with Pycharm Professional thanks to the fr
 
 > Active Development Features:
 >> * VTM v5 Toolbox [Currently: Adding Extra Features to /kindred-tracker]
+>> * aeTerminal; aka devtools
+>> * Bot Related Ticket System; aka easier Issue Reporting
 
 > Heavily Work-In-Progress Features: 
 >> * Notes System [Currently on Pause]
