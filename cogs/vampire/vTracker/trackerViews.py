@@ -56,6 +56,21 @@ class KTV_HOME(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.extras')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=3)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
+
 
 class KTV_HPWP(View):
     def __init__(self, CLIENT):
@@ -93,6 +108,21 @@ class KTV_HUNGER(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
+
     @discord.ui.button(label='Rouse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def rouse_button_callback(self, interaction, button):
         character_name = await vU.getCharacterName(interaction)
@@ -127,11 +157,20 @@ class KTV_ATTRIBUTE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
     async def roll_button_callback(self, interaction, button):
-        # ! Send to Roller
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
 
 class KTV_SKILL(View):
@@ -143,6 +182,21 @@ class KTV_SKILL(View):
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
     @discord.ui.button(label='Physical Skills Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
     async def physical_skills_button_callback(self, interaction, button):
@@ -159,11 +213,20 @@ class KTV_SKILL(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.mental_skills')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
     async def roll_button_callback(self, interaction, button):
-        # ! Send to Roller
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
 
 class KTV_DISCIPLINE(View):
@@ -176,11 +239,20 @@ class KTV_DISCIPLINE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
     async def roll_button_callback(self, interaction, button):
-        # ! Send to Roller
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
 
 class KTV_EXTRA(View):
@@ -192,6 +264,21 @@ class KTV_EXTRA(View):
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
     @discord.ui.button(label='Diablerie', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def diablerie_button_callback(self, interaction, button):
@@ -220,9 +307,25 @@ class KTV_HPREGAIN(View):
         self.CLIENT = CLIENT
 
     @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
     @discord.ui.button(label='Mend', emoji=f'{mC.hunger_emoji}', style=discord.ButtonStyle.red, row=1)
     async def mend_button_callback(self, interaction, button):
@@ -278,6 +381,21 @@ class KTV_HPDAMAGE(View):
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
     @discord.ui.select(placeholder='Take Superficial Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
@@ -348,6 +466,21 @@ class KTV_WPDAMAGE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
+
     @discord.ui.select(placeholder='Take Superficial Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
@@ -408,4 +541,19 @@ class KTV_CLAN(View):
     async def home_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        character_name = await vU.getCharacterName(interaction)
+
+        with sqlite3.connect(
+                f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            cursor = db.cursor()  # ? Resets commandvars & reroll_info
+            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+            cursor.execute(
+                'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
+                (0, 0, 0, 0, 0, 0, 0), )
+            db.commit()
+
+        await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
