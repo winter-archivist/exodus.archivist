@@ -6,7 +6,6 @@ from zenlog import log
 import misc.config.mainConfig as mC
 import cogs.vampire.vMisc.vampireUtils as vU
 import cogs.vampire.vTracker.trackerViews as tV
-import cogs.vampire.vMisc.vampirePageSystem as vPS
 
 
 async def trackerPageDecider(interaction, target_page_name, initial_page) -> Embed and View:
@@ -22,8 +21,6 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
 
                 case 'tracker.hunger':
                     return_page, return_view = await hungerPageBuilder(initial_page, cursor)
-                case 'tracker.hunt':
-                    return_page, return_view = await huntPageBuilder(initial_page, cursor)
 
                 case 'tracker.attributes':
                     return_page, return_view = await attributePageBuilder(initial_page, cursor)
@@ -208,6 +205,7 @@ async def hungerPageBuilder(return_embed, cursor):
 
 async def attributePageBuilder(return_embed, cursor):
     # ! Allow for Leveling
+    # TODO: Make this also apply to skills (I want to die)
     attributes = ('Strength', 'Dexterity', 'Stamina',
                   'Charisma', 'Manipulation', 'Composure',
                   'Intelligence', 'Wits', 'Resolve')
@@ -237,7 +235,7 @@ async def attributePageBuilder(return_embed, cursor):
             if attributes[for_var].lower() in ('strength', 'dexterity', 'stamina'):
                 count -= 1  # Removes one from PHYSICAL attributes since the character is PHYSICALLY impaired.
 
-            elif attributes[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
+            if attributes[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
                 count -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
 
         emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
@@ -528,10 +526,3 @@ async def clanPageBuilder(return_embed, cursor):
 
     return_view = tV.KTV_CLAN
     return return_embed, return_view
-
-
-async def huntPageBuilder(return_embed, cursor):
-
-    return_view = tV.KTV_HUNT
-    return return_embed, return_view
-

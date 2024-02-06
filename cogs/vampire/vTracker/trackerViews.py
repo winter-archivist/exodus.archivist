@@ -8,26 +8,14 @@ import cogs.vampire.vMisc.vampireUtils as vU
 
 from misc.config import mainConfig as mC
 
-template_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
-
-hunt_mod_options = [discord.SelectOption(label='Negative One', value='-1', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Negative Two', value='-2', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Negative Three', value='-3', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Negative Four', value='-4', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Negative Five', value='-5', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Zero', value='0', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
-                    discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),]
+health_or_willpower_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
 
 
 # ? Until Functional, buttons will be gray
@@ -105,50 +93,6 @@ class KTV_HUNGER(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Predator Type Hunt [# is the Pool Modifier, ask ST]', options=hunt_mod_options, max_values=1, min_values=1, row=1)
-    async def pred_hunt_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-
-        character_name = await vU.getCharacterName(interaction)
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
-            cursor = db.cursor()
-            predator_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
-            supported_pred_types: tuple = ('HIDDEN_PRED', 'Grim Reaper', 'Sandman', 'Cryptid', 'Alleycat',
-                                           'Grave Robber', 'Trapdoor')
-
-            match predator_type:
-                case 'HIDDEN_PRED':
-                    clan_description: str = ''  # "Internal" Desc
-                    clan_reputation: str = ''  # "Outside" Desc
-                    clan_status: str = ''  # High/Low Clan
-                    clan_compulsion: str = ''  # Mechanical Stuff
-                    clan_bane: str = ''  # Mechanical Stuff #2
-                    clan_bane_two: str = ''  # Mechanical Stuff #3
-                    clan_disciplines: str = ''  # What Players can expect those in the clan to have
-
-                case 'Grim Reaper':
-                    log.info(2)
-
-                case 'Sandman':
-                    log.info(2)
-
-                case 'Cryptid':
-                    log.info(2)
-
-                case 'Alleycat':
-                    log.info(2)
-
-                case 'Grave Robber':
-                    log.info(2)
-
-                case 'Trapdoor':
-                    log.info(2)
-
-                case _:
-                    log.info(3)
-
-        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hunt')
-        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
-
     @discord.ui.button(label='Rouse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def rouse_button_callback(self, interaction, button):
         character_name = await vU.getCharacterName(interaction)
@@ -170,17 +114,6 @@ class KTV_HUNGER(View):
             case _:
                 response_embed.add_field(name='Rouse Result.', value=f'Fate Unknown? {hunger_emojis}', inline=False)
 
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
-
-
-class KTV_HUNT(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='Home Page', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
-    async def home_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
 
@@ -346,7 +279,7 @@ class KTV_HPDAMAGE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Superficial Damage', options=template_options, max_values=1, min_values=1, row=1)
+    @discord.ui.select(placeholder='Take Superficial Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
@@ -377,7 +310,7 @@ class KTV_HPDAMAGE(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Aggravated Damage', options=template_options, max_values=1, min_values=1, row=2)
+    @discord.ui.select(placeholder='Take Aggravated Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=2)
     async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
@@ -415,7 +348,7 @@ class KTV_WPDAMAGE(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Superficial Damage', options=template_options, max_values=1, min_values=1, row=1)
+    @discord.ui.select(placeholder='Take Superficial Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
@@ -441,7 +374,7 @@ class KTV_WPDAMAGE(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
-    @discord.ui.select(placeholder='Take Aggravated Damage', options=template_options, max_values=1, min_values=1, row=2)
+    @discord.ui.select(placeholder='Take Aggravated Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=2)
     async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
