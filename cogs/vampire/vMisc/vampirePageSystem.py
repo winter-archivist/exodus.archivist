@@ -38,7 +38,7 @@ async def vampirePageCommand(self, interaction, character_name: str, initial_tar
 async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? pageEVNav = Page Embed-View Navigator
     roller_targets = ('roller.difficulty', 'roller.attribute', 'roller.physical', 'roller.social' , 'roller.mental',
                       'roller.discipline' , 'roller.extras',
-                      'roller.rolled', 'roller.rerolled', 'roller.hunt_roll', 'roller.hunt_rerolled')
+                      'roller.rolled', 'roller.rerolled', 'roller.hunt_rolled', 'roller.hunt_rerolled')
     tracker_targets = ('tracker.home', 'tracker.hp/wp', 'tracker.hunger', 'tracker.attributes', 'tracker.discipline',
                        'tracker.extras', 'tracker.skills', 'tracker.physical_skills', 'tracker.social_skills', 'tracker.mental_skills',
                        'tracker.regain_health', 'tracker.damage_health', 'tracker.damage_willpower',

@@ -31,9 +31,12 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
                     return_page, return_view = await rolledPageBuilder(initial_page)
                 case 'roller.rerolled':
                     return_page, return_view = await rerolledPageBuilder(initial_page)
+                case 'roller.hunt_rolled':
+                    return_page, return_view = await huntRolledPageBuilder(initial_page)
+                case 'roller.hunt_rerolled':
+                    return_page, return_view = await huntRerolledPageBuilder(initial_page)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
-                    raise Exception('Provided target_page_name does not exist.')
         return return_page, return_view
     except sqlite3.Error as e:
         log.error(f'**> rollerPageDecider | SQLITE3 ERROR | {e}')
