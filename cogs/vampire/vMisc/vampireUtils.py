@@ -63,4 +63,3 @@ async def rouseCheck(interaction) -> str:
                 return 'Fail'  # * Hunger Gain
     except sqlite3.Error as e:
         log.error(f'rouseCheck | SQLITE3 ERROR | {e}')
-
