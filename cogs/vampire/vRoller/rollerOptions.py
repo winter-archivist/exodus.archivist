@@ -249,3 +249,15 @@ extra_options = [
     ),
     SelectOption(
         label='Minus Five', value='-5', emoji='<:snek:785811903938953227>')]
+hunt_mod_options = [SelectOption(label='Negative One', value='-1', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Negative Two', value='-2', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Negative Three', value='-3', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Negative Four', value='-4', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Negative Five', value='-5', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Zero', value='0', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                    SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),]
+
