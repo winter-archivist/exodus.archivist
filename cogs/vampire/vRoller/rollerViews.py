@@ -146,7 +146,7 @@ async def normalRoller(interaction, return_page):
     log.crit(f'{total_successes=} | {crits=} | {difficulty=}')
 
     #
-    #
+    # TODO: Add to ReRoller
     # atrocious [goto next result atrocious result]
     target_cache = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
     data_check = await yU.cacheDataExist(target_cache, 'mark')
@@ -180,6 +180,47 @@ async def normalRoller(interaction, return_page):
                 hunt_hunger = min_hunger_without_kill
             else:
                 hunt_hunger -= 2
+
+            temperament_check = randint(1, 10)
+            if temperament_check >= 6:
+                random_temperament_num = randint(1, 10)
+                random_resonance_num = randint(1, 10)
+
+                phlegmatic_resonances = (1, 2, 3)
+                melancholy_resonances = (4, 5, 6)
+                choleric_resonances = (7, 8)
+                sanguine_resonances = (9, 10)
+                # Eventually this should be stored in the character's sheet.
+                if random_temperament_num in phlegmatic_resonances:
+                    resonance = 'Phlegmatic'
+                elif random_temperament_num in melancholy_resonances:
+                    resonance = 'Melancholy'
+                elif random_temperament_num in choleric_resonances:
+                    resonance = 'Choleric'
+                elif random_temperament_num in sanguine_resonances:
+                    resonance = 'Sanguine'
+                else:
+                    resonance = 'ERROR'
+
+                negligible_resonances = (1, 2, 3, 4, 5)
+                fleeting_resonances = (6, 7, 8)
+                intense_or_acute_resonances = (9, 10)
+                if random_temperament_num in intense_or_acute_resonances:
+                    second_temperament_roll = randint(1, 10)
+                    if second_temperament_roll >= 9:
+                        temperament = 'Acute'
+                    else:
+                        temperament = 'Intense'
+
+                elif random_temperament_num in fleeting_resonances: temperament = 'Fleeting'
+
+                elif random_temperament_num in negligible_resonances: temperament = 'Negligible'
+
+                else: temperament = 'ERROR'
+
+                return_page.add_field(name=f'{temperament} {resonance} Temperament', value='')
+            else:
+                return_page.add_field(name=f'No Temperament', value='')
 
             if flag == 'Regular Success':
                 return_page.add_field(name='Hunt:', value=f'Success | {hunt_hunger * mC.hunger_emoji}')
