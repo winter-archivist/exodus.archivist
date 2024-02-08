@@ -31,10 +31,8 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
                     return_page, return_view = await rolledPageBuilder(initial_page)
                 case 'roller.rerolled':
                     return_page, return_view = await rerolledPageBuilder(initial_page)
-                case 'roller.hunt_rolled':
-                    return_page, return_view = await huntRolledPageBuilder(initial_page)
-                case 'roller.hunt_rerolled':
-                    return_page, return_view = await huntRerolledPageBuilder(initial_page)
+                case 'roller.marks':
+                    return_page, return_view = await marksPageBuilder(initial_page)
                 case _:
                     log.error('**> Provided target_page_name does not exist.')
         return return_page, return_view
@@ -100,4 +98,9 @@ async def rolledPageBuilder(return_page) -> Embed and View:
 
 async def rerolledPageBuilder(return_page) -> Embed and View:
     return_view = rV.KRV_REROLLED
+    return return_page, return_view
+
+
+async def marksPageBuilder(return_page) -> Embed and View:
+    return_view = rV.KRV_MARKS
     return return_page, return_view

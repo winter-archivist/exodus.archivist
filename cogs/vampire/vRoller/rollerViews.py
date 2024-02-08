@@ -1,5 +1,6 @@
 import discord
 import sqlite3
+import datetime
 from zenlog import log
 from random import randint
 from discord.ui import View
@@ -11,6 +12,7 @@ import cogs.vampire.vRoller.rollerPageBuilders as rPB
 import cogs.vampire.vRoller.rollerOptions as rO
 
 from misc.config import mainConfig as mC
+from misc.utils import yamlUtils as yU
 
 
 async def basicSelection(select, targetDB, targetTable):
@@ -38,6 +40,10 @@ async def basicSelection(select, targetDB, targetTable):
 
 async def clearDBRollInfo(interaction):
     character_name = await vU.getCharacterName(interaction)
+
+    # This will be fixed in the future, I just want to get this small thing pushed out soon.
+    # For more info, just look up "atrocious" in this file lower down.
+    await yU.cacheClear(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml')
 
     with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         cursor = db.cursor()  # ? Resets commandvars & reroll_info
@@ -111,6 +117,7 @@ async def normalRoller(interaction, return_page):
         if result['regular_crit'] + result['hunger_crit'] > 2:
             if result['regular_crit'] >= 2:
                 crits += 4
+                flag = 'Crit'
                 result['regular_crit'] -= 2
 
             elif result['hunger_crit'] >= 2:
@@ -137,6 +144,58 @@ async def normalRoller(interaction, return_page):
     # Assigns Information
     return_page.add_field(name='Roll Result:', value=f'{total_successes} | {flag}')
     log.crit(f'{total_successes=} | {crits=} | {difficulty=}')
+
+    #
+    #
+    # atrocious [goto next result atrocious result]
+    target_cache = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
+    data_check = await yU.cacheDataExist(target_cache, 'mark')
+    if data_check is True:
+        data = await yU.cacheRead(f'{target_cache}')
+        use_data = {}
+        use_data.update(data)
+        roll_mark = str(use_data['mark'])
+        if roll_mark == 'hunt':
+            current_time = datetime.datetime.now()
+            await yU.cacheWrite(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//hunt_history.yaml', {f'{current_time}': f'{flag}'})
+
+            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+                cursor = db.cursor()
+                hunt_hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
+                blood_potency = int(cursor.execute('SELECT blood_potency from charInfo').fetchone()[0])
+
+            return_page.add_field(name='Roll Mark:', value=f'**Hunt**')
+
+            if flag == 'Regular Fail':
+                return_page.add_field(name='Hunt Failed.', value=f'Ask DM About Resulting Consequences')
+                return  # return_page; MAY NEED THIS TO FIX
+
+            min_hunger_without_kill = 1
+            if blood_potency >= 5:
+                min_hunger_without_kill = 2
+
+            if hunt_hunger == 0:
+                min_hunger_without_kill = 0
+            elif int(hunt_hunger - 2) <= min_hunger_without_kill:
+                hunt_hunger = min_hunger_without_kill
+            else:
+                hunt_hunger -= 2
+
+            if flag == 'Regular Success':
+                return_page.add_field(name='Hunt:', value=f'Success | {hunt_hunger * mC.hunger_emoji}')
+
+            elif flag == 'Messy Crit':
+                return_page.add_field(name='Hunt:', value=f'Messy Crit | {hunt_hunger * mC.hunger_emoji}')
+
+            elif flag == 'Crit':
+                return_page.add_field(name='Hunt:', value=f'Flawless | {hunt_hunger * mC.hunger_emoji}')
+
+            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+                cursor = db.cursor()
+                cursor.execute('UPDATE charInfo SET hunger=?', (str(int(hunt_hunger))))  # str(int()) is over excessive, however.
+            await yU.cacheClear(target_cache)
+            await yU.cacheWrite(target_cache, {'mark': 'hunt_success'})
+
     return return_page
 
 
@@ -289,6 +348,12 @@ class KRV_DIFFICULTY(View):
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def stay_button_callback(self, interaction, button):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.difficulty')
+        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Marks', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def marks_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.marks')
         response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
         await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
 
@@ -704,4 +769,45 @@ class KRV_REROLLED(View):
     def __init__(self, CLIENT):
         super().__init__()
         self.CLIENT = CLIENT
+
+
+class KRV_MARKS(View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def roll_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
+
+        # Actual Button Logic
+        response_page = await normalRoller(interaction, response_page)
+        # Actual Button Logic
+
+        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def stay_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.difficulty')
+        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+
+    @discord.ui.button(label='Mark Roll as Hunt', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def hunt_mark_button_callback(self, interaction, button):
+        response_page, response_view = await vPS.pageEVNav(interaction, 'roller.difficulty')
+        character_name = await vU.getCharacterName(interaction)
+
+        # This is atrocious, but I'm just throwing it together, will fix.
+        # I may give the roller an entire system based on "Marks", but its TBD
+        # Such system may assist with adding things such as: Blood Surge; Remorse; Clan Bane; Diablerie; Frenzy; Compulsions; etc.
+        # Actual Button Logic
+        target_cache = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
+        await yU.cacheClear(target_cache)
+        await yU.cacheWrite(target_cache, {'mark': 'hunt'})
+        button.disabled = True  # DOESN'T WORK
+        # Actual Button Logic End
+
+        response_page = await rPB.rollerBasicPageInformation(interaction, response_page)  # ! Roller Exclusive
+        await interaction.response.edit_message(embed=response_page, view=self)
 

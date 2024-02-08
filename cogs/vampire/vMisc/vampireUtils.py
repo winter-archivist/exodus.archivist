@@ -70,7 +70,9 @@ async def rollPrep(interaction, character_name: str = 'None'):
     if character_name == 'None':
         character_name = await getCharacterName(interaction)
 
-    await yU.cacheClear(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//hunt_mark.yaml')
+    # This will be fixed in the future, I just want to get this small thing pushed out soon.
+    # For more info, just look up "atrocious" in rollerViews.py
+    await yU.cacheClear(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml')
 
     with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         cursor = db.cursor()  # ? Resets commandvars & reroll_info
