@@ -19,14 +19,7 @@ class VampireRoll(commands.Cog):
     @app_commands.command(name='vampire-roll', description='VTM v5 Dice Roller!')
     @app_commands.describe(charactername='Character Name')
     async def VampireRoll(self, interaction: discord.Interaction, charactername: str):
-
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite') as db:
-            cursor = db.cursor()  # ? Resets commandvars & reroll_info
-            cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
-            cursor.execute('UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?', (0, 0, 0, 0, 0, 0, 0), )
-            db.commit()
-
-        await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty', False)
+        await vU.rollPrep(interaction, charactername)
 
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(character_name='Character Name')

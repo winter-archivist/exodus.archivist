@@ -63,3 +63,15 @@ async def rouseCheck(interaction) -> str:
                 return 'Fail'  # * Hunger Gain
     except sqlite3.Error as e:
         log.error(f'rouseCheck | SQLITE3 ERROR | {e}')
+
+
+async def rollPrep(interaction, character_name: str = 'None'):
+    if character_name == 'None':
+        character_name = await getCharacterName(interaction)
+
+    with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        cursor = db.cursor()  # ? Resets commandvars & reroll_info
+        cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
+        cursor.execute('UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?', (0, 0, 0, 0, 0, 0, 0), )
+        db.commit()
+
