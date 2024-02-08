@@ -20,6 +20,7 @@ class VampireRoll(commands.Cog):
     @app_commands.describe(charactername='Character Name')
     async def VampireRoll(self, interaction: discord.Interaction, charactername: str):
         await vU.rollPrep(interaction, charactername)
+        await vPS.vampirePageCommand(self, interaction, charactername, 'roller.difficulty', False)
 
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(character_name='Character Name')

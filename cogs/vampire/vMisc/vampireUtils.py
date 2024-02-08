@@ -66,8 +66,11 @@ async def rouseCheck(interaction) -> str:
 
 
 async def rollPrep(interaction, character_name: str = 'None'):
+
     if character_name == 'None':
         character_name = await getCharacterName(interaction)
+
+    await yU.cacheClear(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//hunt_mark.yaml')
 
     with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         cursor = db.cursor()  # ? Resets commandvars & reroll_info
