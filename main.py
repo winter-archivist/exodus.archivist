@@ -4,10 +4,8 @@
 
 import typing
 import time
-
 import discord
 from discord.ext import commands
-
 from zenlog import log
 
 from misc.config import mainConfig as mC, clientConfig as cC
