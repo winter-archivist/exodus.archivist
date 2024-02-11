@@ -20,7 +20,7 @@ reason you'd like to talk to me about the project, your best place to contact me
 > * Active Project/Client Development Features \
 > (varying states of functionality) 
 >> * VTM v5 Toolbox [Adding Functionality]
->> * aeTerminal [Making GUI]
+>> * aeTools [Making GUI]
 >> * Bot Issue Ticket System [HIATUS]
 >> * Notes System [HIATUS]
 
