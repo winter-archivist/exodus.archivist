@@ -26,7 +26,7 @@ class VampireRoll(commands.Cog):
     @app_commands.describe(character_name='Character Name')
     async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
         if character_name == 'Nyctea':
-            nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.embed_colors["black"])
+            nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.EMBED_COLORS["black"])
             await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
             return
 
@@ -36,7 +36,7 @@ class VampireRoll(commands.Cog):
     @app_commands.describe(charactername='Character Name')
     @app_commands.describe(characterimgurl='Character Image URL')
     async def VampireImgSet(self, interaction: discord.Interaction, charactername: str, characterimgurl: str):
-        url_set_embed = Embed(title='URL Set', description='', color=mC.embed_colors["green"])
+        url_set_embed = Embed(title='URL Set', description='', color=mC.EMBED_COLORS["green"])
         url_set_embed.add_field(name='Success', value='', inline=False)
         targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{charactername}//{charactername}.sqlite'
         log.debug(f'> Checking if [ {targetDB} ] exist')
@@ -44,7 +44,7 @@ class VampireRoll(commands.Cog):
             log.warn(f'*> Database [ {targetDB} ] does not exist')
 
             await interaction.response.send_message(embed=discord.Embed(
-                title='Database Error', color=mC.embed_colors["red"],
+                title='Database Error', color=mC.EMBED_COLORS["red"],
                 description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mC.ISSUE_CONTACT}'), ephemeral=True)
 
             return False

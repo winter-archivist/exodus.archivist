@@ -8,7 +8,6 @@ class TEMPLATE(commands.Cog):
         self.CLIENT = CLIENT
 
     @app_commands.command(name="template", description="TEMPLATE COMMAND")
-    @app_commands.describe(templateinput='TEMPLATE Display Text')
     async def template(self, interaction: discord.Interaction, templateinput: str):
         await interaction.response.send_message(f'TEMPLATE; {templateinput}')
 

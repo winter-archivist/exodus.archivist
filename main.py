@@ -1,6 +1,6 @@
-# ! ## ------------ ## #
-# ? ## BRANCH: Main ## #
-# ! ## ------------ ## #
+# ! ## -------------------- ## #
+# ? ## Project Branch: Main ## #
+# ! ## -------------------- ## #
 
 import typing
 import time
@@ -13,32 +13,40 @@ from zenlog import log
 from misc.config import mainConfig as mC, clientConfig as cC
 
 
-async def initialCogs(CLIENT_INPUT):
-    log.info('$ Loading Initial Cogs...')
-    initial_cogs = ('cogs.cogManager',
-                    'cogs.vampire.vampireCog',
-                    'cogs.exonotes.exoNotes')
-    forVar = 0
-    for x in initial_cogs:
-        targetedCog = initial_cogs[forVar]
-        try:
-            await CLIENT_INPUT.load_extension(f'{targetedCog}')
-            log.debug(f'$ {targetedCog} Loaded')
-        except Exception as e:
-            log.crit(f"<<<$ Failed to load {targetedCog} {e}>>>")
-            exit(000)
-        forVar += 1
-    log.info('$ Loaded Initial Cogs... Attempting Sync')
+async def initializeStartupCogs(CLIENT_INPUT):
+    log.info('$ Initializing Startup Cogs...')
 
-    # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
-    try:
-        log.debug(f"$ Loading ddtr")
-        await CLIENT_INPUT.load_extension('cogs.ddtr.ddtr')
-    except Exception as e:
-        log.warn(f"<<<$ {e} | REMOVE TRY STATEMENT IN main.py CONTAINING cogs.ddtr.ddtr >>>")
-        exit()
-    log.debug(f"$ ddtr Loaded, real sync start.")
-    # ! This is a small script purely for use of myself. Remove it when you're using the bot, it has no effect.
+    # To add cogs, just add their directory, but instead of / use .
+    # however do not include their file extension
+    initial_cogs: tuple = ('cogs.cogManager',
+                           'cogs.vampire.vampireCog',
+                           'cogs.exonotes.exoNotes')
+
+    # Tries to load any cog listed in the above tuple
+    # Exits Startup if the cog isn't found
+    for_var = 0
+    for x in initial_cogs:
+        targeted_cog = initial_cogs[for_var]
+
+        try:
+            await CLIENT_INPUT.load_extension(f'{targeted_cog}')
+            log.debug(f'$ {targeted_cog} Loaded')
+
+        except Exception as e:
+            log.crit(f"<<<$ Failed to load {targeted_cog} {e}>>>")
+            exit(000)
+
+        for_var += 1
+
+    log.info('$ Loaded Startup Cogs... Slash Mode Check Starting...')
+
+    # ! ---READ THE COMMENTS BELOW--- !
+    # ! This script will kill the bot on Startup !
+    # It's a simple automation script for a "calculator" (it can only add)
+    # that remembers the prior number then adds the command input
+    import cogs.ddtr.ddtr as ddtr
+    await ddtr.ddtr_check(CLIENT_INPUT)
+    # ! ---READ THE COMMENTS ABOVE--- !
 
 
 # ? Custom Client & Handler, not much extra here yet.
@@ -61,7 +69,9 @@ class ExodusClient(commands.Bot):
         if message.author.bot:
             return
         ctx = await self.get_context(message)
-        await self.invoke(ctx)
+        # await self.invoke(ctx)
+        # Commented out because I believe its unneeded
+        # But if something breaks later on I want it here
 
     async def on_message(self, message, /) -> None:
         await self.process_commands(message)
@@ -71,55 +81,48 @@ INTENTS = discord.Intents.all()
 CLIENT = ExodusClient(command_prefix=cC.PREFIX, intents=INTENTS)
 
 
-# ? Error "Handler"
-@CLIENT.event
-async def on_command_error(ctx, error):
-    """Error Handling"""
-    await ctx.send(f'> `{error}` \n'
-                   f'Screenshot this and send it to `{mC.RUNNER}`, the host of this bot. \n'
-                   f'To contact the original bot writer: `{mC.DEVELOPER}` and/or visit `{mC.GITREPO}`')
-
-
 @CLIENT.event
 async def on_ready():
     log.warn('$ Project Branch: MAIN')
     log.info(f'$ Servers {len(CLIENT.guilds)}: {", ".join(str(x) for x in CLIENT.guilds)}')
     log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
 
-    await initialCogs(CLIENT)
+    # Loads any cogs listed in the tuple "initial_cogs" in initializeStartupCogs()
+    await initializeStartupCogs(CLIENT)
 
-    # ! Slash Commands Setup
-    if cC.SLASH_MODE is True:
-        try:
-            synced = await CLIENT.tree.sync()
-            log.info(f"Synced [ {len(synced)} ] command(s).")
-        except Exception as e:
-            log.crit(f'<<<$ Error Syncing Commands: {e}>>>')
+    # Slash Commands Setup
+    # Can be easily disabled/enabled via the variable
+    # "SLASH_MODE" in misc/config/clientConfig.py
+    match cC.SLASH_MODE:
+
+        case True:
+            try:
+                synced = await CLIENT.tree.sync()
+                log.info(f"Synced [ {len(synced)} ] command(s).")
+
+            except Exception as e:
+                log.crit(f'<<<$ Error Syncing Commands | {e}>>>')
+                exit()
+
+        case False:
+            log.warn('$ SLASH_MODE is False, Sync Skipped')
+
+        case _:
+            log.crit('<<<$ SLASH_MODE is Not a Bool, Client Killed >>>')
             exit()
-    elif cC.SLASH_MODE is False:
-        log.crit('$ SLASH_MODE is False.')
-    else:
-        log.warn('<<<$ Startup Error: SLASH_MODE IS NOT TRUE OR FALSE >>>')
-        exit()
 
-    log.warn('$ Bot Online | All Boot Cogs Loaded.')
-
+    log.info('$ Bot Online | All Startup Cogs Initialized.')
     await CLIENT.change_presence(status=discord.Status.idle, activity=discord.Game('with Snakes.'))
 
 
+# Required for Slash Commands to work
+# Do Not Remove.
 @CLIENT.command(name="sync")
 async def sync(ctx):  # ! Slash Commands Cog Essential
     if str(ctx.author.id) != f'{mC.RUNNER}':
         return
     synced = await CLIENT.tree.sync()
     log.info(f"Synced [ {len(synced)} ] command(s).")
-
-
-@commands.command(hidden=True)
-async def kill(self, ctx):
-    if ctx.author.id != mC.RUNNER_ID:
-        return
-    await CLIENT.close()
 
 
 CLIENT.run(token=cC.TOKEN, reconnect=True)

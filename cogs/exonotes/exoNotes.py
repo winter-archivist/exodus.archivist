@@ -12,11 +12,11 @@ from misc.config import mainConfig as mc
 
 selection_embed = (discord.Embed(title='Select',
                                  description='',
-                                 color=mc.embed_colors["purple"]))
+                                 color=mc.EMBED_COLORS["purple"]))
 
 note_embed = (discord.Embed(title='Note',
                             description='',
-                            color=mc.embed_colors["dark_yellow"]))
+                            color=mc.EMBED_COLORS["dark_yellow"]))
 
 
 class NoteView(View):

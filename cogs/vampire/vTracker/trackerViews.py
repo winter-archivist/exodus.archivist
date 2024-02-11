@@ -73,17 +73,17 @@ class KTV_HPWP(View):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Regain Health', emoji=f'{mC.health_full_emoji}', style=discord.ButtonStyle.green, row=1)
+    @discord.ui.button(label='Regain Health', emoji=f'{mC.HEALTH_FULL_EMOJI}', style=discord.ButtonStyle.green, row=1)
     async def health_regain_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.regain_health')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Damage Health', emoji=f'{mC.health_sup_emoji}', style=discord.ButtonStyle.red, row=1)
+    @discord.ui.button(label='Damage Health', emoji=f'{mC.HEALTH_SUP_EMOJI}', style=discord.ButtonStyle.red, row=1)
     async def health_damage_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_health')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
 
-    @discord.ui.button(label='Damage Willpower', emoji=f'{mC.willpower_sup_emoji}', style=discord.ButtonStyle.red, row=2)
+    @discord.ui.button(label='Damage Willpower', emoji=f'{mC.WILLPOWER_SUP_EMOJI}', style=discord.ButtonStyle.red, row=2)
     async def willpower_damage_button_callback(self, interaction, button):
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.damage_willpower')
         await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
@@ -112,7 +112,7 @@ class KTV_HUNGER(View):
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
-        hunger_emojis: str = str(mC.hunger_emoji * int(hunger))
+        hunger_emojis: str = str(mC.HUNGER_EMOJI * int(hunger))
 
         response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.hunger')
 
@@ -255,7 +255,7 @@ class KTV_HPREGAIN(View):
         await vU.rollPrep(interaction, character_name)
         await vPS.vampirePageCommand(self, interaction, character_name, 'roller.difficulty', False)
 
-    @discord.ui.button(label='Mend', emoji=f'{mC.hunger_emoji}', style=discord.ButtonStyle.red, row=1)
+    @discord.ui.button(label='Mend', emoji=f'{mC.HUNGER_EMOJI}', style=discord.ButtonStyle.red, row=1)
     async def mend_button_callback(self, interaction, button):
 
         character_name = await vU.getCharacterName(interaction)

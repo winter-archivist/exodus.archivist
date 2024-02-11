@@ -72,17 +72,17 @@ async def hpwpPageBuilder(return_embed, cursor):
     wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
 
     actual_health = hc_base - hc_sup - hc_agg
-    full_health = str(mC.health_full_emoji * actual_health)
-    sup_health = str(mC.health_sup_emoji * hc_sup)
-    agg_health = str(mC.health_agg_emoji * hc_agg)
+    full_health = str(mC.HEALTH_FULL_EMOJI * actual_health)
+    sup_health = str(mC.HEALTH_SUP_EMOJI * hc_sup)
+    agg_health = str(mC.HEALTH_AGG_EMOJI * hc_agg)
 
     if hc_sup == hc_base and hc_agg > 1:
-        sup_health = str(mC.health_sup_emoji * int(hc_sup - hc_agg))
+        sup_health = str(mC.HEALTH_SUP_EMOJI * int(hc_sup - hc_agg))
 
     actual_willpower = wpc_base - wpc_sup - wpc_agg
-    full_willpower = str(mC.willpower_full_emoji * actual_willpower)
-    sup_willpower = str(mC.willpower_sup_emoji * wpc_sup)
-    agg_willpower = str(mC.willpower_agg_emoji * wpc_agg)
+    full_willpower = str(mC.WILLPOWER_FULL_EMOJI * actual_willpower)
+    sup_willpower = str(mC.WILLPOWER_SUP_EMOJI * wpc_sup)
+    agg_willpower = str(mC.WILLPOWER_AGG_EMOJI * wpc_agg)
 
     return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
     return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
@@ -191,7 +191,7 @@ async def hungerPageBuilder(return_embed, cursor):
             log.error('**> Bad predator_type #2')
             return
 
-    return_embed.add_field(name='Hunger', value=f'{hunger * mC.hunger_emoji}', inline=True)
+    return_embed.add_field(name='Hunger', value=f'{hunger * mC.HUNGER_EMOJI}', inline=True)
     return_embed.add_field(name='Predator Type', value=f'{predator_type}', inline=True)
     return_embed.add_field(name='PT Pool', value=f'{pt_pool}', inline=False)
     return_embed.add_field(name='PT Description', value=f'{pt_desc}', inline=False)
@@ -238,7 +238,7 @@ async def attributePageBuilder(return_embed, cursor):
             if attributes[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
                 count -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
 
-        emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
+        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
 
         return_embed.add_field(name=f'{attributes[for_var]}', value=f'{emojis}', inline=True)
         for_var += 1
@@ -261,7 +261,7 @@ async def physicalSkillsPageBuilder(return_embed, cursor):
             return_embed.add_field(name='', value='', inline=False)
         count = int(
             cursor.execute(f'SELECT {physical_skills[for_var].lower()} from physicalSkills').fetchone()[0])
-        emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
+        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
 
         return_embed.add_field(name=f'{physical_skills[for_var]}', value=f'{emojis}', inline=True)
         for_var += 1
@@ -277,7 +277,7 @@ async def socialSkillsPageBuilder(return_embed, cursor):
             return_embed.add_field(name='', value='', inline=False)
         count = int(
             cursor.execute(f'SELECT {social_skills[for_var].lower()} from socialSkills').fetchone()[0])
-        emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
+        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
 
         return_embed.add_field(name=f'{social_skills[for_var]}', value=f'{emojis}', inline=True)
         for_var += 1
@@ -293,7 +293,7 @@ async def mentalSkillsPageBuilder(return_embed, cursor):
             return_embed.add_field(name='', value='', inline=False)
         count = int(
             cursor.execute(f'SELECT {mental_skills[for_var].lower()} from mentalSkills').fetchone()[0])
-        emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
+        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
 
         return_embed.add_field(name=f'{mental_skills[for_var]}', value=f'{emojis}', inline=True)
         for_var += 1
@@ -309,7 +309,7 @@ async def disciplinePageBuilder(return_embed, cursor):
         if for_var / 3 in (1, 2):
             return_embed.add_field(name='', value='', inline=False)
         count = int(cursor.execute(f'SELECT {disciplines[for_var].lower()} from disciplines').fetchone()[0])
-        emojis = f'{count * mC.dot_full_emoji} {abs(count - 5) * mC.dot_empty_emoji}'
+        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
 
         if count <= 0:
             pass
@@ -335,12 +335,12 @@ async def extrasPageBuilder(return_embed, cursor):
 
     return_embed.add_field(name='', value=f'', inline=False)
 
-    return_embed.add_field(name='Generation', value=f'{gen * mC.dot_full_emoji}', inline=True)
-    return_embed.add_field(name='Blood Potency', value=f'{bp * mC.hunger_emoji}', inline=True)
+    return_embed.add_field(name='Generation', value=f'{gen * mC.DOT_FULL_EMOJI}', inline=True)
+    return_embed.add_field(name='Blood Potency', value=f'{bp * mC.HUNGER_EMOJI}', inline=True)
 
     return_embed.add_field(name='', value=f'', inline=False)
 
-    return_embed.add_field(name='Humanity', value=f'{humanity * mC.dot_full_emoji} {stains * mC.dot_empty_emoji}', inline=True)
+    return_embed.add_field(name='Humanity', value=f'{humanity * mC.DOT_FULL_EMOJI} {stains * mC.DOT_EMPTY_EMOJI}', inline=True)
     return_embed.add_field(name='Path of Enlightenment', value=f'{path_of_enlightenment}', inline=True)
     return_view = tV.KTV_EXTRA
     return return_embed, return_view
@@ -353,12 +353,12 @@ async def regainhealthPageBuilder(return_embed, cursor):
     hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
 
     actual_health = hc_base - hc_sup - hc_agg
-    full_health = str(mC.health_full_emoji * actual_health)
-    sup_health = str(mC.health_sup_emoji * hc_sup)
-    agg_health = str(mC.health_agg_emoji * hc_agg)
+    full_health = str(mC.HEALTH_FULL_EMOJI * actual_health)
+    sup_health = str(mC.HEALTH_SUP_EMOJI * hc_sup)
+    agg_health = str(mC.HEALTH_AGG_EMOJI * hc_agg)
 
     if hc_sup == hc_base and hc_agg > 1:
-        sup_health = str(mC.health_sup_emoji * int(hc_sup - hc_agg))
+        sup_health = str(mC.HEALTH_SUP_EMOJI * int(hc_sup - hc_agg))
 
     return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
 
@@ -373,12 +373,12 @@ async def damagehealthPageBuilder(return_embed, cursor):
     hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
 
     actual_health = hc_base - hc_sup - hc_agg
-    full_health = str(mC.health_full_emoji * actual_health)
-    sup_health = str(mC.health_sup_emoji * hc_sup)
-    agg_health = str(mC.health_agg_emoji * hc_agg)
+    full_health = str(mC.HEALTH_FULL_EMOJI * actual_health)
+    sup_health = str(mC.HEALTH_SUP_EMOJI * hc_sup)
+    agg_health = str(mC.HEALTH_AGG_EMOJI * hc_agg)
 
     if hc_sup == hc_base and hc_agg > 1:
-        sup_health = str(mC.health_sup_emoji * int(hc_sup - hc_agg))
+        sup_health = str(mC.HEALTH_SUP_EMOJI * int(hc_sup - hc_agg))
 
     return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
 
@@ -393,9 +393,9 @@ async def damagewillpowerPageBuilder(return_embed, cursor):
     wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
 
     actual_willpower = wpc_base - wpc_sup - wpc_agg
-    full_willpower = str(mC.willpower_full_emoji * actual_willpower)
-    sup_willpower = str(mC.willpower_sup_emoji * wpc_sup)
-    agg_willpower = str(mC.willpower_agg_emoji * wpc_agg)
+    full_willpower = str(mC.WILLPOWER_FULL_EMOJI * actual_willpower)
+    sup_willpower = str(mC.WILLPOWER_SUP_EMOJI * wpc_sup)
+    agg_willpower = str(mC.WILLPOWER_AGG_EMOJI * wpc_agg)
 
     return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
     return_view = tV.KTV_WPDAMAGE

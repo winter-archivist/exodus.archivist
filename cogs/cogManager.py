@@ -1,109 +1,57 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ui import View
 
-from misc.config import mainConfig as mc
-
-cog_manager_embed = discord.Embed(title='Cog Manager', color=0x8A2BE2)
-cog_manager_embed.add_field(name='targetCog:', value=f'N/A', inline=True)
-cog_manager_embed.add_field(name='operationType:', value=f'N/A', inline=True)
-cog_manager_embed.add_field(name='CMD:', value=f'N/A', inline=False)
-
-cog_selections = [
-            discord.SelectOption(
-                label='Template', value='template',
-                emoji='<a:pydis_pridespin:1113716405192376351>',
-            ),
-            discord.SelectOption(
-                label='Vampire', value='vampire.vampireCog',
-                emoji='<:bloodT:555804549173084160>',
-            ),
-            discord.SelectOption(
-                label='exoNotes', value='exonotes.exoNotes',
-                emoji='<:ExodusE:1145153679155007600>',
-            )]
-run_command = {"operation": 'tc.Ungiven1', "target": 'Ungiven2'}
+from misc.config import mainConfig as mC
 
 
-class ExodusView(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.select(
-        placeholder='Select targetCog',
-        options=cog_selections,
-        row=0)
-    async def targetCog_select_callback(self, interaction, select: discord.ui.Select):
-        if interaction.user.id != mc.RUNNER_ID:
-            return
-
-        global run_command
-        run_command["target"] = f'{select.values[0]}'
-
-        cog_manager_embed.set_field_at(index=0, name='targetCog:', value=f'{run_command["target"]}', inline=True)
-        await interaction.response.edit_message(embed=cog_manager_embed)
-
-    @discord.ui.select(
-        placeholder='Select operationType',
-        options=[
-            discord.SelectOption(
-                label='Load', value='load', emoji='<:knightyes:722660226716926016>', ),
-            discord.SelectOption(
-                label='Unload', value='unload', emoji='<:knightno:722660227144482856>', ),
-            discord.SelectOption(
-                label='Reload', value='reload', emoji='<:nbthinblood:982240285243351080>', )],
-        row=1)
-    async def operationType_select_callback(self, interaction, select: discord.ui.Select):
-        if interaction.user.id != mc.RUNNER_ID:
-            return
-
-        global run_command
-        run_command["operation"] = f'{select.values[0]}'
-
-        cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'{run_command["operation"]}', inline=True)
-        await interaction.response.edit_message(embed=cog_manager_embed)
-
-    @discord.ui.button(label='Run', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green)
-    async def run_button_callback(self, interaction, button):
-        if interaction.user.id != mc.RUNNER_ID:
-            return
-
-        global run_command
-        cmd_operation = run_command["operation"]
-        cmd_target = run_command["target"]
-
-        match cmd_operation:
-            case 'load':
-                await self.CLIENT.load_extension(f'cogs.{cmd_target}')
-
-            case 'unload':
-                await self.CLIENT.unload_extension(f'cogs.{cmd_target}')
-
-            case 'unload':
-                await self.CLIENT.reload_extension(f'cogs.{cmd_target}')
-
-        cog_manager_embed.set_field_at(index=0, name='targetCog:', value=f'N/A', inline=True)
-        cog_manager_embed.set_field_at(index=1, name='operationType:', value=f'N/A', inline=True)
-        cog_manager_embed.set_field_at(index=2, name='CMD:', value=f'{cmd_operation} -> {cmd_target}', inline=False)
-        run_command["operation"] = 'Ungiven_cogManager_Operation'
-        run_command["target"] = 'Ungiven_cogManager_Target'
-        await interaction.response.edit_message(embed=cog_manager_embed)
-
-
-class cog_manager(commands.Cog):
+class CogManager(commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
     @app_commands.command(name="cog", description="CogManager")
-    async def cog(self, interaction: discord.Interaction):
+    @app_commands.choices(target=[
+        app_commands.Choice(name="Template Cog", value="template"),
+        app_commands.Choice(name="VTM Toolbox", value="vampire.vampireCog"),
+        app_commands.Choice(name="exoNotes [ON HIATUS]", value="exonotes.exoNotes")])
+    @app_commands.choices(operation=[
+        app_commands.Choice(name="Load", value="load"),
+        app_commands.Choice(name="Unload", value="unload"),
+        app_commands.Choice(name="Reload", value="reload")])
+    async def cog(self, interaction: discord.Interaction, target: app_commands.Choice[str], operation: app_commands.Choice[str]):
 
-        if str(interaction.user) != f'{mc.RUNNER}':
+        if str(interaction.user) != f'{mC.RUNNER}':
+            # Prevents anyone, but the person running the bot, from interacting
             return
 
-        await interaction.response.send_message(embed=cog_manager_embed, view=ExodusView(self.CLIENT))
+        # Makes the base embed
+        base_page = discord.Embed(title='Cog Manager', description='', colour=mC.EMBED_COLORS[f'purple'])
+
+        # Assigns basic user information
+        user_info = {'user_name'  : interaction.user,
+                     'user_id'    : interaction.user.id,
+                     'user_avatar': interaction.user.display_avatar}
+
+        # Adds the basic information to the page
+        base_page.set_footer(text=f'{user_info["user_id"]}', icon_url=f'{user_info["user_avatar"]}')
+        base_page.set_author(name=f'{user_info["user_name"]}', icon_url=f'{user_info["user_avatar"]}')
+
+        base_page.add_field(name='Target:', value=f'{target.value}', inline=True)
+        base_page.add_field(name='Operation:', value=f'{operation.value}', inline=True)
+        base_page.add_field(name='Command:', value=f'{operation.value}({target.value})', inline=False)
+
+        match operation.value:
+            case 'load':
+                await self.CLIENT.load_extension(f'cogs.{target.value}')
+
+            case 'unload':
+                await self.CLIENT.unload_extension(f'cogs.{target.value}')
+
+            case 'unload':
+                await self.CLIENT.reload_extension(f'cogs.{target.value}')
+
+        await interaction.response.send_message(embed=base_page)
 
 
 async def setup(CLIENT):
-    await CLIENT.add_cog(cog_manager(CLIENT))
+    await CLIENT.add_cog(CogManager(CLIENT))

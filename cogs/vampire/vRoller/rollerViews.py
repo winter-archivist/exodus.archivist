@@ -223,13 +223,13 @@ async def normalRoller(interaction, return_page):
                 return_page.add_field(name=f'No Temperament', value='')
 
             if flag == 'Regular Success':
-                return_page.add_field(name='Hunt:', value=f'Success | {hunt_hunger * mC.hunger_emoji}')
+                return_page.add_field(name='Hunt:', value=f'Success | {hunt_hunger * mC.HUNGER_EMOJI}')
 
             elif flag == 'Messy Crit':
-                return_page.add_field(name='Hunt:', value=f'Messy Crit | {hunt_hunger * mC.hunger_emoji}')
+                return_page.add_field(name='Hunt:', value=f'Messy Crit | {hunt_hunger * mC.HUNGER_EMOJI}')
 
             elif flag == 'Crit':
-                return_page.add_field(name='Hunt:', value=f'Flawless | {hunt_hunger * mC.hunger_emoji}')
+                return_page.add_field(name='Hunt:', value=f'Flawless | {hunt_hunger * mC.HUNGER_EMOJI}')
 
             with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
                 cursor = db.cursor()
@@ -756,7 +756,7 @@ class KRV_EXTRAS(View):
             roll_comp = cursor.execute('SELECT poolComp from commandVars').fetchone()[0]
 
             hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
-            hunger_emoji = str(mC.hunger_emoji * hunger)
+            hunger_emoji = str(mC.HUNGER_EMOJI * hunger)
 
             rouse_result = await vU.rouseCheck(interaction)
 
