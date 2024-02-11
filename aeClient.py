@@ -67,9 +67,7 @@ class ExodusClient(commands.Bot):
         if message.author.bot:
             return
         ctx = await self.get_context(message)
-        # await self.invoke(ctx)
-        # Commented out because I believe its unneeded
-        # But if something breaks later on I want it here
+        await self.invoke(ctx)  # Do not remove
 
     async def on_message(self, message, /) -> None:
         await self.process_commands(message)
