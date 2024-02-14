@@ -13,17 +13,22 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * Logging /w "Syntax" [See Below]
 >> * Dangerously Cheesy [so much spaghetti]
 >> * In Active Development [FEB 2024]
+
 > * Client: 
 >> * Slash Commands
->> * CogManager
+>> * Cog Manager
 >> * VTM v5 Toolbox 
-> * Active Project/Client Development Features \
-> (varying states of functionality) 
->> * VTM v5 Toolbox [Adding Functionality]
->> * aeTools [Making GUI]
+
+> * Active Development Features (varying states of functionality) 
+>> * VTM v5 Toolbox [Extending Functionality]
 >> * Bot Issue Ticket System [HIATUS]
 >> * Notes System [HIATUS]
 
+> * Currently Abandoned Features (may return)
+>> * eaTools [Bot Devtools]
+
+> * Rejected Features (no chance)
+>> * N/A
 
 ---
 ## USE:
