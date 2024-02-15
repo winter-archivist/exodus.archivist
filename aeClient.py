@@ -17,8 +17,7 @@ async def initializeStartupCogs(CLIENT_INPUT):
     # To add cogs, just add their directory, but instead of / use .
     # however do not include their file extension
     initial_cogs: tuple = ('cogs.cogManager',
-                           'cogs.vampire.vampireCog',
-                           'cogs.exonotes.exoNotes')
+                           'cogs.vampire.vampireCog')
 
     # Tries to load any cog listed in the above tuple
     # Exits Startup if the cog isn't found
