@@ -25,10 +25,11 @@ class VampireRoll(commands.Cog):
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(character_name='Character Name')
     async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
+        """
         if character_name == 'Nyctea':
             nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.EMBED_COLORS["black"])
             await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
-            return
+            return"""
 
         await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
 
