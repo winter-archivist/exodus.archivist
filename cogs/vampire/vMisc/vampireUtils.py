@@ -16,7 +16,7 @@ async def writeCharacterName(interaction, character_name) -> bool:
         log.warn(f'*> Database [ `{targetDB}` ] does not exist')
         await interaction.response.send_message(embed=Embed(
             title='Database Error', color=mC.EMBED_COLORS["red"],
-            description=f'[ `{character_name}` ] Does Not Exist.. \n\n {mC.ISSUE_CONTACT}'), ephemeral=True)
+            description=f'[ `{character_name}` ] Does Not Exist..'), ephemeral=True)
         return False
     else:
         log.debug(f'> Successful Connection to [ `{targetDB}` ]')
