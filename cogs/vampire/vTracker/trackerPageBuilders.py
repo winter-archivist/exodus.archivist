@@ -93,7 +93,7 @@ async def hpwpPageBuilder(return_embed, cursor):
 async def hungerPageBuilder(return_embed, cursor):
     hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
     predator_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])
-    supported_pred_types: tuple = ('HIDDEN_PRED_TYPE', 'Grim Reaper', 'Sandman', 'Cryptid', 'Alleycat',
+    supported_pred_types: tuple = ('SECRET_PRED_TYPE', 'Grim Reaper', 'Sandman', 'Cryptid', 'Alleycat',
                                    'Grave Robber', 'Trapdoor')
 
     if predator_type not in supported_pred_types:
@@ -102,7 +102,7 @@ async def hungerPageBuilder(return_embed, cursor):
 
     # pt = predator type
     match predator_type:
-        case 'HIDDEN_PRED_TYPE':
+        case 'SECRET_PRED_TYPE':
             pt_pool: str = ''  # Mechanical Stuff
             pt_desc: str = ''
             pt_disciplines: str = ''  # The potential disciplines gained from the predator type
@@ -331,17 +331,34 @@ async def extrasPageBuilder(return_embed, cursor):
     humanity: int = cursor.execute(f'SELECT humanity from charInfo').fetchone()[0]
     stains: int = cursor.execute(f'SELECT stains from charInfo').fetchone()[0]
     path_of_enlightenment = cursor.execute(f'SELECT path_of_enlightenment from charInfo').fetchone()[0]
-    return_embed.add_field(name='Clan', value=f'{clan}', inline=True)
+    # THIS IS JUST FOR MY PERSONAL CHRONICLE
+    if clan == 'SECRET_CLAN':
+        return_embed.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
+    else:
+        return_embed.add_field(name='Clan', value=f'{clan}', inline=True)
 
     return_embed.add_field(name='', value=f'', inline=False)
 
-    return_embed.add_field(name='Generation', value=f'{gen * mC.DOT_FULL_EMOJI}', inline=True)
-    return_embed.add_field(name='Blood Potency', value=f'{bp * mC.HUNGER_EMOJI}', inline=True)
+    # THIS IS JUST FOR MY PERSONAL CHRONICLE
+    if gen == 7:
+        return_embed.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
+    else:
+        return_embed.add_field(name='Generation', value=f'{gen * mC.DOT_FULL_EMOJI}', inline=True)
+
+    # THIS IS JUST FOR MY PERSONAL CHRONICLE
+    if bp == 4:
+        return_embed.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
+    else:
+        return_embed.add_field(name='Blood Potency', value=f'{bp * mC.HUNGER_EMOJI}', inline=True)
 
     return_embed.add_field(name='', value=f'', inline=False)
 
     return_embed.add_field(name='Humanity', value=f'{humanity * mC.DOT_FULL_EMOJI} {stains * mC.DOT_EMPTY_EMOJI}', inline=True)
-    return_embed.add_field(name='Path of Enlightenment', value=f'{path_of_enlightenment}', inline=True)
+    # THIS IS JUST FOR MY PERSONAL CHRONICLE
+    if path_of_enlightenment == 'SECRET_PATH':
+        return_embed.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
+    else:
+        return_embed.add_field(name='Path of Enlightenment', value=f'{path_of_enlightenment}', inline=True)
     return_view = tV.KTV_EXTRA
     return return_embed, return_view
 
