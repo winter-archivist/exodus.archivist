@@ -29,17 +29,35 @@ class VampireRoll(commands.Cog):
 
     @app_commands.command(name='dev-test', description='---DO NOT TOUCH---')
     @app_commands.describe(character_name='Character Name')
-    async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
-        import cogs.vtm_toolbox.vtb_misc.vtb_character_manager as vtb_cm
+    async def DevTest(self, interaction: discord.Interaction, character_name: str):
+        import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as vtb_cm
         import json
 
-        CHARACTER_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character_name.json'
-        CHARACTER_DICT: dict = {'character_name': character_name}
+        CHARACTER_NAME_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character.json'
+        CHARACTER_NAME_DICT: dict = {'character_name': character_name}
 
-        with open(CHARACTER_FILE, "w") as operate_file:
-            json.dump(CHARACTER_DICT, operate_file)
+        with open(CHARACTER_NAME_FILE, "w") as operate_file:
+            json.dump(CHARACTER_NAME_DICT, operate_file)
 
-        return
+        await vtb_cm.make_character_file(interaction, character_name)
+
+        try:
+            character_class = vtb_cm.vtb_CharacterManager(interaction)
+        except Exception == '':
+            dev_test_embed = discord.Embed(title='`!__DEV__DEBUG__TESTS__!`',
+                                           description='`!__ONLY__PRESS__THINGS__IF__INSTRUCTED__!`',
+                                           color=mC.EMBED_COLORS['red'])
+            dev_test_embed.add_field(name='Char Name', value=f'{character_name}', inline=True)
+            dev_test_embed.add_field(name='Interactor ID', value=f'{interaction.user.id}', inline=True)
+            dev_test_embed.add_field(name='YOU DO NOT OWN', value=f'{character_name}', inline=True)
+            await interaction.response.send_message(embed=dev_test_embed, view=vtb_cm.vtb_DEV_TEST_VIEW(self.CLIENT))
+        else:
+            dev_test_embed = discord.Embed(title='`!__DEV__DEBUG__TESTS__!`', description='`!__ONLY__PRESS__THINGS__IF__INSTRUCTED__!`', color=mC.EMBED_COLORS['red'])
+            dev_test_embed.add_field(name='Char Name', value=f'{character_class.CHARACTER_NAME}', inline=True)
+            dev_test_embed.add_field(name='Char Owner ID', value=f'{character_class.OWNER_ID}', inline=True)
+            dev_test_embed.add_field(name='Interactor ID', value=f'{interaction.user.id}', inline=True)
+
+            await interaction.response.send_message(embed=dev_test_embed, view=vtb_cm.vtb_DEV_TEST_VIEW(self.CLIENT))
 
     @app_commands.command(name='vampire-img', description='Sets the character img for `vampire`')
     @app_commands.describe(charactername='Character Name')
@@ -144,34 +162,6 @@ class VampireRoll(commands.Cog):
 
                     log.debug(f'Creation of [ {targetcharacter} ] Successful')
                     await ctx.send('Make Complete')
-            except sqlite3.Error as e:
-                log.error(f'vampMaker | SQLITE3 ERROR | {e}')
-
-    @commands.command(hidden=True)
-    async def dbUpdate(self, ctx, target_char):
-        if ctx.author.id == mC.RUNNER_ID:
-            try:
-                id_list = (250241031646347264, 270700184374083585, 437056607063375873, 455365688358600705, 506774892444647434, 635515446015164417)
-                char_list = ('Nyctea', 'Selena', 'Valeriye', 'Iilta', 'Elijah', 'Myr')
-
-                for_var_one = 0
-                for x in id_list:
-                    createdDirectory = f'{os.getcwd()}//cogs//vampire//characters//{id_list[for_var_one]}//{char_list[for_var_one]}'
-                    os.makedirs(createdDirectory, exist_ok=True)
-
-                    with sqlite3.connect(f'cogs//vampire//characters//{id_list[for_var_one]}//{char_list[for_var_one]}//{char_list[for_var_one]}.sqlite') as db:
-                        cursor = db.cursor()
-                        new_columns = ('stains', 'path_of_enlightenment')
-                        new_columns_type = ('INTEGER', 'TEXT')
-
-                        for_var = 0
-                        for y in new_columns:
-                            cursor.execute(f'ALTER TABLE charInfo ADD COLUMN {new_columns[for_var]} {new_columns_type[for_var]}')
-                            for_var += 1
-
-                        cursor.execute('UPDATE charInfo SET stains=?, path_of_enlightenment=?', (0, 'Standard'))
-                        db.commit()
-                        for_var_one += 1
             except sqlite3.Error as e:
                 log.error(f'vampMaker | SQLITE3 ERROR | {e}')
 
