@@ -1,6 +1,14 @@
 ExodusAutomaton
 ===
 ---
+## Version Info
+
+> * Branch: new_character_system
+> * Version: v00.00.01
+> * State: Testing
+> * DateTime: Feb 16th 2024 | 2:35am
+
+---
 ## General
 
 As of now ExodusAutomaton Rewrite is being solo developed by me with Pycharm Professional. 

@@ -9,10 +9,10 @@ import os
 # Or you can just be smart about it, and just use an environment.
 TOKEN: str = f'{os.environ["TOKEN"]}'
 
-# ? Prefix for all Non-Slash Commands.
+# ? Prefix for all NON-SLASH Commands.
 PREFIX: str = f'ex.'
 
-# ? Determines weather or not the bot's slash commands will load.
+# ? Determines whether the bot will attempt loading its slash-commands.
 # I set this to False when doing lots of non-slash-command based testing; If you don't,
-# you'll sync too much with discord's server and be temporally unable to connect
+# you'll sync too much you'll get rate-limited
 SLASH_MODE: bool = True
