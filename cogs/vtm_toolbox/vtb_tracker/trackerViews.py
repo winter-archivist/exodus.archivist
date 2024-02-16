@@ -3,8 +3,8 @@ from discord.ui import View
 import sqlite3
 from zenlog import log
 
-import cogs.vampire.vMisc.vampirePageSystem as vPS
-import cogs.vampire.vMisc.vampireUtils as vU
+import cogs.vtm_toolbox.vtb_misc.vtbPageSystem as vPS
+import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
 
 from misc.config import mainConfig as mC
 

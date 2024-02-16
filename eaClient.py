@@ -17,7 +17,7 @@ async def initializeStartupCogs(CLIENT_INPUT):
     # To add cogs, just add their directory, but instead of / use .
     # however do not include their file extension
     initial_cogs: tuple = ('cogs.cogManager',
-                           'cogs.vampire.vampireCog')
+                           'cogs.vtm_toolbox.vampireToolboxCog')
 
     # Tries to load any cog listed in the above tuple
     # Exits Startup if the cog isn't found
@@ -35,15 +35,9 @@ async def initializeStartupCogs(CLIENT_INPUT):
 
         for_var += 1
 
-    log.info('$ Loaded Startup Cogs... Slash Mode Check Starting...')
+    # TESTING
 
-    # ! ---READ THE COMMENTS BELOW--- !
-    # ! This script will kill the bot on Startup !
-    # It's a simple automation script for a "calculator" (it can only add)
-    # that remembers the prior number then adds the command input
-    import cogs.ddtr.ddtr as ddtr
-    await ddtr.ddtr_check(CLIENT_INPUT)
-    # ! ---READ THE COMMENTS ABOVE--- !
+    log.info('$ Loaded Startup Cogs... Slash Mode Check Starting...')
 
 
 # ? Custom Client & Handler, not much extra here yet.

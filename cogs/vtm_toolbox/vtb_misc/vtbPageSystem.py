@@ -5,9 +5,9 @@ from discord.ui import View
 
 import misc.config.mainConfig as mC
 
-import cogs.vampire.vMisc.vampireUtils as vU
-import cogs.vampire.vTracker.trackerPageBuilders as tPB
-import cogs.vampire.vRoller.rollerPageBuilders as rPB
+import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
+import cogs.vtm_toolbox.vtb_tracker.trackerPageBuilders as tPB
+import cogs.vtm_toolbox.vtb_roller.rollerPageBuilders as rPB
 
 
 # Felt this may be useful for looking at the horrid Vampire Page System.
@@ -47,9 +47,13 @@ async def pageEVNav(interaction, target_page_name: str) -> Embed and View:  # ? 
 
     ALLOWED_TARGETS = ROLLER_TARGETS + TRACKER_TARGETS
 
+    if await vU.ownerCheck(interaction) is False:
+        log.error(f'*> Invalid Owner Given to PageEVNav')
+        raise ValueError
+
     if target_page_name.lower() not in ALLOWED_TARGETS:
         log.error(f'*> Invalid pageEVNav target_page [ {target_page_name} ]')
-        return
+        raise ValueError
 
     elif target_page_name.lower() in TRACKER_TARGETS:
         initial_page = await basicPageBuilder(interaction, 'Kindred Tracker', 'If a button is __Gray__ that means its non-functional', 'cyan')
@@ -86,4 +90,3 @@ async def basicPageBuilder(interaction, page_title: str, page_description: str, 
 
     # Returns Embed (now considered a "Page")
     return base_page
-

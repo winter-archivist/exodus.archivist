@@ -5,11 +5,11 @@ from zenlog import log
 from random import randint
 from discord.ui import View
 
-import cogs.vampire.vMisc.vampirePageSystem as vPS
-import cogs.vampire.vMisc.vampireUtils as vU
+import cogs.vtm_toolbox.vtb_misc.vtbPageSystem as vPS
+import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
 
-import cogs.vampire.vRoller.rollerPageBuilders as rPB
-import cogs.vampire.vRoller.rollerOptions as rO
+import cogs.vtm_toolbox.vtb_roller.rollerPageBuilders as rPB
+import cogs.vtm_toolbox.vtb_roller.rollerOptions as rO
 
 from misc.config import mainConfig as mC
 from misc.utils import yamlUtils as yU

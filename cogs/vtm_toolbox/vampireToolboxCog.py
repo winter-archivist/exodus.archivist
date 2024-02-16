@@ -8,8 +8,8 @@ from zenlog import log
 
 from misc.config import mainConfig as mC
 
-import cogs.vampire.vMisc.vampireUtils as vU
-import cogs.vampire.vMisc.vampirePageSystem as vPS
+import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
+import cogs.vtm_toolbox.vtb_misc.vtbPageSystem as vPS
 
 
 class VampireRoll(commands.Cog):
@@ -25,12 +25,6 @@ class VampireRoll(commands.Cog):
     @app_commands.command(name='vampire-tracker', description='VTM v5 Character Tracker!')
     @app_commands.describe(character_name='Character Name')
     async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
-        """
-        if character_name == 'Nyctea':
-            nyctea_deny_embed = Embed(title='Hidden', description='__You lie beyond Saulot\'s Eye.__', colour=mC.EMBED_COLORS["black"])
-            await interaction.response.send_message(embed=nyctea_deny_embed, ephemeral=True)
-            return"""
-
         await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
 
     @app_commands.command(name='vampire-img', description='Sets the character img for `vampire`')
@@ -46,7 +40,7 @@ class VampireRoll(commands.Cog):
 
             await interaction.response.send_message(embed=discord.Embed(
                 title='Database Error', color=mC.EMBED_COLORS["red"],
-                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL. \n\n {mC.ISSUE_CONTACT}'), ephemeral=True)
+                description=f'[ {charactername} ] Does Not Exist, Can\'t Set URL.'), ephemeral=True)
 
             return False
         else:

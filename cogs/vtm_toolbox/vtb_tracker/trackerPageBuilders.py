@@ -4,12 +4,16 @@ from discord.ui import View
 from zenlog import log
 
 import misc.config.mainConfig as mC
-import cogs.vampire.vMisc.vampireUtils as vU
-import cogs.vampire.vTracker.trackerViews as tV
+import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
+import cogs.vtm_toolbox.vtb_tracker.trackerViews as tV
 
 
 async def trackerPageDecider(interaction, target_page_name, initial_page) -> Embed and View:
     try:
+        if await vU.ownerCheck(interaction) is False:
+            log.error(f'*> Invalid Owner.')
+            raise ValueError
+
         character_name = await vU.getCharacterName(interaction)
         with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()

@@ -1,4 +1,4 @@
-ExodusAutomaton Rewrite
+ExodusAutomaton
 ===
 ---
 ## General

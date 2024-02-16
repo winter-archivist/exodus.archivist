@@ -11,9 +11,7 @@ class CogManager(commands.Cog):
 
     @app_commands.command(name="cog", description="CogManager")
     @app_commands.choices(target=[
-        app_commands.Choice(name="Template Cog", value="template"),
-        app_commands.Choice(name="VTM Toolbox", value="vampire.vampireCog"),
-        app_commands.Choice(name="exoNotes [ON HIATUS]", value="exonotes.exoNotes")])
+        app_commands.Choice(name="VTM Toolbox", value="vtm_toolbox.vampireToolboxCog")])
     @app_commands.choices(operation=[
         app_commands.Choice(name="Load", value="load"),
         app_commands.Choice(name="Unload", value="unload"),
