@@ -14,7 +14,7 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
             raise ValueError
 
         character_name = await vU.getCharacterName(interaction)
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             match target_page_name:
                 case 'roller.difficulty':
@@ -47,7 +47,7 @@ async def rollerPageDecider(interaction, target_page_name, initial_page) -> Embe
 async def rollerBasicPageInformation(interaction, return_page):
     character_name = await vU.getCharacterName(interaction)
 
-    with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+    with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         cursor = db.cursor()
         roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
         difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])

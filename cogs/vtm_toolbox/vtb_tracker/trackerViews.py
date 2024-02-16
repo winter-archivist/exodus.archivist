@@ -109,7 +109,7 @@ class KTV_HUNGER(View):
     async def rouse_button_callback(self, interaction, button):
         character_name = await vU.getCharacterName(interaction)
         rouse_result = await vU.rouseCheck(interaction)
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
         hunger_emojis: str = str(mC.HUNGER_EMOJI * int(hunger))
@@ -260,7 +260,7 @@ class KTV_HPREGAIN(View):
 
         character_name = await vU.getCharacterName(interaction)
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             blood_potency = int(cursor.execute('SELECT blood_potency from charInfo').fetchone()[0])
             hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
@@ -288,7 +288,7 @@ class KTV_HPREGAIN(View):
         if mend_amount > hc_sup:
             mend_amount = hc_sup
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             cursor.execute('UPDATE health SET healthSUP=?', (str(int(hc_sup) - mend_amount),))
             new_hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
@@ -321,7 +321,7 @@ class KTV_HPDAMAGE(View):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
 
@@ -352,7 +352,7 @@ class KTV_HPDAMAGE(View):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
 
@@ -396,7 +396,7 @@ class KTV_WPDAMAGE(View):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
 
@@ -422,7 +422,7 @@ class KTV_WPDAMAGE(View):
         character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
 

@@ -43,9 +43,9 @@ async def clearDBRollInfo(interaction):
 
     # This will be fixed in the future, I just want to get this small thing pushed out soon.
     # For more info, just look up "atrocious" in this file lower down.
-    await yU.cacheClear(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml')
+    await yU.cacheClear(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml')
 
-    with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+    with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         cursor = db.cursor()  # ? Resets commandvars & reroll_info
         cursor.execute('UPDATE commandvars SET difficulty=?, rollPool=?, result=?, poolComp=?', (0, 0, 0, 'Base[0]'), )
         cursor.execute('UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?', (0, 0, 0, 0, 0, 0, 0), )
@@ -58,7 +58,7 @@ async def normalRoller(interaction, return_page):
 
     # Finding Starting Roll Pool, Difficulty, and Hunger before rolling die.
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
             difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
@@ -99,7 +99,7 @@ async def normalRoller(interaction, return_page):
 
     # Updating rerollInfo in the database
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             cursor.execute(
                 'UPDATE rerollInfo SET regularCritDie=?, hungerCritDie=?, regularSuccess=?, hungerSuccess=?, regularFail=?, hungerFail=?, hungerSkull=?',
@@ -148,7 +148,7 @@ async def normalRoller(interaction, return_page):
     #
     # TODO: Add to ReRoller
     # atrocious [goto next result atrocious result]
-    target_cache = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
+    target_cache = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
     data_check = await yU.cacheDataExist(target_cache, 'mark')
     if data_check is True:
         data = await yU.cacheRead(f'{target_cache}')
@@ -157,9 +157,9 @@ async def normalRoller(interaction, return_page):
         roll_mark = str(use_data['mark'])
         if roll_mark == 'hunt':
             current_time = datetime.datetime.now()
-            await yU.cacheWrite(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//hunt_history.yaml', {f'{current_time}': f'{flag}'})
+            await yU.cacheWrite(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//hunt_history.yaml', {f'{current_time}': f'{flag}'})
 
-            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
                 cursor = db.cursor()
                 hunt_hunger = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
                 blood_potency = int(cursor.execute('SELECT blood_potency from charInfo').fetchone()[0])
@@ -231,7 +231,7 @@ async def normalRoller(interaction, return_page):
             elif flag == 'Crit':
                 return_page.add_field(name='Hunt:', value=f'Flawless | {hunt_hunger * mC.HUNGER_EMOJI}')
 
-            with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+            with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
                 cursor = db.cursor()
                 cursor.execute('UPDATE charInfo SET hunger=?', (str(int(hunt_hunger))))  # str(int()) is over excessive, however.
             await yU.cacheClear(target_cache)
@@ -244,7 +244,7 @@ async def reRoller(self, interaction, button, return_page):
     character_name = await vU.getCharacterName(interaction)
 
     # Finding Starting Roll Pool, Difficulty, & Roll Info
-    with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+    with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         cursor = db.cursor()
         roll_pool = int(cursor.execute('SELECT rollPool FROM commandVars').fetchone()[0])
         difficulty = int(cursor.execute('SELECT difficulty from commandVars').fetchone()[0])
@@ -284,7 +284,7 @@ async def reRoller(self, interaction, button, return_page):
 
     # Update roll info
     try:
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             cursor.execute('UPDATE rerollInfo SET regularCritDie=?, regularSuccess=?, regularFail=?',
                            (roll_results['regular_crit'], roll_results['regular_success'], roll_results['regular_fail']))
@@ -404,7 +404,7 @@ class KRV_DIFFICULTY(View):
         character_name = await vU.getCharacterName(interaction)
 
         # Actual Logic of the Selection
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             db.cursor().execute('UPDATE commandvars SET difficulty=?', (select.values))  # ! Parentheses are NOT redundant
             db.commit()
         # Actual Logic of the Selection
@@ -451,7 +451,7 @@ class KRV_ATTRIBUTE(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.attribute')
         character_name = await vU.getCharacterName(interaction)
 
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         # Actual Logic of the Selection
         await basicSelection(select, targetDB, 'charAttributes')
@@ -499,7 +499,7 @@ class KRV_PHYSICAL(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.physical')
         character_name = await vU.getCharacterName(interaction)
 
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         # Actual Logic of the Selection
         await basicSelection(select, targetDB, 'physicalSkills')
@@ -547,7 +547,7 @@ class KRV_SOCIAL(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.social')
         character_name = await vU.getCharacterName(interaction)
 
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         # Actual Logic of the Selection
         await basicSelection(select, targetDB, 'socialSkills')
@@ -595,7 +595,7 @@ class KRV_MENTAL(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.mental')
         character_name = await vU.getCharacterName(interaction)
 
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         # Actual Logic of the Selection
         await basicSelection(select, targetDB, 'mentalSkills')
@@ -643,7 +643,7 @@ class KRV_DISCIPLINE(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.discipline')
         character_name = await vU.getCharacterName(interaction)
 
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         # Actual Logic of the Selection
         await basicSelection(select, targetDB, 'disciplines')
@@ -713,7 +713,7 @@ class KRV_EXTRAS(View):
         response_page, response_view = await vPS.pageEVNav(interaction, 'roller.extras')
         character_name = await vU.getCharacterName(interaction)
 
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         # Actual Logic of the Selection
         with sqlite3.connect(targetDB) as db:
@@ -744,7 +744,7 @@ class KRV_EXTRAS(View):
 
         # Actual Button Logic
         character_name = await vU.getCharacterName(interaction)
-        targetDB = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
+        targetDB = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite'
 
         with sqlite3.connect(targetDB) as db:
             response_page, response_view = await vPS.pageEVNav(interaction, 'roller.rolled')
@@ -843,7 +843,7 @@ class KRV_MARKS(View):
         # I may give the roller an entire system based on "Marks", but its TBD
         # Such system may assist with adding things such as: Blood Surge; Remorse; Clan Bane; Diablerie; Frenzy; Compulsions; etc.
         # Actual Button Logic
-        target_cache = f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
+        target_cache = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
         await yU.cacheClear(target_cache)
         await yU.cacheWrite(target_cache, {'mark': 'hunt'})
         button.disabled = True  # DOESN'T WORK

@@ -15,7 +15,7 @@ async def trackerPageDecider(interaction, target_page_name, initial_page) -> Emb
             raise ValueError
 
         character_name = await vU.getCharacterName(interaction)
-        with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
             cursor = db.cursor()
             match target_page_name:
                 case 'tracker.home':

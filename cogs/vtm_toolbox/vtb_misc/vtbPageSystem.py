@@ -79,7 +79,7 @@ async def basicPageBuilder(interaction, page_title: str, page_description: str, 
     character_name: str = await vU.getCharacterName(interaction)
 
     # Gets the character's avatar
-    with sqlite3.connect(f'cogs//vampire//characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
+    with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
         character_avatar = db.cursor().execute('SELECT imgURL from charInfo').fetchone()[0]
 
     # Adds the basic information to the page
