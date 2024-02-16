@@ -4,7 +4,7 @@ ExodusAutomaton
 ## Version Info
 
 > * Branch: new_character_system
-> * Version: v00.00.01
+> * Version: v00.00.02
 > * State: Testing
 > * DateTime: Feb 16th 2024 | 2:35am
 

@@ -27,6 +27,20 @@ class VampireRoll(commands.Cog):
     async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
         await vPS.vampirePageCommand(self, interaction, character_name, 'tracker.home', True)
 
+    @app_commands.command(name='dev-test', description='---DO NOT TOUCH---')
+    @app_commands.describe(character_name='Character Name')
+    async def VampireTracker(self, interaction: discord.Interaction, character_name: str):
+        import cogs.vtm_toolbox.vtb_misc.vtb_character_manager as vtb_cm
+        import json
+
+        CHARACTER_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character_name.json'
+        CHARACTER_DICT: dict = {'character_name': character_name}
+
+        with open(CHARACTER_FILE, "w") as operate_file:
+            json.dump(CHARACTER_DICT, operate_file)
+
+        return
+
     @app_commands.command(name='vampire-img', description='Sets the character img for `vampire`')
     @app_commands.describe(charactername='Character Name')
     @app_commands.describe(characterimgurl='Character Image URL')
