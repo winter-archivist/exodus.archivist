@@ -11,7 +11,7 @@ import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
 import cogs.vtm_toolbox.vtb_roller.rollerPageBuilders as rPB
 import cogs.vtm_toolbox.vtb_roller.rollerOptions as rO
 
-from misc.config import mainConfig as mC
+from misc.config import main_config as mC
 from misc.utils import yamlUtils as yU
 
 

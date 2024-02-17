@@ -6,7 +6,7 @@ from zenlog import log
 import cogs.vtm_toolbox.vtb_misc.vtbPageSystem as vPS
 import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
 
-from misc.config import mainConfig as mC
+from misc.config import main_config as mC
 
 health_or_willpower_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
                                discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),

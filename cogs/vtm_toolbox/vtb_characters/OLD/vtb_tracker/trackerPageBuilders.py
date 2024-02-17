@@ -3,7 +3,7 @@ from discord import Embed
 from discord.ui import View
 from zenlog import log
 
-import misc.config.mainConfig as mC
+import misc.config.main_config as mC
 import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
 import cogs.vtm_toolbox.vtb_tracker.trackerViews as tV
 
