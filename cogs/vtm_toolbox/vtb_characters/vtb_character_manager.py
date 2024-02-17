@@ -1,7 +1,7 @@
 import os
 import json
+import random
 import discord
-import functools
 from zenlog import log
 from discord.ui import View
 
@@ -132,37 +132,25 @@ class vtb_DEV_TEST_VIEW(View):
 
     @discord.ui.button(label='TESTING', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
     async def dev_test_button_one_button_callback(self, interaction, button):
-        character_class = vtb_Character(interaction)
+        character = vtb_Character(interaction)
 
         dev_test_embed = discord.Embed(title='`!__DEV__DEBUG__TESTS__!`',
                                        description='`!__ONLY__PRESS__THINGS__IF__INSTRUCTED__!`',
                                        color=mC.EMBED_COLORS['red'])
-        dev_test_embed.add_field(name='Char Name', value=f'{character_class.CHARACTER_NAME}', inline=True)
-        dev_test_embed.add_field(name='Char Owner ID', value=f'{character_class.OWNER_ID}', inline=True)
+        dev_test_embed.add_field(name='Char Name', value=f'{character.CHARACTER_NAME}', inline=True)
+        dev_test_embed.add_field(name='Char Owner ID', value=f'{character.OWNER_ID}', inline=True)
 
-        wanted_information = ('base_willpower',)
-        character_information: dict = await character_class.__get_information__(wanted_information, 'willpower')
-        dev_test_embed.add_field(name='Char Willpower', value=f'{character_information[wanted_information[0]]}', inline=True)
+        ROUSE_RESULT = await character.__rouse_check__()
 
-        wanted_information = ('science', 'occult')
-        character_information: dict = await character_class.__get_information__(wanted_information, 'skills/mental')
-        dev_test_embed.add_field(name='Char Science', value=f'{character_information[wanted_information[0]]}', inline=True)
-        dev_test_embed.add_field(name='Char Occult', value=f'{character_information[wanted_information[1]]}', inline=True)
-
-        new_information = (('base_willpower',), (2,))
-        await character_class.__update_information__(new_information, 'willpower')
-
-        new_information = (('science', 'occult'), (5, 9))
-        await character_class.__update_information__(new_information, 'skills/mental')
-
-        wanted_information = ('base_willpower',)
-        character_information: dict = await character_class.__get_information__(wanted_information, 'willpower')
-        dev_test_embed.add_field(name='Char Willpower 2', value=f'{character_information[wanted_information[0]]}', inline=True)
-
-        wanted_information = ('science', 'occult')
-        character_information: dict = await character_class.__get_information__(wanted_information, 'skills/mental')
-        dev_test_embed.add_field(name='Char Science 2', value=f'{character_information[wanted_information[0]]}', inline=True)
-        dev_test_embed.add_field(name='Char Occult 2', value=f'{character_information[wanted_information[1]]}', inline=True)
+        if ROUSE_RESULT[0] == 'Frenzy':
+            log.debug(ROUSE_RESULT)
+            dev_test_embed.add_field(name='FRENZY', value=f'{ROUSE_RESULT[1]}', inline=True)
+        elif ROUSE_RESULT[0] == 'Pass':
+            log.debug(ROUSE_RESULT)
+            dev_test_embed.add_field(name='PASS', value=f'{ROUSE_RESULT[1]}', inline=True)
+        elif ROUSE_RESULT[0] == 'Fail':
+            log.debug(ROUSE_RESULT)
+            dev_test_embed.add_field(name='FAIL', value=f'{ROUSE_RESULT[1] - 1} -> {ROUSE_RESULT[1]}', inline=True)
 
         await interaction.response.send_message(embed=dev_test_embed, view=vtb_DEV_TEST_VIEW(self.CLIENT))
 
@@ -200,6 +188,7 @@ class vtb_Character:
             return_information[f'{WANTED_INFORMATION[loop_counter]}'] = CHARACTER_INFO[f'{WANTED_INFORMATION[loop_counter]}']
             loop_counter += 1
 
+        log.debug(f'{self.OWNER_ID} __get | {return_information}')
         return return_information
 
     async def __update_information__(self, NEW_INFORMATION: tuple, FILE_NAME: str) -> dict:
@@ -211,11 +200,29 @@ class vtb_Character:
         for x in NEW_INFORMATION[0]:
             dict_key = NEW_INFORMATION[0][loop_counter]
             new_value = NEW_INFORMATION[1][loop_counter]
-            log.crit(f'{dict_key} -> {new_value}')
+            log.debug(f'{self.OWNER_ID} __update loop | {dict_key} -> {new_value}')
             character_info[dict_key] = new_value
             loop_counter += 1
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'w') as operate_file:
             json.dump(character_info, operate_file)
 
+        log.debug(f'{self.OWNER_ID} __update | {return_information}')
         return return_information
+
+    async def __rouse_check__(self) -> tuple:
+        HUNGER: int = (await self.__get_information__(('hunger',), 'misc'))['hunger']
+        ROUSE_NUM_RESULT: int = random.randint(1, 10)
+
+        if HUNGER >= 5:
+            result: tuple = ('Frenzy', HUNGER)
+            return result  # Hunger Frenzy, No Hunger Gain Too High Already
+
+        elif ROUSE_NUM_RESULT >= 6:
+            result: tuple = ('Pass', HUNGER)
+            return result  # No Hunger Gain
+
+        elif ROUSE_NUM_RESULT <= 5:
+            await self.__update_information__((('hunger',), (HUNGER+1,)), 'misc')
+            result: tuple = ('Fail', HUNGER+1)
+            return result  # 1 Hunger Gain
