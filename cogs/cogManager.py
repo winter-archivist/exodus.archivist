@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from misc.config import mainConfig as mC
+from misc.config import main_config as mC
 
 
 class CogManager(commands.Cog):

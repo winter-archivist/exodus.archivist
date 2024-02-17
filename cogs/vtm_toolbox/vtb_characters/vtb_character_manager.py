@@ -3,9 +3,8 @@ import json
 import random
 import discord
 from zenlog import log
-from discord.ui import View
 
-from misc.config import mainConfig as mC
+from misc.config import main_config as mc
 
 
 async def make_character_files(interaction: discord.Interaction, character_name):
@@ -25,7 +24,7 @@ async def make_character_files(interaction: discord.Interaction, character_name)
                        'bane_severity'       : 0,
                        'hunger'              : 0,
                        'predator_type'       : 'UNSET',
-                       'character_avatar_url': mC.PLACEHOLDER_IMG}
+                       'character_avatar_url': mc.PLACEHOLDER_IMG}
     HEALTH_DICT: dict = {'base_health'              : 0,
                          'superficial_health_damage': 0,
                          'aggravated_health_damage' : 0}
@@ -123,36 +122,6 @@ async def make_character_files(interaction: discord.Interaction, character_name)
 
     with open(f'{CHARACTER_DIRECTORY}roll/info.json', "w") as operate_file:
         json.dump(ROLL_DICT, operate_file)
-
-
-class vtb_DEV_TEST_VIEW(View):
-    def __init__(self, CLIENT):
-        super().__init__()
-        self.CLIENT = CLIENT
-
-    @discord.ui.button(label='TESTING', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.green, row=1)
-    async def dev_test_button_one_button_callback(self, interaction, button):
-        character = vtb_Character(interaction)
-
-        dev_test_embed = discord.Embed(title='`!__DEV__DEBUG__TESTS__!`',
-                                       description='`!__ONLY__PRESS__THINGS__IF__INSTRUCTED__!`',
-                                       color=mC.EMBED_COLORS['red'])
-        dev_test_embed.add_field(name='Char Name', value=f'{character.CHARACTER_NAME}', inline=True)
-        dev_test_embed.add_field(name='Char Owner ID', value=f'{character.OWNER_ID}', inline=True)
-
-        ROUSE_RESULT = await character.__rouse_check__()
-
-        if ROUSE_RESULT[0] == 'Frenzy':
-            log.debug(ROUSE_RESULT)
-            dev_test_embed.add_field(name='FRENZY', value=f'{ROUSE_RESULT[1]}', inline=True)
-        elif ROUSE_RESULT[0] == 'Pass':
-            log.debug(ROUSE_RESULT)
-            dev_test_embed.add_field(name='PASS', value=f'{ROUSE_RESULT[1]}', inline=True)
-        elif ROUSE_RESULT[0] == 'Fail':
-            log.debug(ROUSE_RESULT)
-            dev_test_embed.add_field(name='FAIL', value=f'{ROUSE_RESULT[1] - 1} -> {ROUSE_RESULT[1]}', inline=True)
-
-        await interaction.response.send_message(embed=dev_test_embed, view=vtb_DEV_TEST_VIEW(self.CLIENT))
 
 
 class vtb_Character:
