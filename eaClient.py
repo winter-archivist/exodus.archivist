@@ -10,7 +10,7 @@ import discord
 from discord.ext import commands
 from zenlog import log
 
-from misc.config import mainConfig as mC, clientConfig as cC
+from misc.config import main_config as mC, client_config as cC
 
 
 async def initializeStartupCogs(CLIENT_INPUT):
@@ -83,7 +83,7 @@ async def on_ready():
 
     # Slash Commands Setup
     # Can be easily disabled/enabled via the variable
-    # "SLASH_MODE" in misc/config/clientConfig.py
+    # "SLASH_MODE" in misc/config/client_config.py
     match cC.SLASH_MODE:
 
         case True:
