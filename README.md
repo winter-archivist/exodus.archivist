@@ -4,7 +4,10 @@ ExodusAutomaton
 ## Version Info
 
 > * Branch: new_character_system
-> * Version: v00.00.02
+> * Version 01.00.00
+> > * Major: 01 | Large Overhauls
+> > * Minor: 00 | Non-Major Features
+> > * Patch: 00 | Other Repo Pushes
 > * State: Testing
 > * DateTime: Feb 16th 2024 | 2:35am
 
