@@ -26,5 +26,11 @@ async def basic_page_builder(interaction: discord.Interaction, page_title: str, 
     return base_page
 
 
-async def tracker_home_builder():
-    pass
+async def standard_roller_page_modifications(page: discord.Embed, CHARACTER: cm.vtb_Character) -> discord.Embed:
+    page.add_field(name='', value='', inline=False)  # Just makes sure it isn't interfering with any other fields/elements
+
+    CHARACTER_INFORMATION: dict = await CHARACTER.__get_information__(('pool', 'difficulty', 'composition'), 'roll/info')
+    page.add_field(name='Pool', value=f'{CHARACTER_INFORMATION["pool"]}', inline=True)
+    page.add_field(name='Difficulty', value=f'{CHARACTER_INFORMATION["difficulty"]}', inline=True)
+    page.add_field(name='Composition', value=f'{CHARACTER_INFORMATION["composition"]}', inline=True)
+    return page

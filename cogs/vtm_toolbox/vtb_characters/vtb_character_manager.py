@@ -87,7 +87,7 @@ async def make_character_files(interaction: discord.Interaction, character_name)
     ROLL_DICT: dict = {'difficulty': 0,
                        'pool' : 0,
                        'result': '',
-                       'composition': (),
+                       'composition': 'Base[0]',
                        'regular_crit_count': 0,
                        'regular_success_count': 0,
                        'regular_fail_count': 0,
@@ -160,11 +160,10 @@ class vtb_Character:
         log.debug(f'{self.OWNER_ID} __get | {return_information}')
         return return_information
 
-    async def __update_information__(self, NEW_INFORMATION: tuple, FILE_NAME: str) -> dict:
+    async def __update_information__(self, NEW_INFORMATION: tuple, FILE_NAME: str) -> None:
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             character_info: dict = json.load(operate_file)
 
-        return_information: dict = {}
         loop_counter: int = 0
         for x in NEW_INFORMATION[0]:
             dict_key = NEW_INFORMATION[0][loop_counter]
@@ -175,9 +174,6 @@ class vtb_Character:
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'w') as operate_file:
             json.dump(character_info, operate_file)
-
-        log.debug(f'{self.OWNER_ID} __update | {return_information}')
-        return return_information
 
     async def __rouse_check__(self) -> tuple:
         HUNGER: int = (await self.__get_information__(('hunger',), 'misc'))['hunger']

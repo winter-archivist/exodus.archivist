@@ -9,7 +9,7 @@ async def reset_character_roll_information(interaction: discord.Interaction, cha
     ROLL_DICT: dict = {'difficulty'           : 0,
                        'pool'                 : 0,
                        'result'               : '',
-                       'composition'          : (),
+                       'composition'          : 'Base[0]',
                        'regular_crit_count'   : 0,
                        'regular_success_count': 0,
                        'regular_fail_count'   : 0,
