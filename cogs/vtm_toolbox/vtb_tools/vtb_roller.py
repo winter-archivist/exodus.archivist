@@ -19,7 +19,41 @@ class Home(discord.ui.View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
+    @discord.ui.select(placeholder='Select Difficulty', options=ro.difficulty_options, max_values=1, min_values=1, row=0)
+    async def difficulty_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+
+        # Parenthesis on (select.values) are NOT redundant!!!
+        await CHARACTER.__update_information__((('difficulty',), ((select.values),)), 'roll/info')
+
+        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
+        await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def roll_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Roll', '', 'red')
+
+        page: discord.Embed = await CHARACTER.__roll__(page)
+
+        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
+        await interaction.response.edit_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Hunting Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def hunt_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Roll', '', 'red')
+
+        page = await CHARACTER.__hunt__(page)
+
+        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
+        await interaction.response.edit_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
     async def attributes_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Attribute Page', '', 'dark_yellow')
@@ -36,9 +70,10 @@ class Attributes(discord.ui.View):
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def home_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        return
 
     @discord.ui.select(placeholder='Select Attribute(s)', options=ro.attribute_options, max_values=3, min_values=1, row=1)
     async def attribute_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
@@ -49,7 +84,7 @@ class Attributes(discord.ui.View):
         pool: int = CHARACTER_INFORMATION['pool']
         composition: str = CHARACTER_INFORMATION['composition']
 
-        for_var = 0
+        for_var: int = 0
         for selections in select.values:
             attribute_value: int = dict(await CHARACTER.__get_information__((f'{select.values[for_var]}',), 'attributes'))[
                 select.values[for_var]]
@@ -63,3 +98,4 @@ class Attributes(discord.ui.View):
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.edit_message(embed=page, view=Attributes(self.CLIENT))
+        return

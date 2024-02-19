@@ -10,7 +10,9 @@ async def reset_character_roll_information(interaction: discord.Interaction, cha
                        'pool'                 : 0,
                        'result'               : '',
                        'composition'          : 'Base[0]',
-                       'regular_crit_count'   : 0,
+
+                       # These are NOT a dict as to make it friendlier
+                       # with vtb_Character.__update_information__()
                        'regular_success_count': 0,
                        'regular_fail_count'   : 0,
                        'hunger_crit_count'    : 0,

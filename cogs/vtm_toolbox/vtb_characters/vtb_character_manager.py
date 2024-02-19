@@ -3,6 +3,7 @@ import json
 import random
 import discord
 from zenlog import log
+from random import randint
 
 from misc.config import main_config as mc
 
@@ -88,6 +89,9 @@ async def make_character_files(interaction: discord.Interaction, character_name)
                        'pool' : 0,
                        'result': '',
                        'composition': 'Base[0]',
+
+                       # These are NOT a dict as to make it friendlier
+                       # with vtb_Character.__update_information__()
                        'regular_crit_count': 0,
                        'regular_success_count': 0,
                        'regular_fail_count': 0,
@@ -191,3 +195,194 @@ class vtb_Character:
             await self.__update_information__((('hunger',), (HUNGER+1,)), 'misc')
             result: tuple = ('Fail', HUNGER+1)
             return result  # 1 Hunger Gain
+
+    async def __roll__(self, page: discord.Embed, RETURN_EXTRA: bool = False):
+
+        POOL_DIFFICULTY_DICT: dict = await self.__get_information__(('pool', 'difficulty'), 'roll/info')
+        POOL: int = POOL_DIFFICULTY_DICT['pool']
+        DIFFICULTY: int = POOL_DIFFICULTY_DICT['difficulty']
+
+        HUNGER = (await self.__get_information__(('hunger',), 'misc'))['hunger']
+
+        result: dict = {
+            # Can be Rerolled by self.__re_roll__
+            'regular_crit': 0,
+            'regular_success': 0,
+            'regular_fail': 0,
+
+            # These can't be rerolled by self.__re_roll__
+            'hunger_crit': 0,
+            'hunger_success': 0,
+            'hunger_fail': 0,
+            'hunger_skull': 0}
+
+        while_pool = POOL
+        while_hunger = HUNGER
+        while 0 < while_pool:
+            die_result = randint(1, 10)
+
+            if while_hunger <= 0:
+
+                if die_result == 10:
+                    result['regular_crit'] += 1
+                elif die_result >= 6:
+                    result['regular_success'] += 1
+                elif die_result <= 5:
+                    result['regular_fail'] += 1
+
+            else:
+                while_hunger -= 1
+
+                if die_result == 10:
+                    result['hunger_crit'] += 1
+                elif die_result == 1:
+                    result['hunger_skull'] += 1
+                elif die_result >= 6:
+                    result['hunger_success'] += 1
+                elif die_result <= 5:
+                    result['hunger_fail'] += 1
+
+            while_pool -= 1
+
+        UPDATE_KEYS = ('regular_crit', 'regular_success', 'regular_fail',
+                       'hunger_crit', 'hunger_success', 'hunger_fail', 'hunger_skull')
+        UPDATE_INFO = (result['regular_crit'], result['regular_success'], result['regular_fail'],
+                       result['hunger_crit'], result['hunger_success'], result['hunger_fail'], result['hunger_skull'])
+        await self.__update_information__((UPDATE_KEYS, UPDATE_INFO), 'roll/info')
+
+        roll_flag: str = ''
+        crits: int = 0
+        unused_crit_die: int = result['regular_crit'] + result['hunger_crit']
+        while_total: int = unused_crit_die
+
+        while while_total > -1:
+
+            # If there are at-least 2 crit die continue
+            # otherwise add the remaining crit die and stop
+            if result['regular_crit'] + result['hunger_crit'] > 2:
+
+                if result['regular_crit'] >= 2:
+                    crits += 1
+                    roll_flag = 'Crit'
+                    result['regular_crit'] -= 2
+                    unused_crit_die -= 2
+
+                elif result['hunger_crit'] >= 2:
+                    crits += 1
+                    roll_flag = 'Messy Crit'
+                    result['hunger_crit'] -= 2
+                    unused_crit_die -= 2
+
+                elif result['regular_crit'] + result['hunger_crit'] >= 2:
+                    crits += 1
+                    roll_flag = 'Messy Crit'
+                    result['regular_crit'] -= 1
+                    result['hunger_crit'] -= 1
+                    unused_crit_die -= 2
+            else:
+                break
+            while_total -= 1
+
+        TOTAL_SUCCESSES: int = int((result['regular_success'] + result['hunger_success'] + unused_crit_die) + crits * 4)
+        TOTAL_FAILS: int = int(result['regular_fail'] + result['hunger_fail'] + result['hunger_skull'])
+
+        if TOTAL_SUCCESSES >= DIFFICULTY and roll_flag == '':
+            roll_flag = 'Regular Success'
+        elif TOTAL_SUCCESSES <= DIFFICULTY and roll_flag == '':
+            roll_flag = 'Regular Fail'
+            if result['hunger_skull'] >= 1:
+                roll_flag = 'Bestial Failure'
+
+        page.add_field(name='Success Count', value=f'{TOTAL_SUCCESSES}')
+        page.add_field(name='Failure Count', value=f'{TOTAL_FAILS}')
+        page.add_field(name='Roll Result', value=f'{roll_flag}')
+
+        if RETURN_EXTRA is False:
+            return page
+        else:
+            return page, result, roll_flag
+
+    async def __re_roll__(self) -> 'str':
+        pass
+
+    async def __hunt__(self, input_page: discord.Embed):
+        page, result, roll_flag = await self.__roll__(input_page, True)
+
+        MISC_DICT: dict = await self.__get_information__(('hunger', 'blood_potency'), 'misc')
+        BLOOD_POTENCY: int = MISC_DICT['blood_potency']
+        hunger: int = MISC_DICT['hunger']
+
+        page.add_field(name='Roll Mark:', value=f'**Hunt**')
+
+        if roll_flag == 'Regular Fail':
+            page.add_field(name='Hunt Failed.', value=f'Ask DM About Resulting Consequences')
+            return  # page; MAY NEED THIS TO FIX
+
+        min_hunger_without_kill = 1
+        if BLOOD_POTENCY >= 5:
+            min_hunger_without_kill = 2
+
+        if hunger == 0:
+            min_hunger_without_kill = 0
+        elif int(hunger - 2) <= min_hunger_without_kill:
+            hunt_hunger = min_hunger_without_kill
+        else:
+            hunger -= 2
+
+        temperament_check = randint(1, 10)
+        if temperament_check >= 6:
+            random_temperament_num = randint(1, 10)
+            random_resonance_num = randint(1, 10)
+
+            phlegmatic_resonances = (1, 2, 3)
+            melancholy_resonances = (4, 5, 6)
+            choleric_resonances = (7, 8)
+            sanguine_resonances = (9, 10)
+            # TODO: Eventually this should be stored in the character's sheet.
+            if random_temperament_num in phlegmatic_resonances:
+                resonance = 'Phlegmatic'
+            elif random_temperament_num in melancholy_resonances:
+                resonance = 'Melancholy'
+            elif random_temperament_num in choleric_resonances:
+                resonance = 'Choleric'
+            elif random_temperament_num in sanguine_resonances:
+                resonance = 'Sanguine'
+            else:
+                resonance = 'ERROR'
+
+            negligible_resonances = (1, 2, 3, 4, 5)
+            fleeting_resonances = (6, 7, 8)
+            intense_or_acute_resonances = (9, 10)
+            if random_temperament_num in intense_or_acute_resonances:
+                second_temperament_roll = randint(1, 10)
+                if second_temperament_roll >= 9:
+                    temperament = 'Acute'
+                else:
+                    temperament = 'Intense'
+
+            elif random_temperament_num in fleeting_resonances:
+                temperament = 'Fleeting'
+
+            elif random_temperament_num in negligible_resonances:
+                temperament = 'Negligible'
+
+            else:
+                temperament = 'ERROR'
+
+            page.add_field(name=f'{temperament} {resonance} Temperament', value='')
+        else:
+            page.add_field(name=f'No Temperament', value='')
+
+        if roll_flag == 'Regular Success':
+            page.add_field(name='Hunt:', value=f'Success | {hunger * mc.HUNGER_EMOJI}')
+
+        elif roll_flag == 'Messy Crit':
+            page.add_field(name='Hunt:', value=f'Messy Crit | {hunger * mc.HUNGER_EMOJI}')
+
+        elif roll_flag == 'Crit':
+            page.add_field(name='Hunt:', value=f'Flawless | {hunger * mc.HUNGER_EMOJI}')
+
+        elif roll_flag == 'Bestial Failure':
+            page.add_field(name='Hunt:', value=f'BESTIAL FAILURE | {hunger * mc.HUNGER_EMOJI}')
+
+        await self.__update_information__((('hunger',), (hunger,)), 'roll/misc')

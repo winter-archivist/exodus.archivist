@@ -5,6 +5,12 @@ import misc.config.main_config as mc
 import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 
 
+class EMPTY_VIEW(discord.ui.View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+
 async def basic_page_builder(interaction: discord.Interaction, page_title: str, page_description: str, page_color: str) -> discord.Embed:
     if page_color not in mc.EMBED_COLORS:
         raise ValueError(f'*> Bad Page Color')
