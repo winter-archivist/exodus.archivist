@@ -199,31 +199,28 @@ discipline_options = [
         label='Thinblood Alchemy', value='thin_blood_alchemy', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Blood Sorcerery', value='blood_sorc', emoji='<:snek:785811903938953227>'
+        label='Blood Sorcerery', value='blood_sorcery', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
         label='Chemeristry', value='chemeristry', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Seven', value='seven', emoji='<:snek:785811903938953227>'
+        label='Seven', value='seven_specific', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Myr', value='myr', emoji='<:snek:785811903938953227>'
+        label='Myr', value='myr_specific', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Selena', value='selena', emoji='<:snek:785811903938953227>'
+        label='Selena', value='selena_specific', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Nyct1', value='nyct1', emoji='<:snek:785811903938953227>'
+        label='Nyct1', value='nyctea_specific_one', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Nyct2', value='nyct2', emoji='<:snek:785811903938953227>'
+        label='Nyct2', value='nyctea_specific_two', emoji='<:snek:785811903938953227>'
     ),
     SelectOption(
-        label='Iilta', value='iilta', emoji='<:snek:785811903938953227>'
-    ),
-    SelectOption(
-        label='Elijah', value='elijah', emoji='<:snek:785811903938953227>'
+        label='Elijah', value='elijah_specific', emoji='<:snek:785811903938953227>'
     ),]
 
 extra_options = [
