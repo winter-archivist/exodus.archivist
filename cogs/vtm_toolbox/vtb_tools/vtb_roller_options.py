@@ -1,5 +1,6 @@
 from discord import SelectOption
 
+
 difficulty_options = [
     SelectOption(
         label='Zero', value='0', emoji='<:snek:785811903938953227>'
@@ -43,6 +44,7 @@ difficulty_options = [
     SelectOption(
         label='Thirteen', value='13', emoji='<:snek:785811903938953227>'
     )]
+
 attribute_options = [
             SelectOption(
                 label='Strength', value='strength',
@@ -80,6 +82,7 @@ attribute_options = [
                 label='Resolve', value='resolve',
                 emoji='<:blueprint:1053308562127994991>',
             )]
+
 physical_skill_options = [
     SelectOption(
         label='Athletics', value='athletics', emoji='<:gem_red:813815883754766356>'
@@ -108,6 +111,7 @@ physical_skill_options = [
     SelectOption(
         label='Survival', value='survival', emoji='<:gem_red:813815883754766356>'
     ), ]
+
 social_skill_options = [
     SelectOption(
         label='Animal Ken', value='animal_ken', emoji='<:greenessential:885489197169926195>'
@@ -136,6 +140,7 @@ social_skill_options = [
     SelectOption(
         label='Subterfuge', value='subterfuge', emoji='<:greenessential:885489197169926195>'
     ), ]
+
 mental_skill_options = [
     SelectOption(
         label='Academics', value='academics', emoji='<:blueprint:1053308562127994991>'
@@ -164,6 +169,7 @@ mental_skill_options = [
     SelectOption(
         label='Technology', value='technology', emoji='<:blueprint:1053308562127994991>'
     ), ]
+
 discipline_options = [
     SelectOption(
         label='Obfuscate', value='obfuscate', emoji='<:snek:785811903938953227>'
@@ -219,6 +225,7 @@ discipline_options = [
     SelectOption(
         label='Elijah', value='elijah', emoji='<:snek:785811903938953227>'
     ),]
+
 extra_options = [
     SelectOption(
         label='One', value='1', emoji='<:snek:785811903938953227>'
@@ -249,6 +256,7 @@ extra_options = [
     ),
     SelectOption(
         label='Minus Five', value='-5', emoji='<:snek:785811903938953227>')]
+
 hunt_mod_options = [SelectOption(label='Negative One', value='-1', emoji='<:snek:785811903938953227>'),
                     SelectOption(label='Negative Two', value='-2', emoji='<:snek:785811903938953227>'),
                     SelectOption(label='Negative Three', value='-3', emoji='<:snek:785811903938953227>'),
