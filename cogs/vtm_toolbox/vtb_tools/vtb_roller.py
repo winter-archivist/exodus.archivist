@@ -124,7 +124,7 @@ class RollTypes(discord.ui.View):
         page: discord.Embed = await CHARACTER.__roll__(page)
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.edit_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Reroll(self.CLIENT))
         return
 
     @discord.ui.button(label='Hunting Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
@@ -135,7 +135,7 @@ class RollTypes(discord.ui.View):
         page = await CHARACTER.__hunt__(page)
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.edit_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Reroll(self.CLIENT))
         return
 
 
@@ -247,4 +247,110 @@ class Extras(discord.ui.View):
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
+        return
+
+
+class Reroll(discord.ui.View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Reroll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
+    async def reroll_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Reroll', '', 'red')
+
+        WANTED_WILLPOWER_INFORMATION: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
+        WILLPOWER_FILE: str = 'willpower'
+        WILLPOWER_DICT: dict = await CHARACTER.__get_information__(WANTED_WILLPOWER_INFORMATION, WILLPOWER_FILE)
+
+        WANTED_ROLL_INFORMATION: tuple = ('regular_crit', 'regular_success', 'regular_fail', 'hunger_crit', 'hunger_success', 'hunger_fail', 'skull_count', 'difficulty')
+        ROLL_FILE: str = 'roll/info'
+        ROLL_DICT: dict = await CHARACTER.__get_information__(WANTED_ROLL_INFORMATION, ROLL_FILE)
+
+        roll_results: dict = {'regular_crit': ROLL_DICT['regular_crit'], 'regular_success': ROLL_DICT['regular_success'], 'regular_fail': ROLL_DICT['regular_fail'],
+                              'hunger_crit': ROLL_DICT['hunger_crit'], 'hunger_success': ROLL_DICT['hunger_success'], 'hunger_fail': ROLL_DICT['hunger_fail'],
+                              'skull_count': ROLL_DICT['skull_count']}
+
+        rerolls = roll_results['regular_fail']
+        # Reroll up to 3 regular-failures
+        if roll_results['regular_fail'] >= 3:
+            rerolls = 3
+            roll_results['regular_fail'] -= 3
+        else:
+            rerolls = roll_results['regular_fail']
+            roll_results['regular_fail'] -= roll_results['regular_fail']
+
+        # Find new roll numbers
+        while 0 < rerolls:
+            die_result = random.randint(1, 10)
+
+            if die_result == 10:
+                roll_results['regular_crit'] += 1
+            elif die_result >= 6:
+                roll_results['regular_success'] += 1
+            elif die_result <= 5:
+                roll_results['regular_fail'] += 1
+
+            rerolls -= 1
+
+        FINAL_ROLL_NUMBERS: tuple = (roll_results['regular_crit'], roll_results['regular_success'], roll_results['regular_fail'],
+                                     roll_results['hunger_crit'], roll_results['hunger_success'], roll_results['hunger_fail'],
+                                     roll_results['skull_count'], )
+
+        # Update roll info
+        await CHARACTER.__update_information__((WANTED_ROLL_INFORMATION, FINAL_ROLL_NUMBERS), 'roll/info')
+
+        # Find New Crits
+        crits = 0
+        flag = ''
+        while_total = roll_results['regular_crit'] + roll_results['hunger_crit']
+        while while_total > 0:
+            if roll_results['regular_crit'] + roll_results['hunger_crit'] > 2:
+                if roll_results['regular_crit'] >= 2:
+                    crits += 4
+                    roll_results['regular_crit'] -= 2
+
+                elif roll_results['hunger_crit'] >= 2:
+                    crits += 4
+                    flag = 'Messy Crit'
+                    roll_results['hunger_crit'] -= 2
+
+                elif roll_results['regular_crit'] + roll_results['hunger_crit'] >= 2:
+                    crits += 4
+                    flag = 'Messy Crit'
+                    break
+            else:
+                break
+            while_total -= 1
+
+        crits += roll_results['hunger_crit'] + roll_results['regular_crit']
+        total_successes = int(roll_results['regular_success'] + roll_results['hunger_success'] + crits)
+
+        DIFFICULTY = ROLL_DICT['difficulty']
+
+        if total_successes >= DIFFICULTY and flag == '':
+            flag = 'Regular Success'
+        elif total_successes <= DIFFICULTY and flag == '':
+            flag = 'Regular Fail'
+
+        if WILLPOWER_DICT['base_willpower'] <= WILLPOWER_DICT['aggravated_willpower_damage']:
+            button.disabled = True
+            button.label = 'Fate Sealed'
+            await interaction.response.edit_message(view=vp.EMPTY_VIEW(self.CLIENT))
+            return
+        elif WILLPOWER_DICT['base_willpower'] <= WILLPOWER_DICT['superficial_willpower_damage']:
+            await CHARACTER.__update_information__((('aggravated_willpower_damage',), (int(WILLPOWER_DICT['aggravated_willpower_damage']+1), )), 'willpower')
+        else:
+            await CHARACTER.__update_information__((('superficial_willpower_damage',), (int(WILLPOWER_DICT['superficial_willpower_damage']+1), )), 'willpower')
+
+        button.disabled = True
+        button.label = 'Fate Tempted'
+
+        # Assigns Information
+        page.add_field(name='Roll Result:', value=f'{total_successes} | {flag}')
+        log.crit(f'{total_successes=} | {crits=} | {DIFFICULTY=}')
+
+        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
+        await interaction.response.send_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
         return
