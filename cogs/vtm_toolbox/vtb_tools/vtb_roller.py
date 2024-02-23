@@ -14,6 +14,14 @@ import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 import cogs.vtm_toolbox.vtb_tools.vtb_roller_options as ro
 
 
+async def return_to_home(self, interaction: discord.Interaction) -> None:
+    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+    page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+    page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
+    await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+    return None
+
+
 class Home(discord.ui.View):
     def __init__(self, CLIENT):
         super().__init__()
@@ -67,10 +75,7 @@ class RollTypes(discord.ui.View):
 
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def home_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
-        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        await return_to_home(self, interaction)
         return
 
     @discord.ui.button(label='Blood Surge', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
@@ -146,10 +151,7 @@ class Attributes(discord.ui.View):
 
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def home_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
-        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        await return_to_home(self, interaction)
         return
 
     @discord.ui.select(placeholder='Select Attribute(s)', options=ro.attribute_options, max_values=3, min_values=1, row=1)
@@ -167,10 +169,7 @@ class Skills(discord.ui.View):
 
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def home_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
-        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        await return_to_home(self, interaction)
         return
 
     @discord.ui.select(placeholder='Select Physical Skill(s)', options=ro.physical_skill_options, max_values=3, min_values=1, row=1)
@@ -202,10 +201,7 @@ class Disciplines(discord.ui.View):
 
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def home_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
-        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        await return_to_home(self, interaction)
         return
 
     @discord.ui.select(placeholder='Select Discipline(s)', options=ro.discipline_options, max_values=3, min_values=1, row=1)
@@ -223,10 +219,7 @@ class Extras(discord.ui.View):
 
     @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def home_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
-        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        await return_to_home(self, interaction)
         return
 
     @discord.ui.select(placeholder='Extra Select', options=ro.extra_options, max_values=1, min_values=1, row=1)
