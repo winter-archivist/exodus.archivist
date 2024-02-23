@@ -184,54 +184,6 @@ async def attributePageBuilder(return_embed, cursor):
     return return_embed, return_view
 
 
-async def physicalSkillsPageBuilder(return_embed, cursor):
-    physical_skills = ('Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival')
-    for_var = 0
-    for x in physical_skills:
-        if for_var / 3 in (1, 2):
-            return_embed.add_field(name='', value='', inline=False)
-        count = int(
-            cursor.execute(f'SELECT {physical_skills[for_var].lower()} from physicalSkills').fetchone()[0])
-        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
-
-        return_embed.add_field(name=f'{physical_skills[for_var]}', value=f'{emojis}', inline=True)
-        for_var += 1
-    return_view = tV.KTV_SKILL
-    return return_embed, return_view
-
-
-async def socialSkillsPageBuilder(return_embed, cursor):
-    social_skills = ('Animal_Ken', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge')
-    for_var = 0
-    for x in social_skills:
-        if for_var / 3 in (1, 2):
-            return_embed.add_field(name='', value='', inline=False)
-        count = int(
-            cursor.execute(f'SELECT {social_skills[for_var].lower()} from socialSkills').fetchone()[0])
-        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
-
-        return_embed.add_field(name=f'{social_skills[for_var]}', value=f'{emojis}', inline=True)
-        for_var += 1
-    return_view = tV.KTV_SKILL
-    return return_embed, return_view
-
-
-async def mentalSkillsPageBuilder(return_embed, cursor):
-    mental_skills = ('Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology')
-    for_var = 0
-    for x in mental_skills:
-        if for_var / 3 in (1, 2):
-            return_embed.add_field(name='', value='', inline=False)
-        count = int(
-            cursor.execute(f'SELECT {mental_skills[for_var].lower()} from mentalSkills').fetchone()[0])
-        emojis = f'{count * mC.DOT_FULL_EMOJI} {abs(count - 5) * mC.DOT_EMPTY_EMOJI}'
-
-        return_embed.add_field(name=f'{mental_skills[for_var]}', value=f'{emojis}', inline=True)
-        for_var += 1
-    return_view = tV.KTV_SKILL
-    return return_embed, return_view
-
-
 async def disciplinePageBuilder(return_embed, cursor):
     disciplines = ('Obfuscate', 'Animalism', 'Potence', 'Dominate', 'Auspex', 'Protean', 'Presence', 'Fortitude', 'Thin_Blood_Alchemy',
                    'Blood_Sorc', 'Chemeristry', 'Seven', 'Myr', 'Selena', 'Nyct1', 'Nyct2', 'Iilta', 'Elijah')
