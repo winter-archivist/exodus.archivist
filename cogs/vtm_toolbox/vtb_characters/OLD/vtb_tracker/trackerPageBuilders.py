@@ -1,32 +1,3 @@
-
-async def hpwpPageBuilder(return_embed, cursor):
-    # ? hc = health_count | wpc = willpower_count
-    hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
-    hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
-    hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
-    wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
-    wpc_sup: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
-    wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
-
-    actual_health = hc_base - hc_sup - hc_agg
-    full_health = str(mC.HEALTH_FULL_EMOJI * actual_health)
-    sup_health = str(mC.HEALTH_SUP_EMOJI * hc_sup)
-    agg_health = str(mC.HEALTH_AGG_EMOJI * hc_agg)
-
-    if hc_sup == hc_base and hc_agg > 1:
-        sup_health = str(mC.HEALTH_SUP_EMOJI * int(hc_sup - hc_agg))
-
-    actual_willpower = wpc_base - wpc_sup - wpc_agg
-    full_willpower = str(mC.WILLPOWER_FULL_EMOJI * actual_willpower)
-    sup_willpower = str(mC.WILLPOWER_SUP_EMOJI * wpc_sup)
-    agg_willpower = str(mC.WILLPOWER_AGG_EMOJI * wpc_agg)
-
-    return_embed.add_field(name='Health', value=f'{full_health}{sup_health}{agg_health}', inline=False)
-    return_embed.add_field(name='Willpower', value=f'{full_willpower}{sup_willpower}{agg_willpower}', inline=False)
-    return_view = tV.KTV_HPWP
-    return return_embed, return_view
-
-
 async def hungerPageBuilder(return_embed, cursor):
     hunger: int = int(cursor.execute('SELECT hunger from charInfo').fetchone()[0])
     predator_type: str = str(cursor.execute('SELECT predator_type from charInfo').fetchone()[0])

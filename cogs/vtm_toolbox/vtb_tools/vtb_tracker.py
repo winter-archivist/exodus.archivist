@@ -72,12 +72,32 @@ class Home(discord.ui.View):
         await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='EXAMPLE', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def example_button_callback(self, interaction, button):
+    @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    async def hpwp_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Example', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Health & Willpower', '', 'dark_yellow')
 
-        # stuff
+        HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
+        HEALTH_DICT: dict = await CHARACTER.__get_information__(HEALTH, 'health')
+
+        WILLPOWER: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
+        WILLPOWER_DICT: dict = await CHARACTER.__get_information__(WILLPOWER, 'willpower')
+
+        ACTUAL_HEALTH = HEALTH_DICT['base_health'] - HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']
+        FULL_HEALTH = str(mc.HEALTH_FULL_EMOJI * ACTUAL_HEALTH)
+        SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * HEALTH_DICT['superficial_health_damage'])
+        AGG_HEALTH = str(mc.HEALTH_AGG_EMOJI * HEALTH_DICT['aggravated_health_damage'])
+
+        if HEALTH_DICT['superficial_health_damage'] == HEALTH_DICT['base_health'] and HEALTH_DICT['aggravated_health_damage'] > 1:
+            SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * int(HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']))
+
+        actual_willpower = WILLPOWER_DICT['base_willpower'] - WILLPOWER_DICT['superficial_willpower_damage'] - WILLPOWER_DICT['aggravated_willpower_damage']
+        FULL_WILLPOWER = str(mc.WILLPOWER_FULL_EMOJI * actual_willpower)
+        SUP_WILLPOWER = str(mc.WILLPOWER_SUP_EMOJI * WILLPOWER_DICT['superficial_willpower_damage'])
+        AGG_WILLPOWER = str(mc.WILLPOWER_AGG_EMOJI * WILLPOWER_DICT['aggravated_willpower_damage'])
+
+        page.add_field(name='Health', value=f'{FULL_HEALTH}{SUP_HEALTH}{AGG_HEALTH}', inline=False)
+        page.add_field(name='Willpower', value=f'{FULL_WILLPOWER}{SUP_WILLPOWER}{AGG_WILLPOWER}', inline=False)
 
         await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
