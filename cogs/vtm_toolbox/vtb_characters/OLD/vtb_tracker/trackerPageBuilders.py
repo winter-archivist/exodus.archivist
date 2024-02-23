@@ -1,70 +1,3 @@
-import sqlite3
-from discord import Embed
-from discord.ui import View
-from zenlog import log
-
-import misc.config.main_config as mC
-import cogs.vtm_toolbox.vtb_misc.vtbUtils as vU
-import cogs.vtm_toolbox.vtb_tracker.trackerViews as tV
-
-
-async def trackerPageDecider(interaction, target_page_name, initial_page) -> Embed and View:
-    try:
-        if await vU.ownerCheck(interaction) is False:
-            log.error(f'*> Invalid Owner.')
-            raise ValueError
-
-        character_name = await vU.getCharacterName(interaction)
-        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
-            cursor = db.cursor()
-            match target_page_name:
-                case 'tracker.home':
-                    return_page, return_view = await homePageBuilder(initial_page)
-                case 'tracker.hp/wp':
-                    return_page, return_view = await hpwpPageBuilder(initial_page, cursor)
-
-                case 'tracker.hunger':
-                    return_page, return_view = await hungerPageBuilder(initial_page, cursor)
-
-                case 'tracker.attributes':
-                    return_page, return_view = await attributePageBuilder(initial_page, cursor)
-                case 'tracker.discipline':
-                    return_page, return_view = await disciplinePageBuilder(initial_page, cursor)
-                case 'tracker.extras':
-                    return_page, return_view = await extrasPageBuilder(initial_page, cursor)
-
-                case 'tracker.skills':
-                    return_page, return_view = await skillsPageBuilder(initial_page, cursor)
-                case 'tracker.physical_skills':
-                    return_page, return_view = await physicalSkillsPageBuilder(initial_page, cursor)
-                case 'tracker.social_skills':
-                    return_page, return_view = await socialSkillsPageBuilder(initial_page, cursor)
-                case 'tracker.mental_skills':
-                    return_page, return_view = await mentalSkillsPageBuilder(initial_page, cursor)
-
-                case 'tracker.regain_health':
-                    return_page, return_view = await regainhealthPageBuilder(initial_page, cursor)
-                case 'tracker.damage_health':
-                    return_page, return_view = await damagehealthPageBuilder(initial_page, cursor)
-                case 'tracker.damage_willpower':
-                    return_page, return_view = await damagewillpowerPageBuilder(initial_page, cursor)
-
-                case 'tracker.clan':
-                    return_page, return_view = await clanPageBuilder(initial_page, cursor)
-
-                case _:
-                    log.error('**> Provided target_page_name does not exist.')
-                    raise Exception('Provided target_page_name does not exist.')
-        return return_page, return_view
-    except sqlite3.Error as e:
-        log.error(f'**> trackerPageDecider | SQLITE3 ERROR | {e}')
-
-
-async def homePageBuilder(return_page):
-    return_page.add_field(name='Select Page', value='', inline=False)
-    return_view = tV.KTV_HOME
-    return return_page, return_view
-
 
 async def hpwpPageBuilder(return_embed, cursor):
     # ? hc = health_count | wpc = willpower_count
@@ -248,12 +181,6 @@ async def attributePageBuilder(return_embed, cursor):
         for_var += 1
 
     return_view = tV.KTV_ATTRIBUTE
-    return return_embed, return_view
-
-
-async def skillsPageBuilder(return_embed, cursor):
-    # ! Needs to allow for Leveling
-    return_view = tV.KTV_SKILL
     return return_embed, return_view
 
 
