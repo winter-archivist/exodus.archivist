@@ -40,3 +40,26 @@ async def standard_roller_page_modifications(page: discord.Embed, CHARACTER: cm.
     page.add_field(name='Difficulty', value=f'{CHARACTER_INFORMATION["difficulty"]}', inline=True)
     page.add_field(name='Composition', value=f'{CHARACTER_INFORMATION["composition"]}', inline=True)
     return page
+
+
+async def standard_roll_select(interaction: discord.Interaction, page, select, file_name: str):
+    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+
+    CHARACTER_INFORMATION: dict = await CHARACTER.__get_information__(('pool', 'composition'), 'roll/info')
+    pool: int = CHARACTER_INFORMATION['pool']
+    composition: str = CHARACTER_INFORMATION['composition']
+
+    for_var: int = 0
+    for selections in select.values:
+        attribute_value: int = dict(await CHARACTER.__get_information__((f'{select.values[for_var]}',), file_name))[
+            select.values[for_var]]
+        pool += attribute_value
+        composition = f'{composition}, {(select.values[for_var]).capitalize()}[{attribute_value}]'
+        for_var += 1
+
+    await CHARACTER.__update_information__((('pool', 'composition'), (pool, composition)), 'roll/info')
+
+    select.disabled = True
+
+    page: discord.Embed = await standard_roller_page_modifications(page, CHARACTER)
+    return page

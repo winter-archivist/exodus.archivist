@@ -151,6 +151,7 @@ async def normalRoller(interaction, return_page):
     target_cache = f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//roll_mark.yaml'
     data_check = await yU.cacheDataExist(target_cache, 'mark')
     if data_check is True:
+        """
         data = await yU.cacheRead(f'{target_cache}')
         use_data = {}
         use_data.update(data)
@@ -236,6 +237,7 @@ async def normalRoller(interaction, return_page):
                 cursor.execute('UPDATE charInfo SET hunger=?', (str(int(hunt_hunger))))  # str(int()) is over excessive, however.
             await yU.cacheClear(target_cache)
             await yU.cacheWrite(target_cache, {'mark': 'hunt_success'})
+            """
 
     return return_page
 
