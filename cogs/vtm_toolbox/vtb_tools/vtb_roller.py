@@ -30,7 +30,7 @@ class Home(discord.ui.View):
     @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=2)
     async def attributes_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Attribute Page', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Attributes Page', '', 'dark_yellow')
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.send_message(embed=page, view=Attributes(self.CLIENT))
         return
@@ -107,27 +107,9 @@ class Attributes(discord.ui.View):
 
     @discord.ui.select(placeholder='Select Attribute(s)', options=ro.attribute_options, max_values=3, min_values=1, row=1)
     async def attribute_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Attribute Page', '', 'dark_yellow')
-
-        CHARACTER_INFORMATION: dict = await CHARACTER.__get_information__(('pool', 'composition'), 'roll/info')
-        pool: int = CHARACTER_INFORMATION['pool']
-        composition: str = CHARACTER_INFORMATION['composition']
-
-        for_var: int = 0
-        for selections in select.values:
-            attribute_value: int = dict(await CHARACTER.__get_information__((f'{select.values[for_var]}',), 'attributes'))[
-                select.values[for_var]]
-            pool += attribute_value
-            composition = f'{composition}, {(select.values[for_var]).capitalize()}[{attribute_value}]'
-            for_var += 1
-
-        await CHARACTER.__update_information__((('pool', 'composition'), (pool, composition)), 'roll/info')
-
-        select.disabled = True
-
-        page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.edit_message(embed=page, view=Attributes(self.CLIENT))
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Attributes Page', '', 'dark_yellow')
+        page = await vp.standard_roll_select(interaction, page, select, 'attributes')
+        await interaction.response.edit_message(embed=page, view=Skills(self.CLIENT))
         return
 
 
