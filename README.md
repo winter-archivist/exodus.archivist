@@ -4,7 +4,7 @@ ExodusAutomaton
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.02.00
+> * Version 01.02.01
 > > * Major: 01 | Large Overhauls
 > > * Minor: 02 | Non-Major Features
 > > * Patch: 01 | Other Repo Pushes
