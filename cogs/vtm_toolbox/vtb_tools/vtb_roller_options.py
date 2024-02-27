@@ -265,4 +265,3 @@ hunt_mod_options = [SelectOption(label='Negative One', value='-1', emoji='<:snek
                     SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
                     SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
                     SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),]
-

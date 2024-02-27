@@ -135,7 +135,6 @@ class vtb_Character:
             CHARACTER_NAME = json.load(operate_file)['character_name']
 
         self.CHARACTER_NAME: str = CHARACTER_NAME
-
         self.CHARACTER_FILE_PATH: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{self.CHARACTER_NAME}'
 
         if not os.path.isdir(self.CHARACTER_FILE_PATH):
@@ -151,36 +150,74 @@ class vtb_Character:
             log.error('*> Bad Character Owner')
             raise Exception('Bad Character Owner')
 
-    async def __get_information__(self, WANTED_INFORMATION: tuple, FILE_NAME: str) -> dict:
+        self.AVATAR_URL: str = CHARACTER_INFO['character_avatar_url']
+
+    # The get/update value/values functions are split since if you only need
+    # one value returned/updated then there's no point in going through the for
+    # it just slightly increases performance, not that this bot needs to be/is
+    # performant focused, especially being written in python.
+    async def __get_values__(self, KEYS: tuple, FILE_NAME: str) -> dict:
+        # Use when getting more than one value, otherwise use self.__get_value__()
+
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             CHARACTER_INFO: dict = json.load(operate_file)
 
         return_information: dict = {}
         loop_counter: int = 0
-        for x in WANTED_INFORMATION:
-            return_information[f'{WANTED_INFORMATION[loop_counter]}'] = CHARACTER_INFO[f'{WANTED_INFORMATION[loop_counter]}']
+        for x in KEYS:
+            return_information[f'{KEYS[loop_counter]}'] = CHARACTER_INFO[f'{KEYS[loop_counter]}']
             loop_counter += 1
 
-        log.debug(f'{self.OWNER_ID} __get | {return_information}')
+        log.debug(f'{self.OWNER_ID} __get_vals | {return_information}')
         return return_information
 
-    async def __update_information__(self, NEW_INFORMATION: tuple, FILE_NAME: str) -> None:
+    async def __get_value__(self, KEY: str, FILE_NAME: str):
+        # Use when getting one value, otherwise use self.__get_values__()
+
+        with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
+            CHARACTER_INFO: dict = json.load(operate_file)
+
+        RETURN_INFORMATION = CHARACTER_INFO[KEY]
+
+        log.debug(f'{self.OWNER_ID} __get_val | {RETURN_INFORMATION}')
+
+        return RETURN_INFORMATION
+
+    async def __update_values__(self, KEYS: tuple, VALUES: tuple, FILE_NAME: str) -> None:
+        # Use when updating more than one value, otherwise use self.__update_value__()
+
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             character_info: dict = json.load(operate_file)
 
         loop_counter: int = 0
-        for x in NEW_INFORMATION[0]:
-            dict_key = NEW_INFORMATION[0][loop_counter]
-            new_value = NEW_INFORMATION[1][loop_counter]
-            log.debug(f'{self.OWNER_ID} __update loop | {dict_key} -> {new_value}')
-            character_info[dict_key] = new_value
+        for x in KEYS:
+            dict_key = KEYS[loop_counter]
+            dict_value = VALUES[loop_counter]
+            log.debug(f'{self.OWNER_ID} __update_vals loop | {dict_key} -> {dict_value}')
+            character_info[dict_key] = dict_value
             loop_counter += 1
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'w') as operate_file:
             json.dump(character_info, operate_file)
 
+        return None
+
+    async def __update_value__(self, KEY: str, VALUE, FILE_NAME: str) -> None:
+        # Use when updating one value, otherwise use self.__update_values__()
+
+        with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
+            character_info: dict = json.load(operate_file)
+
+        log.debug(f'{self.OWNER_ID} __update_val | {KEY}: {VALUE} -> {FILE_NAME}')
+        character_info[KEY] = VALUE
+
+        with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'w') as operate_file:
+            json.dump(character_info, operate_file)
+
+        return None
+
     async def __rouse_check__(self) -> tuple:
-        HUNGER: int = (await self.__get_information__(('hunger',), 'misc'))['hunger']
+        HUNGER: int = await self.__get_value__('hunger', 'misc')
         ROUSE_NUM_RESULT: int = random.randint(1, 10)
 
         if HUNGER >= 5:
@@ -192,17 +229,22 @@ class vtb_Character:
             return result  # No Hunger Gain
 
         elif ROUSE_NUM_RESULT <= 5:
-            await self.__update_information__((('hunger',), (HUNGER+1,)), 'misc')
+            await self.__update_value__('hunger', (HUNGER+1), 'misc')
             result: tuple = ('Fail', HUNGER+1)
             return result  # 1 Hunger Gain
 
     async def __roll__(self, page: discord.Embed, RETURN_EXTRA: bool = False):
 
-        POOL_DIFFICULTY_DICT: dict = await self.__get_information__(('pool', 'difficulty'), 'roll/info')
-        POOL: int = POOL_DIFFICULTY_DICT['pool']
-        DIFFICULTY: int = POOL_DIFFICULTY_DICT['difficulty']
+        # Could be merged, however I was encountering an odd error
+        # where difficulty wasn't being assigned correctly.
+        DIFFICULTY: int = int(await self.__get_value__('difficulty', 'roll/info'))
+        POOL: int = int(await self.__get_value__('pool', 'roll/info'))
 
-        HUNGER = (await self.__get_information__(('hunger',), 'misc'))['hunger']
+        if POOL >= 100:
+            # This _should_ never be possible.
+            raise OverflowError
+
+        HUNGER: int = await self.__get_value__('hunger', 'misc')
 
         result: dict = {
             # Can be Rerolled by self.__re_roll__
@@ -246,9 +288,9 @@ class vtb_Character:
 
         UPDATE_KEYS = ('regular_crit', 'regular_success', 'regular_fail',
                        'hunger_crit', 'hunger_success', 'hunger_fail', 'hunger_skull')
-        UPDATE_INFO = (result['regular_crit'], result['regular_success'], result['regular_fail'],
-                       result['hunger_crit'], result['hunger_success'], result['hunger_fail'], result['hunger_skull'])
-        await self.__update_information__((UPDATE_KEYS, UPDATE_INFO), 'roll/info')
+        UPDATE_VALUES = (result['regular_crit'], result['regular_success'], result['regular_fail'],
+                         result['hunger_crit'], result['hunger_success'], result['hunger_fail'], result['hunger_skull'])
+        await self.__update_values__(UPDATE_KEYS, UPDATE_VALUES, 'roll/info')
 
         roll_flag: str = ''
         crits: int = 0
@@ -308,7 +350,7 @@ class vtb_Character:
     async def __hunt__(self, input_page: discord.Embed):
         page, result, roll_flag = await self.__roll__(input_page, True)
 
-        MISC_DICT: dict = await self.__get_information__(('hunger', 'blood_potency'), 'misc')
+        MISC_DICT: dict = await self.__get_values__(('hunger', 'blood_potency'), 'misc')
         BLOOD_POTENCY: int = MISC_DICT['blood_potency']
         hunger: int = MISC_DICT['hunger']
 
@@ -385,4 +427,4 @@ class vtb_Character:
         elif roll_flag == 'Bestial Failure':
             page.add_field(name='Hunt:', value=f'BESTIAL FAILURE | {hunger * mc.HUNGER_EMOJI}')
 
-        await self.__update_information__((('hunger',), (hunger,)), 'roll/misc')
+        await self.__update_value__('hunger', hunger, 'roll/misc')

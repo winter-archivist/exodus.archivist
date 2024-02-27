@@ -11,7 +11,7 @@ import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 
 
 async def return_to_home(self, interaction: discord.Interaction) -> None:
-    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
     page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
     await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
     return None
@@ -37,7 +37,7 @@ class Home(discord.ui.View):
 
         attributes: tuple = \
             ('strength', 'dexterity', 'stamina', 'charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve')
-        character_data: dict = await CHARACTER.__get_information__(attributes, 'attributes')
+        character_data: dict = await CHARACTER.__get_values__(attributes, 'attributes')
 
         emoji_result = f'{character_data["strength"] * mc.DOT_FULL_EMOJI} {abs(character_data["strength"] - 5) * mc.DOT_EMPTY_EMOJI}'
         page.add_field(name='Strength', value=emoji_result, inline=True)
@@ -78,10 +78,10 @@ class Home(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Health & Willpower', '', 'dark_yellow')
 
         HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
-        HEALTH_DICT: dict = await CHARACTER.__get_information__(HEALTH, 'health')
+        HEALTH_DICT: dict = await CHARACTER.__get_values__(HEALTH, 'health')
 
         WILLPOWER: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
-        WILLPOWER_DICT: dict = await CHARACTER.__get_information__(WILLPOWER, 'willpower')
+        WILLPOWER_DICT: dict = await CHARACTER.__get_values__(WILLPOWER, 'willpower')
 
         ACTUAL_HEALTH = HEALTH_DICT['base_health'] - HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']
         FULL_HEALTH = str(mc.HEALTH_FULL_EMOJI * ACTUAL_HEALTH)
@@ -108,7 +108,7 @@ class Home(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Physical Skills Page', '', 'dark_yellow')
 
         PHYSICAL_SKILLS: tuple = ('athletics', 'brawl', 'craft', 'drive', 'firearms', 'larceny', 'melee', 'stealth', 'survival')
-        PHYSICAL_SKILLS_DICT: dict = await CHARACTER.__get_information__(PHYSICAL_SKILLS, 'skills/physical')
+        PHYSICAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(PHYSICAL_SKILLS, 'skills/physical')
 
         # Will eventually turn this into some kind of loop
 
@@ -163,7 +163,7 @@ class Home(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Social Skills Page', '', 'dark_yellow')
 
         SOCIAL_SKILLS: tuple = ('animal_ken', 'etiquette', 'insight', 'intimidation', 'leadership', 'performance', 'persuasion', 'streetwise', 'subterfuge')
-        SOCIAL_SKILLS_DICT: dict = await CHARACTER.__get_information__(SOCIAL_SKILLS, 'skills/social')
+        SOCIAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(SOCIAL_SKILLS, 'skills/social')
 
         # Will eventually turn this into some kind of loop
 
@@ -218,7 +218,7 @@ class Home(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Physical Skills Page', '', 'dark_yellow')
 
         MENTAL_SKILLS: tuple = ('academics', 'awareness', 'finance', 'investigation', 'medicine', 'occult', 'politics', 'science', 'technology')
-        MENTAL_SKILLS_DICT: dict = await CHARACTER.__get_information__(MENTAL_SKILLS, 'skills/mental')
+        MENTAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(MENTAL_SKILLS, 'skills/mental')
 
         # Will eventually turn this into some kind of loop
 

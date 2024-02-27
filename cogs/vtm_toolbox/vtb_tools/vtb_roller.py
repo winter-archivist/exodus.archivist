@@ -1,5 +1,3 @@
-import os
-import json
 import random
 import discord
 import discord.ui
@@ -99,11 +97,11 @@ class RollTypes(discord.ui.View):
         elif RR_TYPE == 'Pass':
             page.add_field(name='Blood Surge Rouse Passed', value=f'{HUNGER_EMOJI}')
 
-        ROLL_INFO: dict = await CHARACTER.__get_information__(('pool', 'composition'), 'roll/info')
+        ROLL_INFO: dict = await CHARACTER.__get_values__(('pool', 'composition'), 'roll/info')
         NEW_ROLL_POOL: int = int(ROLL_INFO['pool'])
         NEW_ROLL_COMPOSITION = f'{ROLL_INFO["composition"]}, Blood Surge[2]'
 
-        await CHARACTER.__update_information__((('pool', 'composition'), (NEW_ROLL_POOL, NEW_ROLL_COMPOSITION)), 'roll/info')
+        await CHARACTER.__update_values__(('pool', 'composition'), (NEW_ROLL_POOL, NEW_ROLL_COMPOSITION), 'roll/info')
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
@@ -115,7 +113,7 @@ class RollTypes(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
 
         # Parenthesis on (select.values) are NOT redundant!!!
-        await CHARACTER.__update_information__((('difficulty',), (select.values,)), 'roll/info')
+        await CHARACTER.__update_value__('difficulty', (select.values), 'roll/info')
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
@@ -158,7 +156,7 @@ class Attributes(discord.ui.View):
     async def attribute_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Attributes Page', '', 'dark_yellow')
         page = await vp.standard_roll_select(interaction, page, select, 'attributes')
-        await interaction.response.edit_message(embed=page, view=Skills(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Attributes(self.CLIENT))
         return
 
 
@@ -227,14 +225,14 @@ class Extras(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(interaction, 'Extras Page', '', 'dark_yellow')
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
-        CHARACTER_INFORMATION: dict = await CHARACTER.__get_information__(('pool', 'composition'), 'roll/info')
+        CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('pool', 'composition'), 'roll/info')
         pool: int = CHARACTER_INFORMATION['pool']
         composition: str = CHARACTER_INFORMATION['composition']
 
         pool += int(select.values[0])
         composition = f'{composition}, [{select.values[0]}]'
 
-        await CHARACTER.__update_information__((('pool', 'composition'), (pool, composition)), 'roll/info')
+        await CHARACTER.__update_values__(('pool', 'composition',), (pool, composition), 'roll/info')
 
         select.disabled = True
 
@@ -255,11 +253,11 @@ class Reroll(discord.ui.View):
 
         WANTED_WILLPOWER_INFORMATION: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
         WILLPOWER_FILE: str = 'willpower'
-        WILLPOWER_DICT: dict = await CHARACTER.__get_information__(WANTED_WILLPOWER_INFORMATION, WILLPOWER_FILE)
+        WILLPOWER_DICT: dict = await CHARACTER.__get_values__(WANTED_WILLPOWER_INFORMATION, WILLPOWER_FILE)
 
         WANTED_ROLL_INFORMATION: tuple = ('regular_crit', 'regular_success', 'regular_fail', 'hunger_crit', 'hunger_success', 'hunger_fail', 'skull_count', 'difficulty')
         ROLL_FILE: str = 'roll/info'
-        ROLL_DICT: dict = await CHARACTER.__get_information__(WANTED_ROLL_INFORMATION, ROLL_FILE)
+        ROLL_DICT: dict = await CHARACTER.__get_values__(WANTED_ROLL_INFORMATION, ROLL_FILE)
 
         roll_results: dict = {'regular_crit': ROLL_DICT['regular_crit'], 'regular_success': ROLL_DICT['regular_success'], 'regular_fail': ROLL_DICT['regular_fail'],
                               'hunger_crit': ROLL_DICT['hunger_crit'], 'hunger_success': ROLL_DICT['hunger_success'], 'hunger_fail': ROLL_DICT['hunger_fail'],
@@ -287,12 +285,13 @@ class Reroll(discord.ui.View):
 
             rerolls -= 1
 
+        ROLL_KEYS: tuple = ('regular_crit', 'regular_success', 'regular_fail', 'hunger_crit', 'hunger_success', 'hunger_fail', 'skull_count')
         FINAL_ROLL_NUMBERS: tuple = (roll_results['regular_crit'], roll_results['regular_success'], roll_results['regular_fail'],
                                      roll_results['hunger_crit'], roll_results['hunger_success'], roll_results['hunger_fail'],
-                                     roll_results['skull_count'], )
+                                     roll_results['skull_count'])
 
         # Update roll info
-        await CHARACTER.__update_information__((WANTED_ROLL_INFORMATION, FINAL_ROLL_NUMBERS), 'roll/info')
+        await CHARACTER.__update_values__(ROLL_KEYS, FINAL_ROLL_NUMBERS, 'roll/info')
 
         # Find New Crits
         crits = 0
@@ -333,9 +332,9 @@ class Reroll(discord.ui.View):
             await interaction.response.edit_message(view=vp.EMPTY_VIEW(self.CLIENT))
             return
         elif WILLPOWER_DICT['base_willpower'] <= WILLPOWER_DICT['superficial_willpower_damage']:
-            await CHARACTER.__update_information__((('aggravated_willpower_damage',), (int(WILLPOWER_DICT['aggravated_willpower_damage']+1), )), 'willpower')
+            await CHARACTER.__update_value__('aggravated_willpower_damage', int(WILLPOWER_DICT['aggravated_willpower_damage']+1), 'willpower')
         else:
-            await CHARACTER.__update_information__((('superficial_willpower_damage',), (int(WILLPOWER_DICT['superficial_willpower_damage']+1), )), 'willpower')
+            await CHARACTER.__update_value__('superficial_willpower_damage', int(WILLPOWER_DICT['superficial_willpower_damage']+1), 'willpower')
 
         button.disabled = True
         button.label = 'Fate Tempted'
