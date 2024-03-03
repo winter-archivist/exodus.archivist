@@ -4,17 +4,17 @@ ExodusAutomaton
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.02.02
+> * Version 01.02.03
 > > * Major: 01 | Large Overhauls
 > > * Minor: 02 | Non-Major Features
-> > * Patch: 02 | Other Repo Pushes
+> > * Patch: 03 | Other Repo Pushes
 > * State: Stable
 > * DateTime: Feb 16th 2024 | 2:35am
 
 ---
 ## General
 
-As of now ExodusAutomaton Rewrite is being solo developed by me with Pycharm Professional. 
+As of now ExodusAutomaton is being solo developed by me with Pycharm Professional. 
 It's not *good* in any sense of the word, it exclusively exists for me to mess around with programming; if for whatever 
 reason you'd like to talk to me about the project, your best place to contact me is discord `.ashywinter`
 ### Primary Features:
