@@ -344,9 +344,6 @@ class vtb_Character:
         else:
             return page, result, roll_flag
 
-    async def __re_roll__(self) -> 'str':
-        pass
-
     async def __hunt__(self, input_page: discord.Embed):
         page, result, roll_flag = await self.__roll__(input_page, True)
 
