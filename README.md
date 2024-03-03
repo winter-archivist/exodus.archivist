@@ -50,8 +50,8 @@ and the discord developer tools, none of those will be explained here.
 
 > Do ALL the following <u>__BEFORE__</u> trying to run the bot
 > 
-> * Change the Bot's "TOKEN" [clientConfig.py]
-> * Change the Bot's "RUNNER" and "RUNNER_ID" [misc/config/mainConfig.py]
+> * Change the Bot's "TOKEN" [client_config.py]
+> * Change the Bot's "RUNNER" and "RUNNER_ID" [misc/config/main_config.py]
 ---
 ## LOGGING
 When things are logged they should have a "reason" or prefix attached to the beginning these can be "stacked". 
