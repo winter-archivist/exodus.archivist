@@ -30,6 +30,37 @@ async def basic_page_builder(interaction: discord.Interaction, page_title: str, 
     return base_page
 
 
+async def hp_wp_page_builder(interaction):
+    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+    page: discord.Embed = await basic_page_builder(interaction, 'Health & Willpower', '', 'mint')
+
+    HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
+    HEALTH_DICT: dict = await CHARACTER.__get_values__(HEALTH, 'health')
+
+    WILLPOWER: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
+    WILLPOWER_DICT: dict = await CHARACTER.__get_values__(WILLPOWER, 'willpower')
+
+    ACTUAL_HEALTH = HEALTH_DICT['base_health'] - HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT[
+        'aggravated_health_damage']
+    FULL_HEALTH = str(mc.HEALTH_FULL_EMOJI * ACTUAL_HEALTH)
+    SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * HEALTH_DICT['superficial_health_damage'])
+    AGG_HEALTH = str(mc.HEALTH_AGG_EMOJI * HEALTH_DICT['aggravated_health_damage'])
+
+    if HEALTH_DICT['superficial_health_damage'] == HEALTH_DICT['base_health'] and HEALTH_DICT['aggravated_health_damage'] > 1:
+        SUP_HEALTH = str(
+            mc.HEALTH_SUP_EMOJI * int(HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']))
+
+    actual_willpower = WILLPOWER_DICT['base_willpower'] - WILLPOWER_DICT['superficial_willpower_damage'] - WILLPOWER_DICT[
+        'aggravated_willpower_damage']
+    FULL_WILLPOWER = str(mc.WILLPOWER_FULL_EMOJI * actual_willpower)
+    SUP_WILLPOWER = str(mc.WILLPOWER_SUP_EMOJI * WILLPOWER_DICT['superficial_willpower_damage'])
+    AGG_WILLPOWER = str(mc.WILLPOWER_AGG_EMOJI * WILLPOWER_DICT['aggravated_willpower_damage'])
+
+    page.add_field(name='Health', value=f'{FULL_HEALTH}{SUP_HEALTH}{AGG_HEALTH}', inline=False)
+    page.add_field(name='Willpower', value=f'{FULL_WILLPOWER}{SUP_WILLPOWER}{AGG_WILLPOWER}', inline=False)
+    return page
+
+
 async def standard_roller_page_modifications(page: discord.Embed, CHARACTER: cm.vtb_Character) -> discord.Embed:
     page.add_field(name='', value='', inline=False)  # Just makes sure it isn't interfering with any other fields/elements
 

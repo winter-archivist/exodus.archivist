@@ -9,6 +9,15 @@ import cogs.vtm_toolbox.vtb_misc.vtb_pages as vp
 import cogs.vtm_toolbox.vtb_tools.vtb_roller as vr
 import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 
+health_or_willpower_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                               discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
+
 
 async def return_to_home(self, interaction: discord.Interaction) -> None:
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
@@ -74,32 +83,8 @@ class Home(discord.ui.View):
 
     @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def hpwp_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Health & Willpower', '', 'mint')
-
-        HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
-        HEALTH_DICT: dict = await CHARACTER.__get_values__(HEALTH, 'health')
-
-        WILLPOWER: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
-        WILLPOWER_DICT: dict = await CHARACTER.__get_values__(WILLPOWER, 'willpower')
-
-        ACTUAL_HEALTH = HEALTH_DICT['base_health'] - HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']
-        FULL_HEALTH = str(mc.HEALTH_FULL_EMOJI * ACTUAL_HEALTH)
-        SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * HEALTH_DICT['superficial_health_damage'])
-        AGG_HEALTH = str(mc.HEALTH_AGG_EMOJI * HEALTH_DICT['aggravated_health_damage'])
-
-        if HEALTH_DICT['superficial_health_damage'] == HEALTH_DICT['base_health'] and HEALTH_DICT['aggravated_health_damage'] > 1:
-            SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * int(HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']))
-
-        actual_willpower = WILLPOWER_DICT['base_willpower'] - WILLPOWER_DICT['superficial_willpower_damage'] - WILLPOWER_DICT['aggravated_willpower_damage']
-        FULL_WILLPOWER = str(mc.WILLPOWER_FULL_EMOJI * actual_willpower)
-        SUP_WILLPOWER = str(mc.WILLPOWER_SUP_EMOJI * WILLPOWER_DICT['superficial_willpower_damage'])
-        AGG_WILLPOWER = str(mc.WILLPOWER_AGG_EMOJI * WILLPOWER_DICT['aggravated_willpower_damage'])
-
-        page.add_field(name='Health', value=f'{FULL_HEALTH}{SUP_HEALTH}{AGG_HEALTH}', inline=False)
-        page.add_field(name='Willpower', value=f'{FULL_WILLPOWER}{SUP_WILLPOWER}{AGG_WILLPOWER}', inline=False)
-
-        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
     @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
@@ -176,4 +161,73 @@ class Home_n_Roll(discord.ui.View):
     @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
     async def roll_button_callback(self, interaction, button):
         await go_to_roller(self, interaction)
+        return
+
+
+class HP_n_WP(discord.ui.View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    async def home_button_callback(self, interaction, button):
+        await return_to_home(self, interaction)
+        return
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def roll_button_callback(self, interaction, button):
+        await go_to_roller(self, interaction)
+        return
+
+    @discord.ui.button(label='Mend', emoji=f'{mc.HUNGER_EMOJI}', style=discord.ButtonStyle.red, row=2)
+    async def mend_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'purple')
+        SUPERFICIAL_HEALTH_DAMAGE: int = await CHARACTER.__get_value__('superficial_health_damage', 'health')
+        BLOOD_POTENCY: int = await CHARACTER.__get_value__('blood_potency', 'misc')
+
+        # Prevents a Rouse from occurring if no health can be gained.
+        if SUPERFICIAL_HEALTH_DAMAGE == 0:
+            page.add_field(name='No Superficial Health to Regain', value='')
+            await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
+            return
+
+        ROUSE_RESULT: tuple = await CHARACTER.__rouse_check__()
+        if ROUSE_RESULT[0] == 'Frenzy' == 'Frenzy':  # .__rouse_check__ handles Frenzy
+            return
+        NEW_HUNGER: int = ROUSE_RESULT[1]
+
+        if BLOOD_POTENCY <= 1: mend_amount = 1
+        elif BLOOD_POTENCY <= 3: mend_amount = 2
+        elif BLOOD_POTENCY <= 7: mend_amount = 3
+        elif BLOOD_POTENCY <= 9: mend_amount = 4
+        elif BLOOD_POTENCY == 10: mend_amount = 5
+        else: return
+
+        # Can't heal damage you don't have
+        if mend_amount > SUPERFICIAL_HEALTH_DAMAGE:
+            mend_amount = SUPERFICIAL_HEALTH_DAMAGE
+
+        page.add_field(name=f'Rouse {ROUSE_RESULT[0]}', value=f'`{mend_amount}` Health Regained. Current Hunger: `{ROUSE_RESULT[0]}`')
+
+        await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Take HP/WP Damage', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
+    async def to_damage_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Take HP/WP Damage', '', 'mint')
+        await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
+        return None
+
+
+class HP_n_WP_Damage(discord.ui.View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Return', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    async def return_to_hpwp_button_callback(self, interaction, button):
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
