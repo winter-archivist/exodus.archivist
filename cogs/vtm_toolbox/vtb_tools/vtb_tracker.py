@@ -110,49 +110,12 @@ class Home(discord.ui.View):
         PHYSICAL_SKILLS: tuple = ('athletics', 'brawl', 'craft', 'drive', 'firearms', 'larceny', 'melee', 'stealth', 'survival')
         PHYSICAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(PHYSICAL_SKILLS, 'skills/physical')
 
-        # Will eventually turn this into some kind of loop
-
-        count: int = PHYSICAL_SKILLS_DICT['athletics']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[0])}', value=f'{emoji}', inline=True)
-
-        count: int = PHYSICAL_SKILLS_DICT['brawl']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[1])}', value=f'{emoji}', inline=True)
-
-        count: int = PHYSICAL_SKILLS_DICT['craft']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[2])}', value=f'{emoji}', inline=True)
-
-        #
-        page.add_field(name='', value='', inline=False)
-
-        count: int = PHYSICAL_SKILLS_DICT['drive']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[3])}', value=f'{emoji}', inline=True)
-
-        count: int = PHYSICAL_SKILLS_DICT['firearms']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[4])}', value=f'{emoji}', inline=True)
-
-        count: int = PHYSICAL_SKILLS_DICT['larceny']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[5])}', value=f'{emoji}', inline=True)
-
-        #
-        page.add_field(name='', value='', inline=False)
-
-        count: int = PHYSICAL_SKILLS_DICT['melee']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[6])}', value=f'{emoji}', inline=True)
-
-        count: int = PHYSICAL_SKILLS_DICT['stealth']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[7])}', value=f'{emoji}', inline=True)
-
-        count: int = PHYSICAL_SKILLS_DICT['survival']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[8])}', value=f'{emoji}', inline=True)
+        while_var: int = 0
+        while while_var != 9:  # 9 = Skill Count
+            count: int = PHYSICAL_SKILLS_DICT[PHYSICAL_SKILLS[while_var]]
+            emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
+            page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
+            while_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
@@ -165,49 +128,18 @@ class Home(discord.ui.View):
         SOCIAL_SKILLS: tuple = ('animal_ken', 'etiquette', 'insight', 'intimidation', 'leadership', 'performance', 'persuasion', 'streetwise', 'subterfuge')
         SOCIAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(SOCIAL_SKILLS, 'skills/social')
 
-        # Will eventually turn this into some kind of loop
+        while_var: int = 0
+        while while_var != 9:  # 9 = Skill Count
+            count: int = SOCIAL_SKILLS_DICT[SOCIAL_SKILLS[while_var]]
+            emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
 
-        count: int = SOCIAL_SKILLS_DICT['animal_ken']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[0])}', value=f'{emoji}', inline=True)
-
-        count: int = SOCIAL_SKILLS_DICT['etiquette']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[1])}', value=f'{emoji}', inline=True)
-
-        count: int = SOCIAL_SKILLS_DICT['insight']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[2])}', value=f'{emoji}', inline=True)
-
-        #
-        page.add_field(name='', value='', inline=False)
-
-        count: int = SOCIAL_SKILLS_DICT['intimidation']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[3])}', value=f'{emoji}', inline=True)
-
-        count: int = SOCIAL_SKILLS_DICT['leadership']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[4])}', value=f'{emoji}', inline=True)
-
-        count: int = SOCIAL_SKILLS_DICT['performance']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[5])}', value=f'{emoji}', inline=True)
-
-        #
-        page.add_field(name='', value='', inline=False)
-
-        count: int = SOCIAL_SKILLS_DICT['persuasion']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[6])}', value=f'{emoji}', inline=True)
-
-        count: int = SOCIAL_SKILLS_DICT['streetwise']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[7])}', value=f'{emoji}', inline=True)
-
-        count: int = SOCIAL_SKILLS_DICT['subterfuge']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[8])}', value=f'{emoji}', inline=True)
+            # This is a special case, because just str.capitalize() will result in the string being 'Animal_ken'
+            # I'll sacrifice a little bit of performance, Python isn't supposed to be fast anyway
+            if SOCIAL_SKILLS[while_var] == 'animal_ken':
+                page.add_field(name=f'Animal Ken', value=f'{emoji}', inline=True)
+            else:
+                page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
+            while_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
@@ -215,54 +147,17 @@ class Home(discord.ui.View):
     @discord.ui.button(label='Mental Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
     async def mental_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Physical Skills Page', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Mental Skills Page', '', 'dark_yellow')
 
         MENTAL_SKILLS: tuple = ('academics', 'awareness', 'finance', 'investigation', 'medicine', 'occult', 'politics', 'science', 'technology')
         MENTAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(MENTAL_SKILLS, 'skills/mental')
 
-        # Will eventually turn this into some kind of loop
-
-        count: int = MENTAL_SKILLS_DICT['academics']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[0])}', value=f'{emoji}', inline=True)
-
-        count: int = MENTAL_SKILLS_DICT['awareness']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[1])}', value=f'{emoji}', inline=True)
-
-        count: int = MENTAL_SKILLS_DICT['finance']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[2])}', value=f'{emoji}', inline=True)
-
-        #
-        page.add_field(name='', value='', inline=False)
-
-        count: int = MENTAL_SKILLS_DICT['investigation']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[3])}', value=f'{emoji}', inline=True)
-
-        count: int = MENTAL_SKILLS_DICT['medicine']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[4])}', value=f'{emoji}', inline=True)
-
-        count: int = MENTAL_SKILLS_DICT['occult']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[5])}', value=f'{emoji}', inline=True)
-
-        #
-        page.add_field(name='', value='', inline=False)
-
-        count: int = MENTAL_SKILLS_DICT['politics']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[6])}', value=f'{emoji}', inline=True)
-
-        count: int = MENTAL_SKILLS_DICT['science']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[7])}', value=f'{emoji}', inline=True)
-
-        count: int = MENTAL_SKILLS_DICT['technology']
-        emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-        page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[8])}', value=f'{emoji}', inline=True)
+        while_var: int = 0
+        while while_var != 9:  # 9 = Skill Count
+            count: int = MENTAL_SKILLS_DICT[MENTAL_SKILLS[while_var]]
+            emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
+            page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
+            while_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
