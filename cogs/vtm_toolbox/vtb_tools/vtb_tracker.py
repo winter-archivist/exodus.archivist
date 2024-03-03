@@ -226,7 +226,7 @@ class HP_n_WP(discord.ui.View):
     @discord.ui.button(label='Take HP/WP Damage', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def to_damage_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Take HP/WP Damage', '', 'mint')
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return None
 
@@ -242,113 +242,96 @@ class HP_n_WP_Damage(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
-    @discord.ui.select(placeholder='Take Superficial Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=0)
+    @discord.ui.select(placeholder='Take Superficial HP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=0)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        character_name: str = await vU.getCharacterName(interaction)
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
-            cursor = db.cursor()
-            hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+        BASE_HEALTH: int = await CHARACTER.__get_value__('base_health', 'health')
 
-            while damage_amount > 0:
-                hc_sup: int = int(cursor.execute('SELECT healthSUP from health').fetchone()[0])
-                hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
+        while damage_amount > 0:
+            HEALTH_DAMAGE: dict = await CHARACTER.__get_values__(('superficial_health_damage', 'aggravated_health_damage'), 'health')
+            AGG_DMG = HEALTH_DAMAGE['aggravated_health_damage']
+            SUP_DMG = HEALTH_DAMAGE['superficial_health_damage']
 
-                if hc_base == hc_agg:
-                    # Set up torpor logic later
-                    # ! ENTER TORPOR
-                    log.crit('Someone Torpor\'d')
-                    quit()
-                elif hc_sup == hc_base:
-                    # Deals AGG Damage
-                    cursor.execute('UPDATE health SET healthAGG=?', ((str(int(hc_agg + 1))),))  # ! Parentheses are NOT redundant
-                else:
-                    # Deals SUP Damage
-                    cursor.execute('UPDATE health SET healthSUP=?', ((str(int(hc_sup + 1))),))  # ! Parentheses are NOT redundant
+            if BASE_HEALTH == AGG_DMG:
+                # Set up torpor logic later
+                # ENTER TORPOR HERE
+                log.crit('Someone Torpor\'d')
+            elif BASE_HEALTH == SUP_DMG:  # Deals AGG Damage
+                await CHARACTER.__update_value__('aggravated_health_damage', int(AGG_DMG + 1), 'health')
+            else:  # Deals SUP Damage
+                await CHARACTER.__update_value__('superficial_health_damage', int(SUP_DMG + 1), 'health')
+            damage_amount -= 1
 
-                damage_amount -= 1
-                db.commit()
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
+        return
 
-        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
-        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
-
-    @discord.ui.select(placeholder='Take Aggravated Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
+    @discord.ui.select(placeholder='Take Aggravated HP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
     async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        character_name: str = await vU.getCharacterName(interaction)
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
-            cursor = db.cursor()
-            hc_base: int = int(cursor.execute('SELECT healthBase from health').fetchone()[0])
+        BASE_HEALTH: int = await CHARACTER.__get_value__('base_health', 'health')
 
-            while damage_amount > 0:
-                hc_agg: int = int(cursor.execute('SELECT healthAGG from health').fetchone()[0])
+        while damage_amount > 0:
+            AGG_DMG: int = await CHARACTER.__get_value__('aggravated_health_damage', 'health')
 
-                if hc_base == hc_agg:
-                    # Set up torpor logic later
-                    # ! ENTER TORPOR
-                    log.crit('Someone Torpor\'d')
-                    quit()
+            if BASE_HEALTH == AGG_DMG:
+                # Set up torpor logic later
+                # ENTER TORPOR HERE
+                log.crit('Someone Torpor\'d')
+                return
 
-                # Deals AGG Damage
-                cursor.execute('UPDATE health SET healthAGG=?', ((str(int(hc_agg + 1))),))  # ! Parentheses are NOT redundant
+            await CHARACTER.__update_value__('aggravated_health_damage', int(AGG_DMG + 1), 'health')
+            damage_amount -= 1
 
-                damage_amount -= 1
-                db.commit()
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
+        return
 
-        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
-        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+    @discord.ui.select(placeholder='Take Superficial WP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=2)
+    async def wp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
-    @discord.ui.select(placeholder='Take Superficial Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=2)
-    async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
-            cursor = db.cursor()
-            wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+        BASE_WILLPOWER: int = await CHARACTER.__get_value__('base_willpower', 'willpower')
 
-            while damage_amount > 0:
-                wpc_sup: int = int(cursor.execute('SELECT willpowerSUP from willpower').fetchone()[0])
-                wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
+        while damage_amount > 0:
+            WILLPOWER_DAMAGE: dict = await CHARACTER.__get_values__(('superficial_willpower_damage', 'aggravated_willpower_damage'), 'willpower')
+            AGG_DMG = WILLPOWER_DAMAGE['aggravated_willpower_damage']
+            SUP_DMG = WILLPOWER_DAMAGE['superficial_willpower_damage']
 
-                if wpc_sup == wpc_base:
-                    # Deals AGG Damage
-                    cursor.execute('UPDATE willpower SET willpowerAGG=?', ((str(int(wpc_agg + 1))),))  # ! Parentheses are NOT redundant
-                else:
-                    # Deals SUP Damage
-                    cursor.execute('UPDATE willpower SET willpowerSUP=?', ((str(int(wpc_sup + 1))),))  # ! Parentheses are NOT redundant
+            if BASE_WILLPOWER == SUP_DMG:  # Deals AGG Damage
+                await CHARACTER.__update_value__('aggravated_willpower_damage', int(AGG_DMG + 1), 'willpower')
+            else:  # Deals SUP Damage
+                await CHARACTER.__update_value__('superficial_willpower_damage', int(SUP_DMG + 1), 'willpower')
+            damage_amount -= 1
 
-                damage_amount -= 1
-                db.commit()
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
+        return
 
-        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
-        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+    @discord.ui.select(placeholder='Take Aggravated WP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=3)
+    async def wp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
-    @discord.ui.select(placeholder='Take Aggravated Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=3)
-    async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        character_name: str = await vU.getCharacterName(interaction)
         damage_amount: int = int(select.values[0])
 
-        with sqlite3.connect(f'cogs//vampire//vtb_characters//{str(interaction.user.id)}//{character_name}//{character_name}.sqlite') as db:
-            cursor = db.cursor()
-            wpc_base: int = int(cursor.execute('SELECT willpowerBase from willpower').fetchone()[0])
+        BASE_WILLPOWER: int = await CHARACTER.__get_value__('base_willpower', 'willpower')
 
-            while damage_amount > 0:
-                wpc_agg: int = int(cursor.execute('SELECT willpowerAGG from willpower').fetchone()[0])
+        while damage_amount > 0:
+            AGG_DMG: int = await CHARACTER.__get_value__('aggravated_willpower_damage', 'willpower')
+            await CHARACTER.__update_value__('aggravated_willpower_damage', int(AGG_DMG + 1), 'willpower')
+            damage_amount -= 1
 
-                if wpc_agg > wpc_base:
-                    return
-
-                # Deals AGG Damage
-                cursor.execute('UPDATE willpower SET willpowerAGG=?', ((str(int(wpc_agg + 1))),))  # ! Parentheses are NOT redundant
-
-                damage_amount -= 1
-                db.commit()
-
-        response_page, response_view = await vPS.pageEVNav(interaction, 'tracker.hp/wp')
-        await interaction.response.edit_message(embed=response_page, view=response_view(self.CLIENT))
+        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
+        return
 
 
 class Extras(discord.ui.View):
@@ -368,15 +351,12 @@ class Extras(discord.ui.View):
 
     @discord.ui.button(label='Diablerie', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def diablerie_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+        pass
 
     @discord.ui.button(label='Remorse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def remorse_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+        pass
 
     @discord.ui.button(label='Path Rules', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def path_rules_button_callback(self, interaction, button):
-        response_embed, response_view = await vPS.pageEVNav(interaction, 'tracker.home')
-        await interaction.response.edit_message(embed=response_embed, view=response_view(self.CLIENT))
+        pass
