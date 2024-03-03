@@ -13,11 +13,11 @@ import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 async def return_to_home(self, interaction: discord.Interaction) -> None:
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
     page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
-    await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+    await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
     return None
 
 
-async def go_to_roller(self, interaction) -> None:
+async def go_to_roller(self, interaction: discord.Interaction) -> None:
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
     page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
     page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
@@ -69,7 +69,7 @@ class Home(discord.ui.View):
 
         emoji_result = f'{character_data["resolve"] * mc.DOT_FULL_EMOJI} {abs(character_data["resolve"] - 5) * mc.DOT_EMPTY_EMOJI}'
         page.add_field(name='Resolve', value=emoji_result, inline=True)
-        await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
     @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
@@ -99,7 +99,7 @@ class Home(discord.ui.View):
         page.add_field(name='Health', value=f'{FULL_HEALTH}{SUP_HEALTH}{AGG_HEALTH}', inline=False)
         page.add_field(name='Willpower', value=f'{FULL_WILLPOWER}{SUP_WILLPOWER}{AGG_WILLPOWER}', inline=False)
 
-        await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
     @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
@@ -154,7 +154,7 @@ class Home(discord.ui.View):
         emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
         page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[8])}', value=f'{emoji}', inline=True)
 
-        await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
     @discord.ui.button(label='Social Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
@@ -209,7 +209,7 @@ class Home(discord.ui.View):
         emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
         page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[8])}', value=f'{emoji}', inline=True)
 
-        await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
     @discord.ui.button(label='Mental Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
@@ -264,7 +264,7 @@ class Home(discord.ui.View):
         emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
         page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[8])}', value=f'{emoji}', inline=True)
 
-        await interaction.response.send_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
 
