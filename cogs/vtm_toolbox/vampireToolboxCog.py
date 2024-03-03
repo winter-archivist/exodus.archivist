@@ -40,10 +40,11 @@ class VTM_Toolbox(discord.ext.commands.Cog):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
         if target_tool.value == 'tracker':
-            page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+            page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'mint')
             await interaction.response.send_message(embed=page, view=vt.Home(self.CLIENT))
+
         elif target_tool.value == 'roller':
-            page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+            page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'purple')
             page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
             await interaction.response.send_message(embed=page, view=vr.Home(self.CLIENT))
         else:

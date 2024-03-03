@@ -12,14 +12,14 @@ import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 
 async def return_to_home(self, interaction: discord.Interaction) -> None:
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-    page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+    page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'mint')
     await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
     return None
 
 
 async def go_to_roller(self, interaction: discord.Interaction) -> None:
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-    page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'dark_yellow')
+    page: discord.Embed = await vp.basic_page_builder(interaction, 'Home', '', 'purple')
     page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
     await interaction.response.edit_message(embed=page, view=vr.Home(self.CLIENT))
     return None
@@ -30,10 +30,10 @@ class Home(discord.ui.View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def attributes_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Attributes Page', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Attributes Page', '', 'mint')
 
         attributes: tuple = \
             ('strength', 'dexterity', 'stamina', 'charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve')
@@ -72,10 +72,10 @@ class Home(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def hpwp_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Health & Willpower', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Health & Willpower', '', 'mint')
 
         HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
         HEALTH_DICT: dict = await CHARACTER.__get_values__(HEALTH, 'health')
@@ -102,10 +102,10 @@ class Home(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
+    @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def physical_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Physical Skills Page', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Physical Skills Page', '', 'mint')
 
         PHYSICAL_SKILLS: tuple = ('athletics', 'brawl', 'craft', 'drive', 'firearms', 'larceny', 'melee', 'stealth', 'survival')
         PHYSICAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(PHYSICAL_SKILLS, 'skills/physical')
@@ -120,10 +120,10 @@ class Home(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Social Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
+    @discord.ui.button(label='Social Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def social_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Social Skills Page', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Social Skills Page', '', 'mint')
 
         SOCIAL_SKILLS: tuple = ('animal_ken', 'etiquette', 'insight', 'intimidation', 'leadership', 'performance', 'persuasion', 'streetwise', 'subterfuge')
         SOCIAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(SOCIAL_SKILLS, 'skills/social')
@@ -144,10 +144,10 @@ class Home(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Mental Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=0)
+    @discord.ui.button(label='Mental Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def mental_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.basic_page_builder(interaction, 'Mental Skills Page', '', 'dark_yellow')
+        page: discord.Embed = await vp.basic_page_builder(interaction, 'Mental Skills Page', '', 'mint')
 
         MENTAL_SKILLS: tuple = ('academics', 'awareness', 'finance', 'investigation', 'medicine', 'occult', 'politics', 'science', 'technology')
         MENTAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(MENTAL_SKILLS, 'skills/mental')
@@ -168,7 +168,7 @@ class Home_n_Roll(discord.ui.View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
+    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def home_button_callback(self, interaction, button):
         await return_to_home(self, interaction)
         return
