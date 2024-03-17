@@ -25,6 +25,7 @@ async def make_character_files(interaction: discord.Interaction, character_name)
                        'bane_severity'       : 0,
                        'hunger'              : 0,
                        'predator_type'       : 'UNSET',
+                       'temperament'         : '',
                        'character_avatar_url': mc.PLACEHOLDER_IMG}
     HEALTH_DICT: dict = {'base_health'              : 0,
                          'superficial_health_damage': 0,
@@ -152,10 +153,9 @@ class vtb_Character:
 
         self.AVATAR_URL: str = CHARACTER_INFO['character_avatar_url']
 
-    # The get/update value/values functions are split since if you only need
-    # one value returned/updated then there's no point in going through the for
-    # it just slightly increases performance, not that this bot needs to be/is
-    # performant focused, especially being written in python.
+    # The get/update value/values functions are split since if you only need one value returned/updated
+    # then there's no point in going through the for loop/using tuples, this just slightly increases performance;
+    # not that this bot needs to be/is performant, especially being written in python by a newbie.
     async def __get_values__(self, KEYS: tuple, FILE_NAME: str) -> dict:
         # Use when getting more than one value, otherwise use self.__get_value__()
 
@@ -368,47 +368,31 @@ class vtb_Character:
         else:
             hunger -= 2
 
-        temperament_check = randint(1, 10)
-        if temperament_check >= 6:
-            random_temperament_num = randint(1, 10)
-            random_resonance_num = randint(1, 10)
+        # Chance to gain Temperament
+        if randint(1, 10) >= 6:
+            RESONANCE_DICT: dict = \
+                {1: 'phlegmatic', 2: 'phlegmatic', 3: 'phlegmatic',
+                 4: 'melancholy', 5: 'melancholy', 6: 'melancholy',
+                 7: 'choleric', 8: 'choleric',
+                 9: 'sanguine', 10: 'sanguine'}
+            RESONANCE: str = RESONANCE_DICT[randint(1, 10)]
+            await self.__update_value__('resonance', RESONANCE.capitalize(), 'misc')
 
-            phlegmatic_resonances = (1, 2, 3)
-            melancholy_resonances = (4, 5, 6)
-            choleric_resonances = (7, 8)
-            sanguine_resonances = (9, 10)
-            # TODO: Eventually this should be stored in the character's sheet.
-            if random_temperament_num in phlegmatic_resonances:
-                resonance = 'Phlegmatic'
-            elif random_temperament_num in melancholy_resonances:
-                resonance = 'Melancholy'
-            elif random_temperament_num in choleric_resonances:
-                resonance = 'Choleric'
-            elif random_temperament_num in sanguine_resonances:
-                resonance = 'Sanguine'
-            else:
-                resonance = 'ERROR'
-
-            negligible_resonances = (1, 2, 3, 4, 5)
-            fleeting_resonances = (6, 7, 8)
-            intense_or_acute_resonances = (9, 10)
-            if random_temperament_num in intense_or_acute_resonances:
-                second_temperament_roll = randint(1, 10)
-                if second_temperament_roll >= 9:
-                    temperament = 'Acute'
+            random_temperament_roll = randint(1, 10)
+            TEMPERAMENT_DICT: dict = \
+                {1: 'negligible', 2: 'negligible', 3: 'negligible', 4: 'negligible', 5: 'negligible',
+                 6: 'fleeting', 7: 'fleeting', 8: 'fleeting',
+                 9: 'intense_or_acute', 10: 'intense_or_acute'}
+            if TEMPERAMENT_DICT[random_temperament_roll] == 'intense_or_acute':
+                random_temperament_roll = randint(1, 10)
+                if random_temperament_roll >= 9:
+                    TEMPERAMENT = 'Acute'
                 else:
-                    temperament = 'Intense'
-
-            elif random_temperament_num in fleeting_resonances:
-                temperament = 'Fleeting'
-
-            elif random_temperament_num in negligible_resonances:
-                temperament = 'Negligible'
-
+                    TEMPERAMENT = 'Intense'
             else:
-                temperament = 'ERROR'
+                TEMPERAMENT = TEMPERAMENT_DICT[random_temperament_roll]
 
-            page.add_field(name=f'{temperament} {resonance} Temperament', value='')
+            page.add_field(name=f'{TEMPERAMENT} {RESONANCE}', value='')
         else:
             page.add_field(name=f'No Temperament', value='')
 
