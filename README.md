@@ -23,7 +23,7 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * Open Source [GNUGPL 3.0]
 >> * Logging /w "Syntax" [See Below]
 >> * Dangerously Cheesy [so much spaghetti]
->> * In Active Development [FEB 2024]
+>> * In Active Development [MAR 2024]
 
 > * Client: 
 >> * Slash Commands
@@ -31,9 +31,9 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * VTM v5 Toolbox 
 
 > * Active Development Features (varying states of functionality) 
->> * VTM v5 Toolbox [Extending Functionality]
->> * Bot Issue Ticket System [HIATUS]
->> * Notes System [HIATUS]
+>> * VTM v5 Toolbox [Functional | Extending Functionality]
+>> * Bot Issue Ticket System [N/A | HIATUS]
+>> * Notes System [N/A | HIATUS]
 
 > * Currently Abandoned Features (may return)
 >> * eaTools [Bot Devtools]
