@@ -417,5 +417,3 @@ class vtb_Character:
             page.add_field(name='Hunt:', value=f'BESTIAL FAILURE | {hunger * mc.HUNGER_EMOJI}')
 
         await self.__update_value__('hunger', hunger, 'roll/misc')
-
-
