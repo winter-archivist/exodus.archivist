@@ -17,21 +17,23 @@ class VTM_Toolbox(discord.ext.commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    @discord.app_commands.command(name='vtm-toolbox', description='---DO-NOT-TOUCH---')
+    @discord.app_commands.command(name='vtm-toolbox', description='Toolbox for VTM!')
     @discord.app_commands.describe(character_name='Character Name')
-    @discord.app_commands.describe(make='--DEVTOOL--')
     @discord.app_commands.choices(target_tool=[discord.app_commands.Choice(name="Vampire Tracker", value="tracker"),
                                                discord.app_commands.Choice(name="Vampire Roller", value="roller")])
-    async def Toolbox(self, interaction: discord.Interaction, character_name: str,
-                      target_tool: discord.app_commands.Choice[str], make: bool = False):
+    @discord.app_commands.choices(make=[discord.app_commands.Choice(name="True", value=True),
+                                        discord.app_commands.Choice(name="False [Default]", value=False)])
+    async def Toolbox(self, interaction: discord.Interaction,
+                      character_name: str, target_tool: discord.app_commands.Choice[str], make: bool = False):
 
-        if interaction.user.id != mc.RUNNER_ID:
-            log.crit(f'{interaction.user.name} used the no touch.')
-            dev_test_embed = discord.Embed(title='NO TOUCH!', description='NO TOUCH!', color=mc.EMBED_COLORS['red'])
-            await interaction.response.send_message(embed=dev_test_embed)
+        if interaction.user.id != mc.RUNNER_ID and make is not False:
+            log.crit(f'> {interaction.user.name} | {interaction.user.id}  used the no touch.')
+            rando_used_devtool = discord.Embed(title='NO TOUCH!', description='The `make` option was selected, this is a devtool'
+                                                                              ', do __not__ touch.', color=mc.EMBED_COLORS['red'])
+            await interaction.response.send_message(embed=rando_used_devtool)
             return
-
-        if make:
+        elif interaction.user.id == mc.RUNNER_ID and make is True:
+            log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
             await cm.make_character_files(interaction, character_name)
 
         await vu.reset_character_roll_information(interaction, character_name)
@@ -48,7 +50,9 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
             await interaction.response.send_message(embed=page, view=vr.Home(self.CLIENT))
         else:
+            log.error('**> Unknown target_tool.value given to Toolbox()')
             raise ValueError
+
         return
 
 
