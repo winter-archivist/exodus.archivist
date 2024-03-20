@@ -339,13 +339,13 @@ class vtb_Character:
         page.add_field(name='Failure Count', value=f'{TOTAL_FAILS}')
         page.add_field(name='Roll Result', value=f'{roll_flag}')
 
-        if RETURN_EXTRA is False:
-            return page
-        else:
+        if RETURN_EXTRA is True:
             return page, result, roll_flag
 
+        return page
+
     async def __hunt__(self, input_page: discord.Embed):
-        page, result, roll_flag = await self.__roll__(input_page, True)
+        page, _UNUSED_, ROLL_FLAG = await self.__roll__(input_page, True)
 
         MISC_DICT: dict = await self.__get_values__(('hunger', 'blood_potency'), 'misc')
         BLOOD_POTENCY: int = MISC_DICT['blood_potency']
@@ -353,23 +353,23 @@ class vtb_Character:
 
         page.add_field(name='Roll Mark:', value=f'**Hunt**')
 
-        if roll_flag == 'Regular Fail':
+        if ROLL_FLAG == 'Regular Fail':
             page.add_field(name='Hunt Failed.', value=f'Ask DM About Resulting Consequences')
-            return  # page; MAY NEED THIS TO FIX
+            return page
 
-        min_hunger_without_kill = 1
+        min_hunger_without_kill: int = 1
         if BLOOD_POTENCY >= 5:
-            min_hunger_without_kill = 2
+            min_hunger_without_kill: int = 2
 
         if hunger == 0:
-            min_hunger_without_kill = 0
+            min_hunger_without_kill: int = 0
         elif int(hunger - 2) <= min_hunger_without_kill:
-            hunt_hunger = min_hunger_without_kill
+            hunger: int = min_hunger_without_kill
         else:
             hunger -= 2
 
-        # Chance to gain Temperament
-        if randint(1, 10) >= 6:
+        TEMPERAMENT_CHANCE: int = randint(1, 10)
+        if TEMPERAMENT_CHANCE >= 6:
             RESONANCE_DICT: dict = \
                 {1: 'phlegmatic', 2: 'phlegmatic', 3: 'phlegmatic',
                  4: 'melancholy', 5: 'melancholy', 6: 'melancholy',
@@ -378,34 +378,41 @@ class vtb_Character:
             RESONANCE: str = RESONANCE_DICT[randint(1, 10)]
             await self.__update_value__('resonance', RESONANCE.capitalize(), 'misc')
 
-            random_temperament_roll = randint(1, 10)
+            temperament_roll: int = randint(1, 10)
             TEMPERAMENT_DICT: dict = \
                 {1: 'negligible', 2: 'negligible', 3: 'negligible', 4: 'negligible', 5: 'negligible',
                  6: 'fleeting', 7: 'fleeting', 8: 'fleeting',
                  9: 'intense_or_acute', 10: 'intense_or_acute'}
-            if TEMPERAMENT_DICT[random_temperament_roll] == 'intense_or_acute':
-                random_temperament_roll = randint(1, 10)
-                if random_temperament_roll >= 9:
-                    TEMPERAMENT = 'Acute'
+
+            # For an Acute (highest) temperament a 9/10 must be rolled *then* an additional 9/10 must be rolled
+            # otherwise it'll just be Intense
+            if temperament_roll >= 9:
+                temperament_roll: int = randint(1, 10)
+                if temperament_roll >= 9:
+                    TEMPERAMENT: str = 'Acute'
                 else:
-                    TEMPERAMENT = 'Intense'
+                    TEMPERAMENT: str = 'Intense'
             else:
-                TEMPERAMENT = TEMPERAMENT_DICT[random_temperament_roll]
+                TEMPERAMENT: str = TEMPERAMENT_DICT[temperament_roll]
 
             page.add_field(name=f'{TEMPERAMENT} {RESONANCE}', value='')
+
         else:
             page.add_field(name=f'No Temperament', value='')
 
-        if roll_flag == 'Regular Success':
+        #
+        if ROLL_FLAG == 'Regular Success':
             page.add_field(name='Hunt:', value=f'Success | {hunger * mc.HUNGER_EMOJI}')
 
-        elif roll_flag == 'Messy Crit':
+        elif ROLL_FLAG == 'Messy Crit':
             page.add_field(name='Hunt:', value=f'Messy Crit | {hunger * mc.HUNGER_EMOJI}')
 
-        elif roll_flag == 'Crit':
+        elif ROLL_FLAG == 'Crit':
             page.add_field(name='Hunt:', value=f'Flawless | {hunger * mc.HUNGER_EMOJI}')
 
-        elif roll_flag == 'Bestial Failure':
+        elif ROLL_FLAG == 'Bestial Failure':
             page.add_field(name='Hunt:', value=f'BESTIAL FAILURE | {hunger * mc.HUNGER_EMOJI}')
 
         await self.__update_value__('hunger', hunger, 'roll/misc')
+
+
