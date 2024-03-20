@@ -148,6 +148,7 @@ class vtb_Character:
         if int(CHARACTER_INFO['owner_id']) == interaction.user.id:
             self.OWNER_NAME = interaction.user.name
             self.OWNER_ID = interaction.user.id
+            self.OWNER_AVATAR = interaction.user.display_avatar
             log.debug(f'> vtbCM __init__ Verified Owner of {CHARACTER_NAME} |  {self.OWNER_NAME} | {self.OWNER_ID} |')
         else:
             log.error('*> Bad Character Owner')

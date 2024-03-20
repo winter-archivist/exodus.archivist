@@ -10,21 +10,15 @@ class EMPTY_VIEW(discord.ui.View):
         self.CLIENT = CLIENT
 
 
-async def basic_page_builder(interaction: discord.Interaction, page_title: str, page_description: str, page_color: str) -> discord.Embed:
+async def basic_page_builder(CHARACTER: cm.vtb_Character, page_title: str, page_description: str, page_color: str) -> discord.Embed:
     if page_color not in mc.EMBED_COLORS:
         raise ValueError(f'*> Bad Page Color')
 
     base_page: discord.Embed = discord.Embed(title=page_title, description=page_description, colour=mc.EMBED_COLORS[f"{page_color.lower()}"])
 
-    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-
-    USER_INFO = {'user_name'  : interaction.user,
-                 'user_id'    : interaction.user.id,
-                 'user_avatar': interaction.user.display_avatar}
-
     base_page.set_thumbnail(url=CHARACTER.AVATAR_URL)
-    base_page.set_footer(text=f'{USER_INFO["user_id"]}', icon_url=f'{USER_INFO["user_avatar"]}')
-    base_page.set_author(name=f'{USER_INFO["user_name"]}', icon_url=f'{USER_INFO["user_avatar"]}')
+    base_page.set_footer(text=f'{CHARACTER.OWNER_ID}', icon_url=f'{CHARACTER.OWNER_AVATAR}')
+    base_page.set_author(name=f'{CHARACTER.OWNER_NAME}', icon_url=f'{CHARACTER.OWNER_AVATAR}')
     base_page.add_field(name='Character Name', value=f'{CHARACTER.CHARACTER_NAME}', inline=False)
 
     return base_page
@@ -32,7 +26,7 @@ async def basic_page_builder(interaction: discord.Interaction, page_title: str, 
 
 async def hp_wp_page_builder(interaction):
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-    page: discord.Embed = await basic_page_builder(interaction, 'Health & Willpower', '', 'mint')
+    page: discord.Embed = await basic_page_builder(CHARACTER, 'Health & Willpower', '', 'mint')
 
     HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
     HEALTH_DICT: dict = await CHARACTER.__get_values__(HEALTH, 'health')
@@ -71,8 +65,7 @@ async def standard_roller_page_modifications(page: discord.Embed, CHARACTER: cm.
     return page
 
 
-async def standard_roll_select(interaction: discord.Interaction, page, select, file_name: str):
-    CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+async def standard_roll_select(CHARACTER: cm.vtb_Character, page, select, file_name: str):
 
     CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('pool', 'composition'), 'roll/info')
     pool: int = CHARACTER_INFORMATION['pool']

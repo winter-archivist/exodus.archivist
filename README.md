@@ -4,12 +4,12 @@ ExodusAutomaton
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.03.05
+> * Version 01.03.06
 > > * Major: 01 | Large Overhauls
 > > * Minor: 03 | Non-Major Features
-> > * Patch: 05 | Other Repo Pushes
+> > * Patch: 06 | Other Repo Pushes
 > * State: Stable
-> * DateTime: March 19th 2024 | 11:34pm EST
+> * DateTime: March 19th 2024 | 11:51pm EST
 
 ---
 ## General
