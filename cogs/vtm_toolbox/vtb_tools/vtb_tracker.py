@@ -39,25 +39,25 @@ class Home(discord.ui.View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Attributes', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def attributes_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Attributes Page', '', 'mint')
 
         ATTRIBUTES: tuple = \
-            ('strength', 'dexterity', 'stamina', 'charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve')
+            ('Strength', 'Dexterity', 'Stamina', 'Charisma', 'Manipulation', 'Composure', 'Intelligence', 'Wits', 'Resolve')
         CHARACTER_DATA: dict = await CHARACTER.__get_values__(ATTRIBUTES, 'attributes')
 
         physical_impairment_flag: bool = False
-        HEALTH_BASE: int = await CHARACTER.__get_value__('base_health', 'health')
-        HEALTH_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('superficial_health_damage', 'health')
+        HEALTH_BASE: int = await CHARACTER.__get_value__('Base Health', 'health')
+        HEALTH_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('Superficial Health Damage', 'health')
         if HEALTH_BASE <= HEALTH_SUPERFICIAL_DAMAGE:
             page.add_field(name='Physically Impaired.', value='-1 to Physical Dice Pools', inline=False)
             physical_impairment_flag = True
 
         mental_impairment_flag: bool = False
-        WILLPOWER_BASE: int = await CHARACTER.__get_value__('base_willpower', 'willpower')
-        WILLPOWER_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('superficial_willpower_damage', 'willpower')
+        WILLPOWER_BASE: int = await CHARACTER.__get_value__('Base Willpower', 'willpower')
+        WILLPOWER_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('Superficial Willpower Damage', 'willpower')
         if WILLPOWER_BASE <= WILLPOWER_SUPERFICIAL_DAMAGE:
             page.add_field(name='Mentally Impaired', value='-1 to Social & Mental Dice Pools', inline=False)
             mental_impairment_flag = True
@@ -70,33 +70,63 @@ class Home(discord.ui.View):
 
             # don't like this, but will cope
             if physical_impairment_flag is True or mental_impairment_flag is True:
-                if ATTRIBUTES[for_var].lower() in ('strength', 'dexterity', 'stamina'):
+                if ATTRIBUTES[for_var].lower() in ('Strength', 'Dexterity', 'Stamina'):
                     count -= 1  # Removes one from PHYSICAL attributes since the character is PHYSICALLY impaired.
 
-                if ATTRIBUTES[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
+                if ATTRIBUTES[for_var].lower() in ('Charisma', 'Manipulation', 'Composure', 'Intelligence', 'Wits', 'Resolve'):
                     count -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
 
             emojis = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
 
-            page.add_field(name=f'{ATTRIBUTES[for_var].capitalize()}', value=f'{emojis}', inline=True)
+            page.add_field(name=f'{ATTRIBUTES[for_var]}', value=f'{emojis}', inline=True)
             for_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def hpwp_button_callback(self, interaction, button):
+    @discord.ui.button(label='Disciplines', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def disciplines_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
-        await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Disciplines', '', 'mint')
+
+        DISCIPLINES: tuple = ('Obfuscate', 'Animalism', 'Potence', 'Dominate', 'Auspex', 'Protean', 'Presence', 'Fortitude',
+                              'Thin Blood Alchemy', 'Blood Sorcery', 'Chemeristry', 'Seven Specific', 'Myr Specific',
+                              'Selena Specific', 'Nyctea Specific One', 'Nyctea Specific Two', 'Elijah Specific')
+
+        for_var = 0
+        for x in DISCIPLINES:
+            count: int = await CHARACTER.__get_value__(DISCIPLINES[for_var], 'disciplines')
+            emojis = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
+
+            if count <= 0:
+                pass
+            else:
+                page.add_field(name=f'{DISCIPLINES[for_var]}', value=f'{emojis}', inline=True)
+            for_var += 1
+
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    @discord.ui.button(label='Hunger', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def hunger_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
+        page: discord.Embed = await vp.hunger_page_builder(CHARACTER)
+        await interaction.response.edit_message(embed=page, view=Hunger(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Clan', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    async def clan_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', '', 'mint')
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def physical_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Physical Skills Page', '', 'mint')
 
-        PHYSICAL_SKILLS: tuple = ('athletics', 'brawl', 'craft', 'drive', 'firearms', 'larceny', 'melee', 'stealth', 'survival')
+        PHYSICAL_SKILLS: tuple = ('Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival')
         PHYSICAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(PHYSICAL_SKILLS, 'skills/physical')
 
         while_var: int = 0
@@ -109,36 +139,30 @@ class Home(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Social Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    @discord.ui.button(label='Social Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def social_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Social Skills Page', '', 'mint')
 
-        SOCIAL_SKILLS: tuple = ('animal_ken', 'etiquette', 'insight', 'intimidation', 'leadership', 'performance', 'persuasion', 'streetwise', 'subterfuge')
+        SOCIAL_SKILLS: tuple = ('Animal Ken', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge')
         SOCIAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(SOCIAL_SKILLS, 'skills/social')
 
         while_var: int = 0
         while while_var != 9:  # 9 = Skill Count
             count: int = SOCIAL_SKILLS_DICT[SOCIAL_SKILLS[while_var]]
             emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
-
-            # This is a special case, because just str.capitalize() will result in the string being 'Animal_ken'
-            # I'll sacrifice a little bit of performance, Python isn't supposed to be fast anyway
-            if SOCIAL_SKILLS[while_var] == 'animal_ken':
-                page.add_field(name=f'Animal Ken', value=f'{emoji}', inline=True)
-            else:
-                page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
+            page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
             while_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Mental Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
+    @discord.ui.button(label='Mental Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def mental_skills_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Mental Skills Page', '', 'mint')
 
-        MENTAL_SKILLS: tuple = ('academics', 'awareness', 'finance', 'investigation', 'medicine', 'occult', 'politics', 'science', 'technology')
+        MENTAL_SKILLS: tuple = ('Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology')
         MENTAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(MENTAL_SKILLS, 'skills/mental')
 
         while_var: int = 0
@@ -151,18 +175,56 @@ class Home(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
-    @discord.ui.button(label='Hunger', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
-    async def hunger_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-        page: discord.Embed = await vp.hunger_page_builder(CHARACTER)
-        await interaction.response.edit_message(embed=page, view=Hunger(self.CLIENT))
+    @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=2)
+    async def hpwp_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
+        await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
-    @discord.ui.button(label='Extras', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Extras', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=2)
     async def extras_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Extras', '', 'mint')
-        await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
+
+        # ! Needs Diablerie Button [Clan & Generation]
+        # ! Needs Stain/Remorse Button [Humanity & Stains]
+        # ! Needs PoE Rule Checker [Path of Enlightenment]
+        MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Humanity', 'Blood Potency'),
+                                                         'misc')
+        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'),
+                                                             'humanity')
+
+        # THIS IS JUST FOR MY PERSONAL CHRONICLE
+        if MISC_DICT['Clan'] == 'SECRET_CLAN':
+            page.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
+        else:
+            page.add_field(name='Clan', value=f'{MISC_DICT["Clan"]}', inline=True)
+
+        page.add_field(name='', value=f'', inline=False)
+
+        # THIS IS JUST FOR MY PERSONAL CHRONICLE
+        if MISC_DICT['Generation'] >= 7:
+            page.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
+        else:
+            page.add_field(name='Generation', value=f'{MISC_DICT["Generation"] * mc.DOT_FULL_EMOJI}', inline=True)
+
+        # THIS IS JUST FOR MY PERSONAL CHRONICLE
+        if MISC_DICT['Blood Potency'] >= 4:
+            page.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
+        else:
+            page.add_field(name='Blood Potency', value=f'{MISC_DICT["Blood Potency"] * mc.HUNGER_EMOJI}', inline=True)
+
+        page.add_field(name='', value=f'', inline=False)
+
+        page.add_field(name='Humanity', value=f'{HUMANITY_DICT["Humanity"] * mc.DOT_FULL_EMOJI} {HUMANITY_DICT["Stains"] * mc.DOT_EMPTY_EMOJI}', inline=True)
+        # THIS IS JUST FOR MY PERSONAL CHRONICLE
+        if HUMANITY_DICT["Path of Enlightenment"] == 'SECRET_PATH':
+            page.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
+        else:
+            page.add_field(name='Path of Enlightenment', value=f'{HUMANITY_DICT["Path of Enlightenment"]}', inline=True)
+
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
 
@@ -201,15 +263,15 @@ class HP_n_WP(discord.ui.View):
     async def mend_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
-        BLOOD_POTENCY: int = await CHARACTER.__get_value__('blood_potency', 'misc')
-        if BLOOD_POTENCY <= 1: mend_amount = 1
-        elif BLOOD_POTENCY <= 3: mend_amount = 2
-        elif BLOOD_POTENCY <= 7: mend_amount = 3
-        elif BLOOD_POTENCY <= 9: mend_amount = 4
-        elif BLOOD_POTENCY == 10: mend_amount = 5
+        BLOOD_POTENCY: int = await CHARACTER.__get_value__('Blood Potency', 'misc')
+        if BLOOD_POTENCY <= 1: MEND_AMOUNT = 1
+        elif BLOOD_POTENCY <= 3: MEND_AMOUNT = 2
+        elif BLOOD_POTENCY <= 7: MEND_AMOUNT = 3
+        elif BLOOD_POTENCY <= 9: MEND_AMOUNT = 4
+        elif BLOOD_POTENCY == 10: MEND_AMOUNT = 5
         else: raise ValueError
 
-        SUPERFICIAL_HEALTH_DAMAGE: int = await CHARACTER.__get_value__('superficial_health_damage', 'health')
+        SUPERFICIAL_HEALTH_DAMAGE: int = await CHARACTER.__get_value__('Superficial Health Damage', 'health')
 
         # Prevents a Rouse from occurring if no health can be gained.
         if SUPERFICIAL_HEALTH_DAMAGE == 0:
@@ -223,14 +285,14 @@ class HP_n_WP(discord.ui.View):
             return
 
         # Can't heal damage you don't have
-        if mend_amount > SUPERFICIAL_HEALTH_DAMAGE:
-            mend_amount = SUPERFICIAL_HEALTH_DAMAGE
+        if MEND_AMOUNT > SUPERFICIAL_HEALTH_DAMAGE:
+            MEND_AMOUNT = SUPERFICIAL_HEALTH_DAMAGE
 
-        await CHARACTER.__update_value__('superficial_health_damage', int(SUPERFICIAL_HEALTH_DAMAGE - mend_amount), 'health')
+        await CHARACTER.__update_value__('Superficial Health Damage', int(SUPERFICIAL_HEALTH_DAMAGE - MEND_AMOUNT), 'health')
 
         page: discord.Embed = await vp.hp_wp_page_builder(interaction)
 
-        page.add_field(name=f'Rouse {ROUSE_RESULT[0]}', value=f'`{mend_amount}` Health Regained. New Hunger: {ROUSE_RESULT[1] * mc.HUNGER_EMOJI}')
+        page.add_field(name=f'Rouse {ROUSE_RESULT[0]}', value=f'`{MEND_AMOUNT}` Health Regained. New Hunger: {ROUSE_RESULT[1] * mc.HUNGER_EMOJI}')
         await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
@@ -260,21 +322,21 @@ class HP_n_WP_Damage(discord.ui.View):
 
         damage_amount: int = int(select.values[0])
 
-        BASE_HEALTH: int = await CHARACTER.__get_value__('base_health', 'health')
+        BASE_HEALTH: int = await CHARACTER.__get_value__('Base Health', 'health')
 
         while damage_amount > 0:
-            HEALTH_DAMAGE: dict = await CHARACTER.__get_values__(('superficial_health_damage', 'aggravated_health_damage'), 'health')
-            AGG_DMG = HEALTH_DAMAGE['aggravated_health_damage']
-            SUP_DMG = HEALTH_DAMAGE['superficial_health_damage']
+            HEALTH_DAMAGE: dict = await CHARACTER.__get_values__(('Superficial Health Damage', 'Aggravated Health Damage'), 'health')
+            AGG_DMG = HEALTH_DAMAGE['Aggravated Health Damage']
+            SUP_DMG = HEALTH_DAMAGE['Superficial Health Damage']
 
             if BASE_HEALTH == AGG_DMG:
                 # Set up torpor logic later
                 # ENTER TORPOR HERE
                 log.crit('Someone Torpor\'d')
             elif BASE_HEALTH == SUP_DMG:  # Deals AGG Damage
-                await CHARACTER.__update_value__('aggravated_health_damage', int(AGG_DMG + 1), 'health')
+                await CHARACTER.__update_value__('Aggravated Health Damage', int(AGG_DMG + 1), 'health')
             else:  # Deals SUP Damage
-                await CHARACTER.__update_value__('superficial_health_damage', int(SUP_DMG + 1), 'health')
+                await CHARACTER.__update_value__('Superficial Health Damage', int(SUP_DMG + 1), 'health')
             damage_amount -= 1
 
         page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
@@ -287,10 +349,10 @@ class HP_n_WP_Damage(discord.ui.View):
 
         damage_amount: int = int(select.values[0])
 
-        BASE_HEALTH: int = await CHARACTER.__get_value__('base_health', 'health')
+        BASE_HEALTH: int = await CHARACTER.__get_value__('Base Health', 'health')
 
         while damage_amount > 0:
-            AGG_DMG: int = await CHARACTER.__get_value__('aggravated_health_damage', 'health')
+            AGG_DMG: int = await CHARACTER.__get_value__('Aggravated Health Damage', 'health')
 
             if BASE_HEALTH == AGG_DMG:
                 # Set up torpor logic later
@@ -298,7 +360,7 @@ class HP_n_WP_Damage(discord.ui.View):
                 log.crit('Someone Torpor\'d')
                 return
 
-            await CHARACTER.__update_value__('aggravated_health_damage', int(AGG_DMG + 1), 'health')
+            await CHARACTER.__update_value__('Aggravated Health Damage', int(AGG_DMG + 1), 'health')
             damage_amount -= 1
 
         page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
@@ -311,17 +373,17 @@ class HP_n_WP_Damage(discord.ui.View):
 
         damage_amount: int = int(select.values[0])
 
-        BASE_WILLPOWER: int = await CHARACTER.__get_value__('base_willpower', 'willpower')
+        BASE_WILLPOWER: int = await CHARACTER.__get_value__('Base Willpower', 'willpower')
 
         while damage_amount > 0:
-            WILLPOWER_DAMAGE: dict = await CHARACTER.__get_values__(('superficial_willpower_damage', 'aggravated_willpower_damage'), 'willpower')
-            AGG_DMG = WILLPOWER_DAMAGE['aggravated_willpower_damage']
-            SUP_DMG = WILLPOWER_DAMAGE['superficial_willpower_damage']
+            WILLPOWER_DAMAGE: dict = await CHARACTER.__get_values__(('Superficial Willpower Damage', 'Aggravated Willpower Damage'), 'willpower')
+            AGG_DMG = WILLPOWER_DAMAGE['Aggravated Willpower Damage']
+            SUP_DMG = WILLPOWER_DAMAGE['Superficial Willpower Damage']
 
             if BASE_WILLPOWER == SUP_DMG:  # Deals AGG Damage
-                await CHARACTER.__update_value__('aggravated_willpower_damage', int(AGG_DMG + 1), 'willpower')
+                await CHARACTER.__update_value__('Aggravated Willpower Damage', int(AGG_DMG + 1), 'willpower')
             else:  # Deals SUP Damage
-                await CHARACTER.__update_value__('superficial_willpower_damage', int(SUP_DMG + 1), 'willpower')
+                await CHARACTER.__update_value__('Superficial Willpower Damage', int(SUP_DMG + 1), 'willpower')
             damage_amount -= 1
 
         page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
@@ -334,11 +396,11 @@ class HP_n_WP_Damage(discord.ui.View):
 
         damage_amount: int = int(select.values[0])
 
-        BASE_WILLPOWER: int = await CHARACTER.__get_value__('base_willpower', 'willpower')
+        BASE_WILLPOWER: int = await CHARACTER.__get_value__('Base Willpower', 'willpower')
 
         while damage_amount > 0:
-            AGG_DMG: int = await CHARACTER.__get_value__('aggravated_willpower_damage', 'willpower')
-            await CHARACTER.__update_value__('aggravated_willpower_damage', int(AGG_DMG + 1), 'willpower')
+            AGG_DMG: int = await CHARACTER.__get_value__('Aggravated Willpower Damage', 'willpower')
+            await CHARACTER.__update_value__('Aggravated Willpower Damage', int(AGG_DMG + 1), 'willpower')
             damage_amount -= 1
 
         page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
@@ -361,12 +423,12 @@ class Hunger(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Predator Type Information', '', 'mint')
 
-        PREDATOR_TYPE: str = await CHARACTER.__get_value__('predator_type', 'misc')
+        PREDATOR_TYPE: str = await CHARACTER.__get_value__('Predator Type', 'misc')
         SUPPORTED_PREDATOR_TYPES: tuple = ('SECRET_PREDATOR_TYPE', 'Grim Reaper', 'Sandman',
                                            'Cryptid', 'Alleycat', 'Grave Robber', 'Trapdoor')
 
         if PREDATOR_TYPE not in SUPPORTED_PREDATOR_TYPES:
-            log.error('**> Bad PREDATOR_TYPE given to hunger_page_builder()')
+            log.error('**> Bad PREDATOR_TYPE')
             return
 
         match PREDATOR_TYPE:

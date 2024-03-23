@@ -97,11 +97,11 @@ class RollTypes(discord.ui.View):
         elif RR_TYPE == 'Pass':
             page.add_field(name='Blood Surge Rouse Passed', value=f'{HUNGER_EMOJI}')
 
-        ROLL_INFO: dict = await CHARACTER.__get_values__(('pool', 'composition'), 'roll/info')
-        NEW_ROLL_POOL: int = int(ROLL_INFO['pool'])
-        NEW_ROLL_COMPOSITION = f'{ROLL_INFO["composition"]}, Blood Surge[2]'
+        ROLL_INFO: dict = await CHARACTER.__get_values__(('Pool', 'Composition'), 'roll/info')
+        NEW_ROLL_POOL: int = int(ROLL_INFO['Pool'])
+        NEW_ROLL_COMPOSITION = f'{ROLL_INFO["Composition"]}, Blood Surge[2]'
 
-        await CHARACTER.__update_values__(('pool', 'composition'), (NEW_ROLL_POOL, NEW_ROLL_COMPOSITION), 'roll/info')
+        await CHARACTER.__update_values__(('Pool', 'Composition'), (NEW_ROLL_POOL, NEW_ROLL_COMPOSITION), 'roll/info')
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
         await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
@@ -230,14 +230,14 @@ class Extras(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Extras Page', '', 'purple')
 
-        CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('pool', 'composition'), 'roll/info')
-        pool: int = CHARACTER_INFORMATION['pool']
-        composition: str = CHARACTER_INFORMATION['composition']
+        CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('Pool', 'Composition'), 'roll/info')
+        pool: int = CHARACTER_INFORMATION['Pool']
+        composition: str = CHARACTER_INFORMATION['Composition']
 
         pool += int(select.values[0])
         composition = f'{composition}, [{select.values[0]}]'
 
-        await CHARACTER.__update_values__(('pool', 'composition',), (pool, composition), 'roll/info')
+        await CHARACTER.__update_values__(('Pool', 'Composition',), (pool, composition), 'roll/info')
 
         select.disabled = True
 
@@ -256,44 +256,44 @@ class Reroll(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Reroll', '', 'red')
 
-        WANTED_WILLPOWER_INFORMATION: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
+        WANTED_WILLPOWER_INFORMATION: tuple = ('Base Willpower', 'Superficial Willpower Damage', 'Aggravated Willpower Damage')
         WILLPOWER_FILE: str = 'willpower'
         WILLPOWER_DICT: dict = await CHARACTER.__get_values__(WANTED_WILLPOWER_INFORMATION, WILLPOWER_FILE)
 
-        WANTED_ROLL_INFORMATION: tuple = ('regular_crit', 'regular_success', 'regular_fail', 'hunger_crit', 'hunger_success', 'hunger_fail', 'skull_count', 'difficulty')
+        WANTED_ROLL_INFORMATION: tuple = ('Regular Crit', 'Regular Success', 'Regular Fail', 'Hunger Crit', 'Hunger Success', 'Hunger Fail', 'Skull Count', 'Difficulty')
         ROLL_FILE: str = 'roll/info'
         ROLL_DICT: dict = await CHARACTER.__get_values__(WANTED_ROLL_INFORMATION, ROLL_FILE)
 
-        roll_results: dict = {'regular_crit': ROLL_DICT['regular_crit'], 'regular_success': ROLL_DICT['regular_success'], 'regular_fail': ROLL_DICT['regular_fail'],
-                              'hunger_crit': ROLL_DICT['hunger_crit'], 'hunger_success': ROLL_DICT['hunger_success'], 'hunger_fail': ROLL_DICT['hunger_fail'],
-                              'skull_count': ROLL_DICT['skull_count']}
+        roll_results: dict = {'Regular Crit': ROLL_DICT['Regular Crit'], 'Regular Success': ROLL_DICT['Regular Success'], 'Regular Fail': ROLL_DICT['Regular Fail'],
+                              'Hunger Crit': ROLL_DICT['Hunger Crit'], 'Hunger Success': ROLL_DICT['Hunger Success'], 'Hunger Fail': ROLL_DICT['Hunger Fail'],
+                              'Skull Count': ROLL_DICT['Skull Count']}
 
-        rerolls = roll_results['regular_fail']
+        rerolls = roll_results['Regular Fail']
         # Reroll up to 3 regular-failures
-        if roll_results['regular_fail'] >= 3:
+        if roll_results['Regular Fail'] >= 3:
             rerolls = 3
-            roll_results['regular_fail'] -= 3
+            roll_results['Regular Fail'] -= 3
         else:
-            rerolls = roll_results['regular_fail']
-            roll_results['regular_fail'] -= roll_results['regular_fail']
+            rerolls = roll_results['Regular Fail']
+            roll_results['Regular Fail'] -= roll_results['Regular Fail']
 
         # Find new roll numbers
         while 0 < rerolls:
             die_result = random.randint(1, 10)
 
             if die_result == 10:
-                roll_results['regular_crit'] += 1
+                roll_results['Regular Crit'] += 1
             elif die_result >= 6:
-                roll_results['regular_success'] += 1
+                roll_results['Regular Success'] += 1
             elif die_result <= 5:
-                roll_results['regular_fail'] += 1
+                roll_results['Regular Fail'] += 1
 
             rerolls -= 1
 
-        ROLL_KEYS: tuple = ('regular_crit', 'regular_success', 'regular_fail', 'hunger_crit', 'hunger_success', 'hunger_fail', 'skull_count')
-        FINAL_ROLL_NUMBERS: tuple = (roll_results['regular_crit'], roll_results['regular_success'], roll_results['regular_fail'],
-                                     roll_results['hunger_crit'], roll_results['hunger_success'], roll_results['hunger_fail'],
-                                     roll_results['skull_count'])
+        ROLL_KEYS: tuple = ('Regular Crit', 'Regular Success', 'Regular Fail', 'Hunger_Crit', 'Hunger Success', 'Hunger Fail', 'Skull Count')
+        FINAL_ROLL_NUMBERS: tuple = (roll_results['Regular Crit'], roll_results['Regular Success'], roll_results['Regular Fail'],
+                                     roll_results['Hunger Crit'], roll_results['Hunger Success'], roll_results['Hunger Fail'],
+                                     roll_results['Skull Count'])
 
         # Update roll info
         await CHARACTER.__update_values__(ROLL_KEYS, FINAL_ROLL_NUMBERS, 'roll/info')
@@ -301,19 +301,19 @@ class Reroll(discord.ui.View):
         # Find New Crits
         crits = 0
         flag = ''
-        while_total = roll_results['regular_crit'] + roll_results['hunger_crit']
+        while_total = roll_results['Regular Crit'] + roll_results['Hunger Crit']
         while while_total > 0:
-            if roll_results['regular_crit'] + roll_results['hunger_crit'] > 2:
-                if roll_results['regular_crit'] >= 2:
+            if roll_results['Regular Crit'] + roll_results['Hunger Crit'] > 2:
+                if roll_results['Regular Crit'] >= 2:
                     crits += 4
-                    roll_results['regular_crit'] -= 2
+                    roll_results['Regular Crit'] -= 2
 
-                elif roll_results['hunger_crit'] >= 2:
+                elif roll_results['Hunger Crit'] >= 2:
                     crits += 4
                     flag = 'Messy Crit'
-                    roll_results['hunger_crit'] -= 2
+                    roll_results['Hunger Crit'] -= 2
 
-                elif roll_results['regular_crit'] + roll_results['hunger_crit'] >= 2:
+                elif roll_results['Regular Crit'] + roll_results['Hunger Crit'] >= 2:
                     crits += 4
                     flag = 'Messy Crit'
                     break
@@ -321,25 +321,25 @@ class Reroll(discord.ui.View):
                 break
             while_total -= 1
 
-        crits += roll_results['hunger_crit'] + roll_results['regular_crit']
-        total_successes = int(roll_results['regular_success'] + roll_results['hunger_success'] + crits)
+        crits += roll_results['Hunger Crit'] + roll_results['Regular Crit']
+        total_successes = int(roll_results['Regular Success'] + roll_results['Hunger Success'] + crits)
 
-        DIFFICULTY = ROLL_DICT['difficulty']
+        DIFFICULTY = ROLL_DICT['Difficulty']
 
         if total_successes >= DIFFICULTY and flag == '':
             flag = 'Regular Success'
         elif total_successes <= DIFFICULTY and flag == '':
             flag = 'Regular Fail'
 
-        if WILLPOWER_DICT['base_willpower'] <= WILLPOWER_DICT['aggravated_willpower_damage']:
+        if WILLPOWER_DICT['Base Willpower'] <= WILLPOWER_DICT['Aggravated Willpower Damage']:
             button.disabled = True
             button.label = 'Fate Sealed'
             await interaction.response.edit_message(view=vp.EMPTY_VIEW(self.CLIENT))
             return
-        elif WILLPOWER_DICT['base_willpower'] <= WILLPOWER_DICT['superficial_willpower_damage']:
-            await CHARACTER.__update_value__('aggravated_willpower_damage', int(WILLPOWER_DICT['aggravated_willpower_damage']+1), 'willpower')
+        elif WILLPOWER_DICT['Base Willpower'] <= WILLPOWER_DICT['Superficial Willpower Damage']:
+            await CHARACTER.__update_value__('Aggravated Willpower Damage', int(WILLPOWER_DICT['Aggravated Willpower Damage']+1), 'willpower')
         else:
-            await CHARACTER.__update_value__('superficial_willpower_damage', int(WILLPOWER_DICT['superficial_willpower_damage']+1), 'willpower')
+            await CHARACTER.__update_value__('Superficial Willpower Damage', int(WILLPOWER_DICT['Superficial Willpower Damage']+1), 'willpower')
 
         button.disabled = True
         button.label = 'Fate Tempted'

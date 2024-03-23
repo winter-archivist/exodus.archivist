@@ -4,12 +4,12 @@ Exodus.Archivist
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.04.09
+> * Version 01.05.00
 > > * Major: 01 | Large Overhauls
-> > * Minor: 04 | Non-Major Features
-> > * Patch: 09 | Other Repo Pushes
+> > * Minor: 05 | Non-Major Features
+> > * Patch: 00 | Other Repo Pushes
 > * State: Stable
-> * DateTime: March 22th 2024 | 10:07pm EST
+> * DateTime: March 23rd 2024 | 12:21am EST
 
 ---
 ## General

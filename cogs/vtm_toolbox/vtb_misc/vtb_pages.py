@@ -28,26 +28,24 @@ async def basic_page_builder(CHARACTER: cm.vtb_Character, page_title: str, page_
 async def hp_wp_page_builder(CHARACTER: cm.vtb_Character):
     page: discord.Embed = await basic_page_builder(CHARACTER, 'Health & Willpower', '', 'mint')
 
-    HEALTH: tuple = ('base_health', 'superficial_health_damage', 'aggravated_health_damage')
+    HEALTH: tuple = ('Base Health', 'Superficial Health Damage', 'Aggravated Health Damage')
     HEALTH_DICT: dict = await CHARACTER.__get_values__(HEALTH, 'health')
 
-    WILLPOWER: tuple = ('base_willpower', 'superficial_willpower_damage', 'aggravated_willpower_damage')
+    WILLPOWER: tuple = ('Base Willpower', 'Superficial Willpower Damage', 'Aggravated Willpower Damage')
     WILLPOWER_DICT: dict = await CHARACTER.__get_values__(WILLPOWER, 'willpower')
 
-    ACTUAL_HEALTH = HEALTH_DICT['base_health'] - HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']
+    ACTUAL_HEALTH = HEALTH_DICT['Base Health'] - HEALTH_DICT['Superficial Health Damage'] - HEALTH_DICT['Aggravated Health Damage']
     FULL_HEALTH = str(mc.HEALTH_FULL_EMOJI * ACTUAL_HEALTH)
-    SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * HEALTH_DICT['superficial_health_damage'])
-    AGG_HEALTH = str(mc.HEALTH_AGG_EMOJI * HEALTH_DICT['aggravated_health_damage'])
+    SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * HEALTH_DICT['Superficial Health Damage'])
+    AGG_HEALTH = str(mc.HEALTH_AGG_EMOJI * HEALTH_DICT['Aggravated Health Damage'])
 
-    if HEALTH_DICT['superficial_health_damage'] == HEALTH_DICT['base_health'] and HEALTH_DICT['aggravated_health_damage'] > 1:
-        SUP_HEALTH = str(
-            mc.HEALTH_SUP_EMOJI * int(HEALTH_DICT['superficial_health_damage'] - HEALTH_DICT['aggravated_health_damage']))
+    if HEALTH_DICT['Superficial Health Damage'] == HEALTH_DICT['Base Health'] and HEALTH_DICT['Aggravated Health Damage'] > 1:
+        SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * int(HEALTH_DICT['Superficial Health Damage'] - HEALTH_DICT['Aggravated Health Damage']))
 
-    actual_willpower = WILLPOWER_DICT['base_willpower'] - WILLPOWER_DICT['superficial_willpower_damage'] - WILLPOWER_DICT[
-        'aggravated_willpower_damage']
+    actual_willpower = WILLPOWER_DICT['Base Willpower'] - WILLPOWER_DICT['Superficial Willpower Damage'] - WILLPOWER_DICT['Aggravated Willpower Damage']
     FULL_WILLPOWER = str(mc.WILLPOWER_FULL_EMOJI * actual_willpower)
-    SUP_WILLPOWER = str(mc.WILLPOWER_SUP_EMOJI * WILLPOWER_DICT['superficial_willpower_damage'])
-    AGG_WILLPOWER = str(mc.WILLPOWER_AGG_EMOJI * WILLPOWER_DICT['aggravated_willpower_damage'])
+    SUP_WILLPOWER = str(mc.WILLPOWER_SUP_EMOJI * WILLPOWER_DICT['Superficial Willpower Damage'])
+    AGG_WILLPOWER = str(mc.WILLPOWER_AGG_EMOJI * WILLPOWER_DICT['Aggravated Willpower Damage'])
 
     page.add_field(name='Health', value=f'{FULL_HEALTH}{SUP_HEALTH}{AGG_HEALTH}', inline=False)
     page.add_field(name='Willpower', value=f'{FULL_WILLPOWER}{SUP_WILLPOWER}{AGG_WILLPOWER}', inline=False)
@@ -56,7 +54,7 @@ async def hp_wp_page_builder(CHARACTER: cm.vtb_Character):
 
 async def hunger_page_builder(CHARACTER: cm.vtb_Character):
     page: discord.Embed = await basic_page_builder(CHARACTER, 'Hunger & Predator Type', '', 'mint')
-    CURRENT_HUNGER: int = await CHARACTER.__get_value__('hunger', 'misc')
+    CURRENT_HUNGER: int = await CHARACTER.__get_value__('Hunger', 'misc')
     page.add_field(name='Hunger', value=f'{CURRENT_HUNGER * mc.HUNGER_EMOJI}', inline=True)
     return page
 
@@ -64,18 +62,18 @@ async def hunger_page_builder(CHARACTER: cm.vtb_Character):
 async def standard_roller_page_modifications(page: discord.Embed, CHARACTER: cm.vtb_Character) -> discord.Embed:
     page.add_field(name='', value='', inline=False)  # Just makes sure it isn't interfering with any other fields/elements
 
-    CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('pool', 'difficulty', 'composition'), 'roll/info')
-    page.add_field(name='Pool', value=f'{CHARACTER_INFORMATION["pool"]}', inline=True)
-    page.add_field(name='Difficulty', value=f'{CHARACTER_INFORMATION["difficulty"]}', inline=True)
-    page.add_field(name='Composition', value=f'{CHARACTER_INFORMATION["composition"]}', inline=True)
+    CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('Pool', 'Difficulty', 'Composition'), 'roll/info')
+    page.add_field(name='Pool', value=f'{CHARACTER_INFORMATION["Pool"]}', inline=True)
+    page.add_field(name='Difficulty', value=f'{CHARACTER_INFORMATION["Difficulty"]}', inline=True)
+    page.add_field(name='Composition', value=f'{CHARACTER_INFORMATION["Composition"]}', inline=True)
     return page
 
 
 async def standard_roll_select(CHARACTER: cm.vtb_Character, page, select, file_name: str):
 
-    CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('pool', 'composition'), 'roll/info')
-    pool: int = CHARACTER_INFORMATION['pool']
-    composition: str = CHARACTER_INFORMATION['composition']
+    CHARACTER_INFORMATION: dict = await CHARACTER.__get_values__(('Pool', 'Composition'), 'roll/info')
+    pool: int = CHARACTER_INFORMATION['Pool']
+    composition: str = CHARACTER_INFORMATION['Composition']
 
     for_var: int = 0
     for selections in select.values:
@@ -84,7 +82,7 @@ async def standard_roll_select(CHARACTER: cm.vtb_Character, page, select, file_n
         composition = f'{composition}, {(select.values[for_var]).capitalize()}[{attribute_value}]'
         for_var += 1
 
-    await CHARACTER.__update_values__(('pool', 'composition'), (pool, composition), 'roll/info')
+    await CHARACTER.__update_values__(('Pool', 'Composition'), (pool, composition), 'roll/info')
 
     select.disabled = True
 

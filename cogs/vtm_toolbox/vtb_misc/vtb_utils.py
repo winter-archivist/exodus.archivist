@@ -6,19 +6,19 @@ import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
 
 
 async def reset_character_roll_information(interaction: discord.Interaction, character_name):
-    ROLL_DICT: dict = {'difficulty'           : 0,
-                       'pool'                 : 0,
-                       'result'               : '',
-                       'composition'          : 'Base[0]',
+    ROLL_DICT: dict = {'Difficulty'           : 0,
+                       'Pool'                 : 0,
+                       'Result'               : '',
+                       'Composition'          : 'Base[0]',
 
                        # These are NOT a dict as to make it friendlier
                        # with vtb_Character.__update_information__()
-                       'regular_success_count': 0,
-                       'regular_fail_count'   : 0,
-                       'hunger_crit_count'    : 0,
-                       'hunger_success_count' : 0,
-                       'hunger_fail_count'    : 0,
-                       'skull_count'          : 0}
+                       'Regular Success Count': 0,
+                       'Regular Fail Count'   : 0,
+                       'Hunger Crit Count'    : 0,
+                       'Hunger Success Count' : 0,
+                       'Hunger Fail Count'    : 0,
+                       'Skull Count'          : 0}
     ROLL_FILE_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{character_name}/roll/info.json'
     with open(ROLL_FILE_DIRECTORY, "w") as operate_file:
         json.dump(ROLL_DICT, operate_file)
