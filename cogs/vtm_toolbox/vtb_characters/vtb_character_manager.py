@@ -156,7 +156,7 @@ class vtb_Character:
             return_information[f'{KEYS[loop_counter]}'] = CHARACTER_INFO[f'{KEYS[loop_counter]}']
             loop_counter += 1
 
-        log.debug(f'{self.OWNER_ID} | {self.OWNER_NAME} | __get_vals | {return_information}')
+        log.debug(f'> vtbCM __get_vals: {return_information} | {self.OWNER_ID} | {self.OWNER_NAME} |')
         return return_information
 
     async def __get_value__(self, KEY: str, FILE_NAME: str):
@@ -167,7 +167,7 @@ class vtb_Character:
 
         RETURN_INFORMATION = CHARACTER_INFO[KEY]
 
-        log.debug(f'{self.OWNER_ID} | {self.OWNER_NAME} |  __get_val | {RETURN_INFORMATION}')
+        log.debug(f'> vtbCM __get_val: {RETURN_INFORMATION} | {self.OWNER_ID} | {self.OWNER_NAME} |')
 
         return RETURN_INFORMATION
 
@@ -181,7 +181,7 @@ class vtb_Character:
         for x in KEYS:
             dict_key = KEYS[loop_counter]
             dict_value = VALUES[loop_counter]
-            log.debug(f'{self.OWNER_ID} | {self.OWNER_NAME} |  __update_vals loop | {dict_key} -> {dict_value}')
+            log.debug(f'> vtbCM __update_vals loop: {dict_key} -> {dict_value} | {self.OWNER_ID} | {self.OWNER_NAME} |')
             character_info[dict_key] = dict_value
             loop_counter += 1
 
@@ -196,7 +196,7 @@ class vtb_Character:
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             character_info: dict = json.load(operate_file)
 
-        log.debug(f'{self.OWNER_ID} | {self.OWNER_NAME} |  __update_val | {KEY}: {VALUE} -> {FILE_NAME}')
+        log.debug(f'> vtbCM __update_val: {KEY}: {VALUE} -> {FILE_NAME} | {self.OWNER_ID} | {self.OWNER_NAME} |')
         character_info[KEY] = VALUE
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'w') as operate_file:
