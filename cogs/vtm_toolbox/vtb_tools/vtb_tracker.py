@@ -65,7 +65,8 @@ class Home(discord.ui.View):
 
     @discord.ui.button(label='Health & Willpower', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
     async def hpwp_button_callback(self, interaction, button):
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
@@ -127,6 +128,13 @@ class Home(discord.ui.View):
             while_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Hunger', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    async def hunger_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
+        page: discord.Embed = await vp.hunger_page_builder(CHARACTER)
+        await interaction.response.edit_message(embed=page, view=Hunger(self.CLIENT))
         return
 
     @discord.ui.button(label='Extras', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
@@ -207,8 +215,8 @@ class HP_n_WP(discord.ui.View):
 
     @discord.ui.button(label='Take HP/WP Damage', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def to_damage_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return None
 
@@ -220,7 +228,8 @@ class HP_n_WP_Damage(discord.ui.View):
 
     @discord.ui.button(label='Return', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=4)
     async def return_to_hpwp_button_callback(self, interaction, button):
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
@@ -247,7 +256,7 @@ class HP_n_WP_Damage(discord.ui.View):
                 await CHARACTER.__update_value__('superficial_health_damage', int(SUP_DMG + 1), 'health')
             damage_amount -= 1
 
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return
 
@@ -271,7 +280,7 @@ class HP_n_WP_Damage(discord.ui.View):
             await CHARACTER.__update_value__('aggravated_health_damage', int(AGG_DMG + 1), 'health')
             damage_amount -= 1
 
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return
 
@@ -294,7 +303,7 @@ class HP_n_WP_Damage(discord.ui.View):
                 await CHARACTER.__update_value__('superficial_willpower_damage', int(SUP_DMG + 1), 'willpower')
             damage_amount -= 1
 
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return
 
@@ -311,8 +320,151 @@ class HP_n_WP_Damage(discord.ui.View):
             await CHARACTER.__update_value__('aggravated_willpower_damage', int(AGG_DMG + 1), 'willpower')
             damage_amount -= 1
 
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
+        return
+
+
+class Hunger(discord.ui.View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    async def home_button_callback(self, interaction, button):
+        await return_to_home(self, interaction)
+        return
+
+    @discord.ui.button(label='Predator Type', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
+    async def predator_type_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Predator Type Information', '', 'mint')
+
+        PREDATOR_TYPE: str = await CHARACTER.__get_value__('predator_type', 'misc')
+        SUPPORTED_PREDATOR_TYPES: tuple = ('SECRET_PREDATOR_TYPE', 'Grim Reaper', 'Sandman',
+                                           'Cryptid', 'Alleycat', 'Grave Robber', 'Trapdoor')
+
+        if PREDATOR_TYPE not in SUPPORTED_PREDATOR_TYPES:
+            log.error('**> Bad PREDATOR_TYPE given to hunger_page_builder()')
+            return
+
+        match PREDATOR_TYPE:
+            case 'SECRET_PRED_TYPE':
+                pt_pool: str = ''  # Mechanical Stuff
+                pt_desc: str = ''
+                pt_disciplines: str = ''  # The potential disciplines gained from the predator type
+                pt_spec: str = ''  # Specialty/ies from pt
+                pt_merit: str = ''  # Advantages/Merits given by pt
+                pt_flaws: str = ''  # Flaws given by pt
+
+            case 'Grim Reaper':
+                pt_pool: str = 'Intelligence + Awareness/Medicine in order to find victims.'
+                pt_desc: str = ('Hunting inside hospice care facilities, assisted living homes, and other places where those'
+                                ' who are near death reside. Grim Reapers are constantly on the move in an effort to locate '
+                                'new victims near the end of their lives to feed from. Hunting in this style may also earn a'
+                                ' taste for specific diseases making them easier to identify. ')
+                pt_disciplines: str = 'Auspex or Oblivion (Necromancy/Obtenebration)'
+                pt_spec: str = 'Awareness (Death) or Larceny (Forgery)'
+                pt_merit: str = 'One dot of Allies or Influence associated with the medical community & Gain 1 Humanity'
+                pt_flaws: str = '(•) Prey Exclusion (Healthy Mortals)'
+
+            case 'Sandman':
+                pt_pool: str = 'Dexterity + Stealth is for casing a location, breaking in and feeding without leaving a trace.'
+                pt_desc: str = ('If they never wake during the feed it never happened, right? Sandman prefers to hunt on '
+                                'sleeping mortals than anyone else by using stealth or Disciplines to feed from their '
+                                'victims they are rarely caught in the act, though when they are, problems are sure to occur'
+                                '. Maybe they were anti-social in life or perhaps they find the route of seduction or '
+                                'violence too much for them and find comfort in the silence of this feeding style. ')
+                pt_disciplines: str = 'Auspex or Obfuscate'
+                pt_spec: str = 'Medicine (Anesthetics) or Stealth (Break-in)'
+                pt_merit: str = 'Gain one dot of Resources'
+                pt_flaws: str = 'None!'
+
+            case 'Cryptid':
+                pt_pool: str = ''
+                pt_desc: str = ('Nobody believes in vampires, right? Well, not "nobody", exactly. Know what nobody-nobody '
+                                'believes in? Aliens, chupacabras, and sasquatches. You have concocted some incredibly '
+                                'fanciful identity for yourself in which you present yourself as some obscure piece of '
+                                'occult apocrypha. True Believers are so ready to believe in ghosts or mermaids or whatever,'
+                                ' that it will never occur to them you\')re a vampire. Some even seek to serve their '
+                                'paranormal masters. "After the probe, the alien took blood samples." "The chupacabra jumped'
+                                ' out of nowhere! It got my dog!" "The succubus appears at midnight, and it feels sooo good!"'
+                                ' "The Delaware Water Gap Mermaid? That\'s just a tourist legend, still, be careful if you '
+                                'swim or boat at night."')
+                pt_disciplines: str = 'Obfuscate, Dominate, or Clan Specific'
+                pt_spec: str = 'Occult (Cryptids) or Performance (Impersonating Urban Legends)'
+                pt_merit: str = 'Three Dots to spend between Herd and/or Retainer'
+                pt_flaws: str = 'Stalkers & Suspect'
+
+            case 'Alleycat':
+                pt_pool: str = 'Strength + Brawl is to take blood by force or threat. Wits + Streetwise can be used to find criminals as if a vigilante figure.'
+                pt_desc: str = ('Those who find violence to be the quickest way to get what they want might gravitate '
+                                'towards this hunting style. Alleycats are a vampire who feeds by brute force and outright '
+                                'attack and feeds from whomever they can when they can. Intimidation is a route easily taken'
+                                ' to make their victims cower or even Dominating the victims to not report the attack or '
+                                'mask it as something else entirely.')
+                pt_disciplines: str = 'Celerity or Potence'
+                pt_spec: str = 'Intimidation (Stickups) or Brawl (Grappling)'
+                pt_merit: str = 'Gain three dots of Criminal Contacts'
+                pt_flaws: str = 'Lose 1 Humanity'
+
+            case 'Grave Robber':
+                pt_pool: str = ('Resolve + Medicine for sifting through the dead for a body with blood. Manipulation + '
+                                'Insight for moving among miserable mortals.')
+                pt_desc: str = ('Similar to Baggers these kindred understand there\'s no good in wasting good blood, even if'
+                                ' others cannot consume it. Often they find themselves digging up corpses or working or '
+                                'mortuaries to obtain their bodies, yet regardless of what the name suggests, they prefer '
+                                'feeding from mourners at a gravesite or a hospital. This Predator Type often requires a '
+                                'haven or other connections to a church, hospital, or morgue as a way to obtain the bodies. ')
+                pt_disciplines: str = 'Fortitude or Oblivion (Necromancy)'
+                pt_spec: str = 'Occult (Grave Rituals) or Medicine (Cadavers)'
+                pt_merit: str = 'Feeding Merit (•••) Iron Gullet & Haven Advantage (•)'
+                pt_flaws: str = 'Herd Flaw: (••) Obvious Predator'
+
+            case 'Trapdoor':
+                pt_pool: str = ('Charisma + Stealth for the victims that enter expecting a fun-filled night. Dexterity + '
+                                'Stealth to feed upon trespassers. Wits + Awareness + Haven dots is used to navigate the '
+                                'maze of the den itself. ')
+                pt_desc: str = ('Much like the spider, this vampire builds a nest and lures their prey inside. Be it an '
+                                'amusement park, an abandoned house, or an underground club, the victim comes to them. '
+                                'There the trapdoor might only play with their mind and terrorize them, imprison them to '
+                                'drain them slowly, or take a deep drink and then send them home. ')
+                pt_disciplines: str = 'Protean or Obfuscate'
+                pt_spec: str = 'Persuasion (Marketing) or Stealth (Ambushes or Traps)'
+                pt_merit: str = 'Gain one dot of Haven & Gain one dot of either Retainers or Herd, or a second Haven dot.'
+                pt_flaws: str = 'Gain one Haven Flaw, either (•) Creepy or (•) Haunted.'
+
+            case _:
+                log.error('**> How did we get here? (vtb_pages "case _:")')
+                return
+
+        page.add_field(name='Predator Type', value=f'{PREDATOR_TYPE}', inline=True)
+        page.add_field(name='PT Pool', value=f'{pt_pool}', inline=False)
+        page.add_field(name='PT Description', value=f'{pt_desc}', inline=False)
+        page.add_field(name='PT Discipline(s)', value=f'{pt_disciplines}', inline=True)
+        page.add_field(name='PT Specialty(ies)', value=f'{pt_spec}', inline=True)
+        page.add_field(name='PT Merit(s)', value=f'{pt_merit}', inline=True)
+        page.add_field(name='PT Flaw(s)', value=f'{pt_flaws}', inline=True)
+
+        await interaction.response.edit_message(embed=page, view=Predator_Type(self.CLIENT))
+        return None
+
+
+class Predator_Type(discord.ui.View):
+    def __init__(self, CLIENT):
+        super().__init__()
+        self.CLIENT = CLIENT
+
+    @discord.ui.button(label='Return', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    async def return_to_hunger_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.hunger_page_builder(CHARACTER)
+        await interaction.response.edit_message(embed=page, view=Hunger(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def roll_button_callback(self, interaction, button):
+        await go_to_roller(self, interaction)
         return
 
 
@@ -333,12 +485,12 @@ class Extras(discord.ui.View):
 
     @discord.ui.button(label='Diablerie', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def diablerie_button_callback(self, interaction, button):
-        pass
+        raise NotImplementedError
 
     @discord.ui.button(label='Remorse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def remorse_button_callback(self, interaction, button):
-        pass
+        raise NotImplementedError
 
     @discord.ui.button(label='Path Rules', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def path_rules_button_callback(self, interaction, button):
-        pass
+        raise NotImplementedError
