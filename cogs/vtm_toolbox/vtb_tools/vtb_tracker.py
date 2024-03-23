@@ -48,16 +48,37 @@ class Home(discord.ui.View):
             ('strength', 'dexterity', 'stamina', 'charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve')
         CHARACTER_DATA: dict = await CHARACTER.__get_values__(ATTRIBUTES, 'attributes')
 
-        for_var: int = 0
-        for x in CHARACTER_DATA:
+        physical_impairment_flag: bool = False
+        HEALTH_BASE: int = await CHARACTER.__get_value__('base_health', 'health')
+        HEALTH_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('superficial_health_damage', 'health')
+        if HEALTH_BASE <= HEALTH_SUPERFICIAL_DAMAGE:
+            page.add_field(name='Physically Impaired.', value='-1 to Physical Dice Pools', inline=False)
+            physical_impairment_flag = True
 
+        mental_impairment_flag: bool = False
+        WILLPOWER_BASE: int = await CHARACTER.__get_value__('base_willpower', 'willpower')
+        WILLPOWER_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('superficial_willpower_damage', 'willpower')
+        if WILLPOWER_BASE <= WILLPOWER_SUPERFICIAL_DAMAGE:
+            page.add_field(name='Mentally Impaired', value='-1 to Social & Mental Dice Pools', inline=False)
+            mental_impairment_flag = True
+
+        for_var = 0
+        for x in ATTRIBUTES:
             if for_var % 3 == 0:
                 page.add_field(name='', value='', inline=False)
+            count = CHARACTER_DATA[ATTRIBUTES[for_var]]
 
-            emoji_result: str = (f'{CHARACTER_DATA[ATTRIBUTES[for_var]] * mc.DOT_FULL_EMOJI} '
-                                 f'{abs(CHARACTER_DATA[ATTRIBUTES[for_var]] - 5) * mc.DOT_EMPTY_EMOJI}')
-            page.add_field(name=f'{(ATTRIBUTES[for_var].capitalize())}', value=emoji_result, inline=True)
+            # don't like this, but will cope
+            if physical_impairment_flag is True or mental_impairment_flag is True:
+                if ATTRIBUTES[for_var].lower() in ('strength', 'dexterity', 'stamina'):
+                    count -= 1  # Removes one from PHYSICAL attributes since the character is PHYSICALLY impaired.
 
+                if ATTRIBUTES[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
+                    count -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
+
+            emojis = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
+
+            page.add_field(name=f'{ATTRIBUTES[for_var].capitalize()}', value=f'{emojis}', inline=True)
             for_var += 1
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
