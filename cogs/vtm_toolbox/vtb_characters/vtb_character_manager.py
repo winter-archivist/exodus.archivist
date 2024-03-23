@@ -102,32 +102,16 @@ async def make_character_files(interaction: discord.Interaction, character_name)
                        'hunger_fail_count' : 0,
                        'skull_count': 0}
 
-    with open(f'{CHARACTER_DIRECTORY}misc.json', "w") as operate_file:
-        json.dump(MISC_DICT, operate_file)
+    CHARACTER_FILES: tuple = ('misc', 'health', 'willpower', 'attributes', 'disciplines',
+                              'skills/physical', 'skills/social', 'skills/mental', 'roll/info')
+    FILE_CONTENTS: tuple = (MISC_DICT, HEALTH_DICT, WILLPOWER_DICT, ATTRIBUTES_DICT, DISCIPLINES_DICT,
+                            PHYSICAL_SKILLS_DICT, SOCIAL_SKILLS_DICT, MENTAL_SKILLS_DICT, ROLL_DICT)
 
-    with open(f'{CHARACTER_DIRECTORY}health.json', "w") as operate_file:
-        json.dump(HEALTH_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}willpower.json', "w") as operate_file:
-        json.dump(WILLPOWER_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}attributes.json', "w") as operate_file:
-        json.dump(ATTRIBUTES_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}disciplines.json', "w") as operate_file:
-        json.dump(DISCIPLINES_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}skills/physical.json', "w") as operate_file:
-        json.dump(PHYSICAL_SKILLS_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}skills/social.json', "w") as operate_file:
-        json.dump(SOCIAL_SKILLS_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}skills/mental.json', "w") as operate_file:
-        json.dump(MENTAL_SKILLS_DICT, operate_file)
-
-    with open(f'{CHARACTER_DIRECTORY}roll/info.json', "w") as operate_file:
-        json.dump(ROLL_DICT, operate_file)
+    for_var: int = 0
+    for x in ROLL_DICT:
+        with open(f'{CHARACTER_DIRECTORY}{CHARACTER_FILES[for_var]}.json', "w") as operate_file:
+            json.dump(FILE_CONTENTS[for_var], operate_file)
+        for_var += 1
 
 
 class vtb_Character:
