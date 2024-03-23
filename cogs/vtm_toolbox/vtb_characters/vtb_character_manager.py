@@ -26,6 +26,7 @@ async def make_character_files(interaction: discord.Interaction, character_name)
                        'hunger'              : 0,
                        'predator_type'       : 'UNSET',
                        'temperament'         : '',
+                       'resonance'           : '',
                        'character_avatar_url': mc.PLACEHOLDER_IMG}
     HEALTH_DICT: dict = {'base_health'              : 0,
                          'superficial_health_damage': 0,
