@@ -29,9 +29,9 @@ HUNGER_EMOJI = '<:hunger:1186602644748390470>'
 
 
 # ? Should be changed
-RUNNER: str = '.ashywinter'  # ? YOUR DISCORD NAME
+RUNNER: str = 'winter.archivist'  # ? YOUR DISCORD NAME
 RUNNER_ID: int = 567819777209532418  # ? YOUR DISCORD ID as an INTEGER
 
 # ? Should be kept the same
-DEVELOPER: str = '.ashywinter'  # ! if you need to contact who wrote this awful code
-GITREPO: str = 'https://github.com/AshenEntropy/exodusAutomaton'  # ! if you need to contact who wrote this awful code
+DEVELOPER: str = 'winter.archivist'  # ! if you need to contact who wrote this awful code
+GITREPO: str = 'https://github.com/AshenEntropy/exodus.archivist'  # ! if you need to contact who wrote this awful code

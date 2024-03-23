@@ -1,22 +1,22 @@
-ExodusAutomaton
+Exodus.Archivist
 ===
 ---
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.03.07
+> * Version 01.03.08
 > > * Major: 01 | Large Overhauls
 > > * Minor: 03 | Non-Major Features
 > > * Patch: 07 | Other Repo Pushes
 > * State: Stable
-> * DateTime: March 20th 2024 | 12:09am EST
+> * DateTime: March 22th 2024 | 8:55pm EST
 
 ---
 ## General
 
-As of now ExodusAutomaton is being solo developed by me with Pycharm Professional. 
+As of now Exodus.Archivist is being solo developed by me with Pycharm Professional. 
 It's not *good* in any sense of the word, it exclusively exists for me to mess around with programming; if for whatever 
-reason you'd like to talk to me about the project, your best place to contact me is discord `.ashywinter`
+reason you'd like to talk to me about the project, your best place to contact me is discord `winter.archivist`
 ### Primary Features:
 > * Project: 
 >> * Easily Setup
