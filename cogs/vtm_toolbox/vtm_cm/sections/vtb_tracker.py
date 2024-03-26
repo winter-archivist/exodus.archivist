@@ -88,20 +88,25 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Disciplines', '', 'mint')
 
-        DISCIPLINES: tuple = ('Obfuscate', 'Animalism', 'Potence', 'Dominate', 'Auspex', 'Protean', 'Presence', 'Fortitude',
-                              'Thin Blood Alchemy', 'Blood Sorcery', 'Chemeristry', 'Seven Specific', 'Myr Specific',
-                              'Selena Specific', 'Nyctea Specific One', 'Nyctea Specific Two', 'Elijah Specific')
+        if CHARACTER.CHARACTER_NAME != 'Nyctea':
+            DISCIPLINES: tuple = ('Obfuscate', 'Animalism', 'Potence', 'Dominate', 'Auspex', 'Protean', 'Presence', 'Fortitude',
+                                  'Thin Blood Alchemy', 'Blood Sorcery', 'Chemeristry', 'Seven Specific', 'Myr Specific',
+                                  'Selena Specific', 'Nyctea Specific One', 'Nyctea Specific Two', 'Elijah Specific')
 
-        for_var = 0
-        for x in DISCIPLINES:
-            count: int = await CHARACTER.__get_value__(DISCIPLINES[for_var], 'disciplines')
-            emojis = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
+            for_var = 0
+            for x in DISCIPLINES:
+                count: int = await CHARACTER.__get_value__(DISCIPLINES[for_var], 'disciplines')
+                emojis = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
 
-            if count <= 0:
-                pass
-            else:
-                page.add_field(name=f'{DISCIPLINES[for_var]}', value=f'{emojis}', inline=True)
-            for_var += 1
+                if count <= 0:
+                    pass
+                else:
+                    page.add_field(name=f'{DISCIPLINES[for_var]}', value=f'{emojis}', inline=True)
+                for_var += 1
+        elif CHARACTER.CHARACTER_NAME == 'Nyctea':
+            # Remove the code within this else and take out the if statement, if you intend on using this in your chronicle
+            # these limits have been set up due to a specific character in my Chronicle
+            page.add_field(name='Potential', value=f'Beyond the Eye of Saulot', inline=True)
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
@@ -111,13 +116,6 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
         page: discord.Embed = await vp.hunger_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=Hunger(self.CLIENT))
-        return
-
-    @discord.ui.button(label='Clan', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
-    async def clan_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', '', 'mint')
-        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
 
     @discord.ui.button(label='Physical Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
@@ -189,39 +187,23 @@ class Home(discord.ui.View):
         # ! Needs Diablerie Button [Clan & Generation]
         # ! Needs Stain/Remorse Button [Humanity & Stains]
         # ! Needs PoE Rule Checker [Path of Enlightenment]
-        MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Humanity', 'Blood Potency'),
-                                                         'misc')
-        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'),
-                                                             'humanity')
+        MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Blood Potency'), 'misc')
+        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'), 'humanity')
 
-        # THIS IS JUST FOR MY PERSONAL CHRONICLE
-        if MISC_DICT['Clan'] == 'SECRET_CLAN':
-            page.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
-        else:
+        if CHARACTER.CHARACTER_NAME != 'Nyctea':
             page.add_field(name='Clan', value=f'{MISC_DICT["Clan"]}', inline=True)
-
-        page.add_field(name='', value=f'', inline=False)
-
-        # THIS IS JUST FOR MY PERSONAL CHRONICLE
-        if MISC_DICT['Generation'] >= 7:
-            page.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
-        else:
+            page.add_field(name='Path of Enlightenment', value=f'{HUMANITY_DICT["Path of Enlightenment"]}', inline=True)
             page.add_field(name='Generation', value=f'{MISC_DICT["Generation"] * mc.DOT_FULL_EMOJI}', inline=True)
-
-        # THIS IS JUST FOR MY PERSONAL CHRONICLE
-        if MISC_DICT['Blood Potency'] >= 4:
-            page.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
-        else:
             page.add_field(name='Blood Potency', value=f'{MISC_DICT["Blood Potency"] * mc.HUNGER_EMOJI}', inline=True)
-
-        page.add_field(name='', value=f'', inline=False)
+        elif CHARACTER.CHARACTER_NAME == 'Nyctea':
+            # Remove the code within this else and take out the if statement, if you intend on using this in your chronicle
+            # these limits have been set up due to a specific character in my Chronicle
+            page.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
+            page.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
+            page.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
+            page.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
 
         page.add_field(name='Humanity', value=f'{HUMANITY_DICT["Humanity"] * mc.DOT_FULL_EMOJI} {HUMANITY_DICT["Stains"] * mc.DOT_EMPTY_EMOJI}', inline=True)
-        # THIS IS JUST FOR MY PERSONAL CHRONICLE
-        if HUMANITY_DICT["Path of Enlightenment"] == 'SECRET_PATH':
-            page.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
-        else:
-            page.add_field(name='Path of Enlightenment', value=f'{HUMANITY_DICT["Path of Enlightenment"]}', inline=True)
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
@@ -555,14 +537,22 @@ class Extras(discord.ui.View):
         super().__init__()
         self.CLIENT = CLIENT
 
-    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Home', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
     async def home_button_callback(self, interaction, button):
         await return_to_home(self, interaction)
         return
 
-    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    @discord.ui.button(label='Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=0)
     async def roll_button_callback(self, interaction, button):
         await go_to_roller(self, interaction)
+        return
+
+    @discord.ui.button(label='Clan', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    async def clan_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', '', 'mint')
+        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        raise NotImplementedError
         return
 
     @discord.ui.button(label='Diablerie', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)

@@ -54,8 +54,16 @@ async def hp_wp_page_builder(CHARACTER: cm.vtb_Character):
 
 async def hunger_page_builder(CHARACTER: cm.vtb_Character):
     page: discord.Embed = await basic_page_builder(CHARACTER, 'Hunger & Predator Type', '', 'mint')
-    CURRENT_HUNGER: int = await CHARACTER.__get_value__('Hunger', 'misc')
-    page.add_field(name='Hunger', value=f'{CURRENT_HUNGER * mc.HUNGER_EMOJI}', inline=True)
+    MISC_DICT: dict = await CHARACTER.__get_values__(('Hunger', 'Predator Type'), 'misc')
+    page.add_field(name='Hunger', value=f'{MISC_DICT["Hunger"] * mc.HUNGER_EMOJI}', inline=True)
+
+    if CHARACTER.CHARACTER_NAME != 'Nyctea':
+        page.add_field(name='Predator Type', value=f'{MISC_DICT["Predator Type"]}', inline=True)
+    elif CHARACTER.CHARACTER_NAME == 'Nyctea':
+        # Remove the code within this else and take out the if statement, if you intend on using this in your chronicle
+        # these limits have been set up due to a specific character in my Chronicle
+        page.add_field(name='Predator Type', value='Beyond the Eye of Saulot', inline=True)
+
     return page
 
 
