@@ -6,11 +6,10 @@ import discord.ext
 
 import misc.config.main_config as mc
 
-import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
-import cogs.vtm_toolbox.vtb_misc.vtb_utils as vu
-import cogs.vtm_toolbox.vtb_misc.vtb_pages as vp
-import cogs.vtm_toolbox.vtb_tools.vtb_roller as vr
-import cogs.vtm_toolbox.vtb_tools.vtb_tracker as vt
+import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
+import cogs.vtm_toolbox.vtb_pages as vp
+import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
+import cogs.vtm_toolbox.vtm_cm.sections.vtb_tracker as vt
 
 
 class VTM_Toolbox(discord.ext.commands.Cog):
@@ -36,8 +35,27 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
             await cm.make_character_files(interaction, character_name)
 
-        await vu.reset_character_roll_information(interaction, character_name)
-        await vu.write_character_name(interaction, character_name)
+        ROLL_DICT: dict = {'Difficulty'           : 0,
+                           'Pool'                 : 0,
+                           'Result'               : '',
+                           'Composition'          : 'Base[0]',
+
+                           # These are NOT a dict as to make it friendlier
+                           # with vtb_Character.__update_information__()
+                           'Regular Success Count': 0,
+                           'Regular Fail Count'   : 0,
+                           'Hunger Crit Count'    : 0,
+                           'Hunger Success Count' : 0,
+                           'Hunger Fail Count'    : 0,
+                           'Skull Count'          : 0}
+        ROLL_FILE_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{character_name}/roll/info.json'
+        with open(ROLL_FILE_DIRECTORY, "w") as operate_file:
+            json.dump(ROLL_DICT, operate_file)
+
+        CHARACTER_NAME_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character.json'
+        CHARACTER_NAME_DICT: dict = {'character_name': character_name}
+        with open(CHARACTER_NAME_FILE, "w") as operate_file:
+            json.dump(CHARACTER_NAME_DICT, operate_file)
 
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 

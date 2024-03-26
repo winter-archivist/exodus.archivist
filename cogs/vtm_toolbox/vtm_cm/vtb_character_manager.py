@@ -8,8 +8,8 @@ from random import randint
 from misc.config import main_config as mc
 
 
-async def make_character_files(interaction: discord.Interaction, character_name):
-    CHARACTER_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{character_name}/'
+async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME):
+    CHARACTER_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{CHARACTER_NAME}/'
 
     # os.mkdir(f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}')
     os.mkdir(f'{CHARACTER_DIRECTORY}')
@@ -17,7 +17,7 @@ async def make_character_files(interaction: discord.Interaction, character_name)
     os.mkdir(f'{CHARACTER_DIRECTORY}roll')
 
     MISC_DICT: dict = {'Owner ID'            : interaction.user.id,
-                       'Character Name'      : character_name,
+                       'Character Name'      : CHARACTER_NAME,
                        'Blood Potency'       : 0,
                        'Clan'                : 'UNSET',
                        'Generation'          : 0,

@@ -4,10 +4,9 @@ from zenlog import log
 
 import misc.config.main_config as mc
 
-import cogs.vtm_toolbox.vtb_misc.vtb_utils as vu
-import cogs.vtm_toolbox.vtb_misc.vtb_pages as vp
-import cogs.vtm_toolbox.vtb_tools.vtb_roller as vr
-import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
+import cogs.vtm_toolbox.vtb_pages as vp
+import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
+import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 
 health_or_willpower_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
                                discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),

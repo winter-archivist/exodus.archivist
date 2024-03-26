@@ -5,11 +5,10 @@ from zenlog import log
 
 import misc.config.main_config as mc
 
-import cogs.vtm_toolbox.vtb_misc.vtb_utils as vu
-import cogs.vtm_toolbox.vtb_misc.vtb_pages as vp
-import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
+import cogs.vtm_toolbox.vtb_pages as vp
+import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 
-import cogs.vtm_toolbox.vtb_tools.vtb_roller_options as ro
+import cogs.vtm_toolbox.vtm_cm.sections.options.vtb_roller_options as ro
 
 
 async def return_to_home(self, interaction: discord.Interaction) -> None:

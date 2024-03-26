@@ -2,7 +2,7 @@ import discord
 from zenlog import log
 
 import misc.config.main_config as mc
-import cogs.vtm_toolbox.vtb_characters.vtb_character_manager as cm
+import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 
 
 class EMPTY_VIEW(discord.ui.View):
