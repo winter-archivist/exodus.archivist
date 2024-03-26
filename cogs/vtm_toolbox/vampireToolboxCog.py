@@ -84,12 +84,6 @@ class VTM_Toolbox(discord.ext.commands.Cog):
         await interaction.response.send_message(embed=page)
         return
 
-    @discord.app_commands.command(name='vtb-experience', description='[ADMIN]')
-    @discord.app_commands.describe(character_name='Character Name')
-    async def Experience(self, interaction: discord.Interaction, character_name: str):
-        await interaction.response.send_message(embed=page)
-        return
-
 
 async def setup(CLIENT):
     await CLIENT.add_cog(VTM_Toolbox(CLIENT))
