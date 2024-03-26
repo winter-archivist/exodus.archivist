@@ -20,21 +20,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
     @discord.app_commands.describe(character_name='Character Name')
     @discord.app_commands.choices(target_tool=[discord.app_commands.Choice(name="Vampire Tracker", value="tracker"),
                                                discord.app_commands.Choice(name="Vampire Roller", value="roller")])
-    @discord.app_commands.choices(make=[discord.app_commands.Choice(name="True", value='True'),
-                                        discord.app_commands.Choice(name="False [Default]", value='False')])
-    async def Toolbox(self, interaction: discord.Interaction,
-                      character_name: str, target_tool: discord.app_commands.Choice[str], make: str = 'False'):
-
-        if interaction.user.id != mc.RUNNER_ID and make != 'False':
-            log.crit(f'> {interaction.user.name} | {interaction.user.id}  used the no touch.')
-            rando_used_devtool = discord.Embed(title='NO TOUCH!', description='The `make` option was selected, this is a devtool'
-                                                                              ', do __not__ touch.', color=mc.EMBED_COLORS['red'])
-            await interaction.response.send_message(embed=rando_used_devtool)
-            return
-        elif interaction.user.id == mc.RUNNER_ID and make == 'True':
-            log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
-            await cm.make_character_files(interaction, character_name)
-
+    async def Toolbox(self, interaction: discord.Interaction, character_name: str, target_tool: discord.app_commands.Choice[str]):
         ROLL_DICT: dict = {'Difficulty'           : 0,
                            'Pool'                 : 0,
                            'Result'               : '',
@@ -71,6 +57,31 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             log.error('**> Unknown target_tool.value given to Toolbox()')
             raise ValueError
 
+        return
+
+    @discord.app_commands.command(name='vtb-make', description='[ADMIN]')
+    @discord.app_commands.describe(character_name='Character Name')
+    async def Make(self, interaction: discord.Interaction, character_name: str):
+        if interaction.user.id == mc.RUNNER_ID:
+            try:
+                await cm.make_character_files(interaction, character_name)
+                log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
+                page: discord.Embed = discord.Embed(title='VTB-Make', description='Successful Creation', colour=mc.EMBED_COLORS[f"mint"])
+
+            except Exception as e:
+                log.crit(f'> {interaction.user.name} | {interaction.user.id} failed at making {character_name}.')
+                log.crit(f'> Make Error: {e}')
+                page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed Creation', colour=mc.EMBED_COLORS[f"red"])
+                page.add_field(name='Encountered Error', value=f'{e}', inline=False)
+
+            page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+            page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+            page.add_field(name='Character Name', value=f'{character_name}', inline=False)
+        else:
+            page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed', colour=mc.EMBED_COLORS[f"red"])
+            page.add_field(name='Uncounted Error', value=f'Non-Admin User ID', inline=False)
+
+        await interaction.response.send_message(embed=page)
         return
 
 
