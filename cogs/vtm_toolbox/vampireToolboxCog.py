@@ -69,8 +69,8 @@ class VTM_Toolbox(discord.ext.commands.Cog):
                 page: discord.Embed = discord.Embed(title='VTB-Make', description='Successful Creation', colour=mc.EMBED_COLORS[f"mint"])
 
             except Exception as e:
-                log.crit(f'> {interaction.user.name} | {interaction.user.id} failed at making {character_name}.')
-                log.crit(f'> Make Error: {e}')
+                log.crit(f'*> {interaction.user.name} | {interaction.user.id} failed at making {character_name}.')
+                log.crit(f'*> Make Error: {e}')
                 page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed Creation', colour=mc.EMBED_COLORS[f"red"])
                 page.add_field(name='Encountered Error', value=f'{e}', inline=False)
 
