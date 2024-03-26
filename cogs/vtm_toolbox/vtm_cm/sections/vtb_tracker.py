@@ -4,7 +4,7 @@ from zenlog import log
 
 import misc.config.main_config as mc
 
-import cogs.vtm_toolbox.vtb_pages as vp
+import cogs.vtm_toolbox.vtm_cm.vtb_pages as vp
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
 import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 

@@ -7,7 +7,7 @@ import discord.ext
 import misc.config.main_config as mc
 
 import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
-import cogs.vtm_toolbox.vtb_pages as vp
+import cogs.vtm_toolbox.vtm_cm.vtb_pages as vp
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_tracker as vt
 
@@ -81,6 +81,12 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed', colour=mc.EMBED_COLORS[f"red"])
             page.add_field(name='Uncounted Error', value=f'Non-Admin User ID', inline=False)
 
+        await interaction.response.send_message(embed=page)
+        return
+
+    @discord.app_commands.command(name='vtb-experience', description='[ADMIN]')
+    @discord.app_commands.describe(character_name='Character Name')
+    async def Experience(self, interaction: discord.Interaction, character_name: str):
         await interaction.response.send_message(embed=page)
         return
 
