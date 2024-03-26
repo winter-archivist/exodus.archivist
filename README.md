@@ -4,12 +4,12 @@ Exodus.Archivist
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.05.03
+> * Version 01.05.04
 > > * Major: 01 | Large Overhauls
 > > * Minor: 05 | Non-Major Features
-> > * Patch: 03 | Other Repo Pushes
+> > * Patch: 04 | Other Repo Pushes
 > * State: Stable
-> * DateTime: March 26rd 2024 | 5:08am EST
+> * DateTime: March 26rd 2024 | 7:47am EST
 
 ---
 ## General
@@ -38,8 +38,10 @@ reason you'd like to talk to me about the project, your best place to contact me
 > * Currently Abandoned Features (may return)
 >> * eaTools [Bot Devtools]
 
-> * Rejected Features (no chance)
->> * N/A
+> * Rejected Features (no/little chance)
+>> * VTM V5 Toolbox
+>>> * Automated Diablerie
+>>> * Integrated Path of Enlightenment/Humanity Rules
 
 ---
 ## USE:

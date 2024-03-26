@@ -20,6 +20,7 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                        'Character Name'      : CHARACTER_NAME,
                        'Blood Potency'       : 0,
                        'Clan'                : 'UNSET',
+                       'Bloodline'           : 'UNSET',
                        'Generation'          : 0,
                        'Bane Severity'       : 0,
                        'Hunger'              : 0,

@@ -8,14 +8,23 @@ import cogs.vtm_toolbox.vtm_cm.vtb_pages as vp
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
 import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 
-health_or_willpower_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
-                               discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>')]
+number_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Nine', value='9', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Ten', value='10', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Eleven', value='11', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Twelve', value='12', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Thirteen', value='13', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Fourteen', value='14', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Fifteen', value='15', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Sixteen', value='16', emoji='<:snek:785811903938953227>'),
+                        discord.SelectOption(label='Seventeen', value='17', emoji='<:snek:785811903938953227>'),]
 
 
 async def return_to_home(self, interaction: discord.Interaction) -> None:
@@ -184,9 +193,6 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Extras', '', 'mint')
 
-        # ! Needs Diablerie Button [Clan & Generation]
-        # ! Needs Stain/Remorse Button [Humanity & Stains]
-        # ! Needs PoE Rule Checker [Path of Enlightenment]
         MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Blood Potency'), 'misc')
         HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'), 'humanity')
 
@@ -205,7 +211,7 @@ class Home(discord.ui.View):
 
         page.add_field(name='Humanity', value=f'{HUMANITY_DICT["Humanity"] * mc.DOT_FULL_EMOJI} {HUMANITY_DICT["Stains"] * mc.DOT_EMPTY_EMOJI}', inline=True)
 
-        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
         return
 
 
@@ -297,7 +303,7 @@ class HP_n_WP_Damage(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
         return
 
-    @discord.ui.select(placeholder='Take Superficial HP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=0)
+    @discord.ui.select(placeholder='Take Superficial HP Damage', options=number_options, max_values=1, min_values=1, row=0)
     async def hp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
@@ -324,7 +330,7 @@ class HP_n_WP_Damage(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return
 
-    @discord.ui.select(placeholder='Take Aggravated HP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=1)
+    @discord.ui.select(placeholder='Take Aggravated HP Damage', options=number_options, max_values=1, min_values=1, row=1)
     async def hp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
@@ -348,7 +354,7 @@ class HP_n_WP_Damage(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return
 
-    @discord.ui.select(placeholder='Take Superficial WP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=2)
+    @discord.ui.select(placeholder='Take Superficial WP Damage', options=number_options, max_values=1, min_values=1, row=2)
     async def wp_sup_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
@@ -371,7 +377,7 @@ class HP_n_WP_Damage(discord.ui.View):
         await interaction.response.edit_message(embed=page, view=HP_n_WP_Damage(self.CLIENT))
         return
 
-    @discord.ui.select(placeholder='Take Aggravated WP Damage', options=health_or_willpower_options, max_values=1, min_values=1, row=3)
+    @discord.ui.select(placeholder='Take Aggravated WP Damage', options=number_options, max_values=1, min_values=1, row=3)
     async def wp_agg_dmg_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
@@ -547,22 +553,97 @@ class Extras(discord.ui.View):
         await go_to_roller(self, interaction)
         return
 
-    @discord.ui.button(label='Clan', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=1)
+    @discord.ui.button(label='Clan Information', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
     async def clan_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', '', 'mint')
-        await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
-        raise NotImplementedError
-        return
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
-    @discord.ui.button(label='Diablerie', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def diablerie_button_callback(self, interaction, button):
-        raise NotImplementedError
+        MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Bloodline'), 'misc')
+        CLAN = MISC_DICT['Clan']
+        BLOODLINE = MISC_DICT['Bloodline']
+
+        if CLAN not in ('SECRET_CLAN', 'Tzimisce', 'Tremere', 'Thinblood'):
+            fail_page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', 'Failed to Retrieve', 'red')
+            log.info(f'*> Bad CLAN ({CLAN}) given to clan_button_callback() | {CHARACTER.OWNER_NAME} | {CHARACTER.OWNER_ID} |')
+            await interaction.response.edit_message(embed=fail_page, view=Home_n_Roll(self.CLIENT))
+            return
+
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', '', 'mint')
+        # This is specific to my chronicle, for your use, remove this
+        if CHARACTER.CHARACTER_NAME == 'Nyctea':
+            CLAN_BANE_TITLE: str = ''
+            CLAN_BANE_DESCRIPTION: str = 'Beyond'
+            CLAN_COMPULSION_TITLE: str = ''
+            CLAN_COMPULSION_DESCRIPTION: str = 'The Sight'
+            CLAN_DISCIPLINES: str = 'Of Saulot'
+            # This is specific to my chronicle, for your use, remove this
+
+        # All the information below should be looked at and edited per your chronicle since mine uses homebrew.
+        variant_bane: bool = False
+        if CLAN == 'Tzimisce':
+            if BLOODLINE == 'New Clan':
+                CLAN_BANE_TITLE: str = 'Grounded'
+                CLAN_BANE_DESCRIPTION: str = ('Each Tzimisce must choose a specific charge — a physical domain, a group of people'
+                                              ', an organization, or even something more esoteric — but clearly defined and limit'
+                                              'ed. The Kindred must spend their day sleep surrounded by their chosen charge. Hist'
+                                              'orically this has often meant slumbering in the soil of their land, but it can als'
+                                              'o mean being surrounded by that which they tonight rule: a certain kind of people,'
+                                              ' a building deeply tied to their obsession, a local counterculture faction, or oth'
+                                              'er, more outlandish elements. If they do not, they sustain aggravated Willpower da'
+                                              'mage equal to their Bane Severity upon waking the following night.')
+
+                CLAN_COMPULSION_TITLE: str = 'Refinement'
+                CLAN_COMPULSION_DESCRIPTION: str = ('The Tzimisce’s blood pushes them to improve or transform things, from their o'
+                                                    'wn flesh to their domains and hospitality. Everything can be honed or improv'
+                                                    'ed upon. The Tzimisce must score a critical at a roll in order to improve so'
+                                                    'mething, either giving a bonus to an item or action, or improving a dice poo'
+                                                    'l on themselves, someone or something else. Until they successfully improve '
+                                                    'something, they take a -2 penalty to all actions unrelated to making somethi'
+                                                    'ng better than its current state.')
+
+                CLAN_DISCIPLINES: str = 'Vicissitude, Animalism, Auspex'
+        elif CLAN == 'Tremere':
+            CLAN_BANE_TITLE: str = 'Deficient Blood'
+            CLAN_BANE_DESCRIPTION: str = ('The Tremere are no longer able to create Blood Bonds with other Kindr'
+                                          'ed through normal means. A Tremere can still bind mortals and ghouls, though the corru'
+                                          'pted vitae must be drunk an additional number of times equal to the vampire’s Bane Sev'
+                                          'erity for the bond to form. ')
+
+            variant_bane: bool = True
+            VARIANT_CLAN_BANE_TITLE: str = 'Stolen Blood'
+            VARIANT_CLAN_BANE_DESCRIPTION: str = ('When performing a Blood Surge they need to make Rouse Checks equal to their Ba'
+                                                  'ne Severity. If these Rouse Checks increase their Hunger to 5 or higher, they '
+                                                  'can choose whether to back off their Blood Surge or perform it to then hit Hun'
+                                                  'ger 5 afterward immediately')
+
+            CLAN_COMPULSION_TITLE: str = 'Refinement'
+            CLAN_COMPULSION_DESCRIPTION: str = ('nothing but the best satisfies the vampire. Anything less than exceptional perfo'
+                                                'rmance instils a profound sense of failure, and they often repeat tasks obsessiv'
+                                                'ely to get them "just right". Until the vampire scores a critical win on a Skill'
+                                                ' roll or the scene ends, the vampire labours under a two-dice penalty to all dic'
+                                                'e pools. The penalty is reduced to one die for a repeated action and removed ent'
+                                                'irely on a second repeat.')
+
+            CLAN_DISCIPLINES: str = 'Blood Sorcery, Dominate, Auspex'
+        elif CLAN == 'Thinblood':
+            CLAN_BANE_TITLE: str = 'Thinblooded'
+            CLAN_BANE_DESCRIPTION: str = ('Your blood is too thin, too far from Caine; Your blood potency can not be raised above'
+                                          ' 0. Additionally, you begin with the Suspect flaw.')
+
+            CLAN_COMPULSION_TITLE: str = 'N/A'
+            CLAN_COMPULSION_DESCRIPTION: str = ''
+
+            CLAN_DISCIPLINES: str = 'N/A'
+
+        page.add_field(name=f'Clan Bane: {CLAN_BANE_TITLE}', value=f'{CLAN_BANE_DESCRIPTION}', inline=False)
+        if variant_bane:
+            page.add_field(name=f'Clan Bane: {VARIANT_CLAN_BANE_TITLE}', value=f'{VARIANT_CLAN_BANE_DESCRIPTION}', inline=False)
+        page.add_field(name=f'Clan Compulsion: {CLAN_COMPULSION_TITLE}', value=f'{CLAN_COMPULSION_DESCRIPTION}', inline=False)
+        page.add_field(name=f'Clan Disciplines', value=f'{CLAN_DISCIPLINES}', inline=False)
+
+        await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
+        return
 
     @discord.ui.button(label='Remorse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
     async def remorse_button_callback(self, interaction, button):
         raise NotImplementedError
-
-    @discord.ui.button(label='Path Rules', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def path_rules_button_callback(self, interaction, button):
-        raise NotImplementedError
+        return
