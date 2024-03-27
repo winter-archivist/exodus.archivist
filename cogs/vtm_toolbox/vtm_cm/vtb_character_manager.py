@@ -11,7 +11,14 @@ from misc.config import main_config as mc
 async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME):
     CHARACTER_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{CHARACTER_NAME}/'
 
-    # os.mkdir(f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}')
+    if not os.path.exists(f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}'):
+        os.mkdir(f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}')
+
+    if os.path.exists(CHARACTER_DIRECTORY):
+        log.debug(f'> | {interaction.user.name} | {interaction.user.id} | '
+                  f'Attempted to make {CHARACTER_NAME}, but {CHARACTER_DIRECTORY} already exists.')
+        raise IsADirectoryError
+
     os.mkdir(f'{CHARACTER_DIRECTORY}')
     os.mkdir(f'{CHARACTER_DIRECTORY}skills')
     os.mkdir(f'{CHARACTER_DIRECTORY}roll')
@@ -145,7 +152,7 @@ class vtb_Character:
             self.OWNER_NAME = interaction.user.name
             self.OWNER_ID = interaction.user.id
             self.OWNER_AVATAR = interaction.user.display_avatar
-            log.error(f'*> vtbCM __init__ Bad Character Owner of {CHARACTER_NAME} |  {self.OWNER_NAME} | {self.OWNER_ID} |')
+            log.debug(f'*> vtbCM __init__ Bad Character Owner of {CHARACTER_NAME} |  {self.OWNER_NAME} | {self.OWNER_ID} |')
             raise ValueError
 
         self.AVATAR_URL: str = CHARACTER_INFO['Character Avatar URL']

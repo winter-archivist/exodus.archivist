@@ -415,7 +415,7 @@ class Hunger(discord.ui.View):
                                            'Cryptid', 'Alleycat', 'Grave Robber', 'Trapdoor')
 
         if PREDATOR_TYPE not in SUPPORTED_PREDATOR_TYPES:
-            log.error('**> Bad PREDATOR_TYPE')
+            log.error('**> Bad PREDATOR_TYPE given to predator_type_button_callback()')
             return
 
         match PREDATOR_TYPE:
@@ -505,7 +505,7 @@ class Hunger(discord.ui.View):
                 pt_flaws: str = 'Gain one Haven Flaw, either (•) Creepy or (•) Haunted.'
 
             case _:
-                log.error('**> How did we get here? (vtb_pages "case _:")')
+                log.crit('**> How did we get here? (vtb_pages "case _:")')
                 return
 
         page.add_field(name='Predator Type', value=f'{PREDATOR_TYPE}', inline=True)
@@ -563,7 +563,7 @@ class Extras(discord.ui.View):
 
         if CLAN not in ('SECRET_CLAN', 'Tzimisce', 'Tremere', 'Thinblood'):
             fail_page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Clan Information', 'Failed to Retrieve', 'red')
-            log.info(f'*> Bad CLAN ({CLAN}) given to clan_button_callback() | {CHARACTER.OWNER_NAME} | {CHARACTER.OWNER_ID} |')
+            log.error(f'*> Bad CLAN ({CLAN}) given to clan_button_callback() | {CHARACTER.OWNER_NAME} | {CHARACTER.OWNER_ID} |')
             await interaction.response.edit_message(embed=fail_page, view=Home_n_Roll(self.CLIENT))
             return
 

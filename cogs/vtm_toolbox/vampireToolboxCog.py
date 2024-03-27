@@ -67,7 +67,6 @@ class VTM_Toolbox(discord.ext.commands.Cog):
                 await cm.make_character_files(interaction, character_name)
                 log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
                 page: discord.Embed = discord.Embed(title='VTB-Make', description='Successful Creation', colour=mc.EMBED_COLORS[f"mint"])
-
             except Exception as e:
                 log.crit(f'*> {interaction.user.name} | {interaction.user.id} failed at making {character_name}.')
                 log.crit(f'*> Make Error: {e}')
