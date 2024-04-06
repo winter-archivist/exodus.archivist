@@ -15,7 +15,7 @@ async def return_to_home(self, interaction: discord.Interaction) -> None:
     CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
     page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'purple')
     page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-    await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+    await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
     return None
 
 
@@ -37,7 +37,7 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Attributes Page', '', 'purple')
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Attributes(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Attributes(self.CLIENT))
         return
 
     @discord.ui.button(label='Skills', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
@@ -45,7 +45,7 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Skills Page', '', 'purple')
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Skills(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Skills(self.CLIENT))
         return
 
     @discord.ui.button(label='Disciplines', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
@@ -53,7 +53,7 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Disciplines Page', '', 'purple')
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Disciplines(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Disciplines(self.CLIENT))
         return
 
     @discord.ui.button(label='Extras', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=0)
@@ -61,7 +61,7 @@ class Home(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Extras Page', '', 'purple')
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Extras(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
         return
 
 
@@ -87,7 +87,7 @@ class RollTypes(discord.ui.View):
         if RR_TYPE == 'Frenzy':
             page.add_field(name='Blood Surge Rouse __Frenzy__', value=f'{HUNGER_EMOJI}')
             page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-            await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+            await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
             return
 
         if RR_TYPE == 'Fail':
@@ -103,7 +103,7 @@ class RollTypes(discord.ui.View):
         await CHARACTER.__update_values__(('Pool', 'Composition'), (NEW_ROLL_POOL, NEW_ROLL_COMPOSITION), 'roll/info')
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=Home(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
         return
 
     @discord.ui.select(placeholder='Select Difficulty', options=ro.difficulty_options, max_values=1, min_values=1, row=1)
@@ -348,5 +348,5 @@ class Reroll(discord.ui.View):
         log.crit(f'{total_successes=} | {crits=} | {DIFFICULTY=}')
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.send_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=vp.EMPTY_VIEW(self.CLIENT))
         return

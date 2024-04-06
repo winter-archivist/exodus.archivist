@@ -9,22 +9,22 @@ import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
 import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 
 number_options = [discord.SelectOption(label='One', value='1', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Nine', value='9', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Ten', value='10', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Eleven', value='11', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Twelve', value='12', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Thirteen', value='13', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Fourteen', value='14', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Fifteen', value='15', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Sixteen', value='16', emoji='<:snek:785811903938953227>'),
-                        discord.SelectOption(label='Seventeen', value='17', emoji='<:snek:785811903938953227>'),]
+                  discord.SelectOption(label='Two', value='2', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Three', value='3', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Four', value='4', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Five', value='5', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Six', value='6', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Seven', value='7', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Eight', value='8', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Nine', value='9', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Ten', value='10', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Eleven', value='11', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Twelve', value='12', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Thirteen', value='13', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Fourteen', value='14', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Fifteen', value='15', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Sixteen', value='16', emoji='<:snek:785811903938953227>'),
+                  discord.SelectOption(label='Seventeen', value='17', emoji='<:snek:785811903938953227>'), ]
 
 
 async def return_to_home(self, interaction: discord.Interaction) -> None:
@@ -56,19 +56,12 @@ class Home(discord.ui.View):
             ('Strength', 'Dexterity', 'Stamina', 'Charisma', 'Manipulation', 'Composure', 'Intelligence', 'Wits', 'Resolve')
         CHARACTER_DATA: dict = await CHARACTER.__get_values__(ATTRIBUTES, 'attributes')
 
-        physical_impairment_flag: bool = False
-        HEALTH_BASE: int = await CHARACTER.__get_value__('Base Health', 'health')
-        HEALTH_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('Superficial Health Damage', 'health')
-        if HEALTH_BASE <= HEALTH_SUPERFICIAL_DAMAGE:
-            page.add_field(name='Physically Impaired.', value='-1 to Physical Dice Pools', inline=False)
-            physical_impairment_flag = True
-
-        mental_impairment_flag: bool = False
-        WILLPOWER_BASE: int = await CHARACTER.__get_value__('Base Willpower', 'willpower')
-        WILLPOWER_SUPERFICIAL_DAMAGE: int = await CHARACTER.__get_value__('Superficial Willpower Damage', 'willpower')
-        if WILLPOWER_BASE <= WILLPOWER_SUPERFICIAL_DAMAGE:
-            page.add_field(name='Mentally Impaired', value='-1 to Social & Mental Dice Pools', inline=False)
-            mental_impairment_flag = True
+        # don't like this, but will cope
+        # don't like this, but will cope
+        FLAGS = await CHARACTER.__impairment_flags__()
+        PHYSICAL_IMPAIRMENT_FLAG = FLAGS[0]
+        MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
+        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
 
         for_var = 0
         for x in ATTRIBUTES:
@@ -76,18 +69,22 @@ class Home(discord.ui.View):
                 page.add_field(name='', value='', inline=False)
             count = CHARACTER_DATA[ATTRIBUTES[for_var]]
 
-            # don't like this, but will cope
-            if physical_impairment_flag is True or mental_impairment_flag is True:
-                if ATTRIBUTES[for_var].lower() in ('Strength', 'Dexterity', 'Stamina'):
+            if DEGENERATION_IMPAIRMENT_FLAG is True:
+                count -= 1  # Removes one from ALL attributes since the character is DEGENERATION impaired.
+
+            if PHYSICAL_IMPAIRMENT_FLAG is True or MENTAL_IMPAIRMENT_FLAG is True:
+                if ATTRIBUTES[for_var].lower() in ('strength', 'dexterity', 'stamina'):
                     count -= 1  # Removes one from PHYSICAL attributes since the character is PHYSICALLY impaired.
 
-                if ATTRIBUTES[for_var].lower() in ('Charisma', 'Manipulation', 'Composure', 'Intelligence', 'Wits', 'Resolve'):
+                if ATTRIBUTES[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
                     count -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
 
             emojis = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
 
             page.add_field(name=f'{ATTRIBUTES[for_var]}', value=f'{emojis}', inline=True)
             for_var += 1
+        # don't like this, but will cope
+        # don't like this, but will cope
 
         await interaction.response.edit_message(embed=page, view=Home_n_Roll(self.CLIENT))
         return
@@ -135,9 +132,22 @@ class Home(discord.ui.View):
         PHYSICAL_SKILLS: tuple = ('Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival')
         PHYSICAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(PHYSICAL_SKILLS, 'skills/physical')
 
+        FLAGS = await CHARACTER.__impairment_flags__()
+        PHYSICAL_IMPAIRMENT_FLAG = FLAGS[0]
+        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
+
         while_var: int = 0
         while while_var != 9:  # 9 = Skill Count
             count: int = PHYSICAL_SKILLS_DICT[PHYSICAL_SKILLS[while_var]]
+
+            if PHYSICAL_IMPAIRMENT_FLAG is True:
+                count -= 1
+                page.add_field(name='Physically Impaired.', value='-1 to Physical Dice Pools', inline=False)
+
+            if DEGENERATION_IMPAIRMENT_FLAG is True:
+                count -= 2
+                page.add_field(name='Degeneration Impaired.', value='-2 to All Dice Pools', inline=False)
+
             emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
             page.add_field(name=f'{str.capitalize(PHYSICAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
             while_var += 1
@@ -153,9 +163,22 @@ class Home(discord.ui.View):
         SOCIAL_SKILLS: tuple = ('Animal Ken', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge')
         SOCIAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(SOCIAL_SKILLS, 'skills/social')
 
+        FLAGS = await CHARACTER.__impairment_flags__()
+        MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
+        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
+
         while_var: int = 0
         while while_var != 9:  # 9 = Skill Count
             count: int = SOCIAL_SKILLS_DICT[SOCIAL_SKILLS[while_var]]
+
+            if MENTAL_IMPAIRMENT_FLAG is True:
+                count -= 1
+                page.add_field(name='Mentally Impaired.', value='-1 to Mental Dice Pools', inline=False)
+
+            if DEGENERATION_IMPAIRMENT_FLAG is True:
+                count -= 2
+                page.add_field(name='Degeneration Impaired.', value='-2 to All Dice Pools', inline=False)
+
             emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
             page.add_field(name=f'{str.capitalize(SOCIAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
             while_var += 1
@@ -171,9 +194,22 @@ class Home(discord.ui.View):
         MENTAL_SKILLS: tuple = ('Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology')
         MENTAL_SKILLS_DICT: dict = await CHARACTER.__get_values__(MENTAL_SKILLS, 'skills/mental')
 
+        FLAGS = await CHARACTER.__impairment_flags__()
+        MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
+        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
+
         while_var: int = 0
         while while_var != 9:  # 9 = Skill Count
             count: int = MENTAL_SKILLS_DICT[MENTAL_SKILLS[while_var]]
+
+            if MENTAL_IMPAIRMENT_FLAG is True:
+                count -= 1
+                page.add_field(name='Mentally Impaired.', value='-1 to Mental Dice Pools', inline=False)
+
+            if DEGENERATION_IMPAIRMENT_FLAG is True:
+                count -= 2
+                page.add_field(name='Degeneration Impaired.', value='-2 to All Dice Pools', inline=False)
+
             emoji: str = f'{count * mc.DOT_FULL_EMOJI} {abs(count - 5) * mc.DOT_EMPTY_EMOJI}'
             page.add_field(name=f'{str.capitalize(MENTAL_SKILLS[while_var])}', value=f'{emoji}', inline=True)
             while_var += 1
@@ -190,27 +226,8 @@ class Home(discord.ui.View):
 
     @discord.ui.button(label='Extras', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.blurple, row=2)
     async def extras_button_callback(self, interaction, button):
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)  # This is kept so the __init__ can run the owner checker
-        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Extras', '', 'mint')
-
-        MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Blood Potency'), 'misc')
-        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'), 'humanity')
-
-        if CHARACTER.CHARACTER_NAME != 'Nyctea':
-            page.add_field(name='Clan', value=f'{MISC_DICT["Clan"]}', inline=True)
-            page.add_field(name='Path of Enlightenment', value=f'{HUMANITY_DICT["Path of Enlightenment"]}', inline=True)
-            page.add_field(name='Generation', value=f'{MISC_DICT["Generation"] * mc.DOT_FULL_EMOJI}', inline=True)
-            page.add_field(name='Blood Potency', value=f'{MISC_DICT["Blood Potency"] * mc.HUNGER_EMOJI}', inline=True)
-        elif CHARACTER.CHARACTER_NAME == 'Nyctea':
-            # Remove the code within this else and take out the if statement, if you intend on using this in your chronicle
-            # these limits have been set up due to a specific character in my Chronicle
-            page.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
-            page.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
-            page.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
-            page.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
-
-        page.add_field(name='Humanity', value=f'{HUMANITY_DICT["Humanity"] * mc.DOT_FULL_EMOJI} {HUMANITY_DICT["Stains"] * mc.DOT_EMPTY_EMOJI}', inline=True)
-
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.extra_page_builder(CHARACTER)
         await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
         return
 
@@ -553,7 +570,82 @@ class Extras(discord.ui.View):
         await go_to_roller(self, interaction)
         return
 
-    @discord.ui.button(label='Clan Information', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    @discord.ui.button(label='Remorse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def remorse_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Extra', '', 'mint')
+
+        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains'), 'humanity')
+        HUMANITY: int = HUMANITY_DICT['Humanity']
+        STAINS: int = HUMANITY_DICT['Stains']
+        MINIMUM_POOL: int = 1
+        POOL: int = (HUMANITY + STAINS) - 10
+
+        if POOL < MINIMUM_POOL:
+            POOL: int = MINIMUM_POOL
+
+        page, RESULT, UNUSED_FLAG = await CHARACTER.__roll__(page, True)
+        SUCCESS_COUNT: int = (RESULT['Regular Crit Count'] + RESULT['Regular Success Count'] +
+                              RESULT['Hunger Crit Count'] + RESULT['Hunger Success Count'])
+
+        if SUCCESS_COUNT >= 1:
+            page.add_field(name='Remorse Test', value='Success, you retain your Humanity & your Stains fade away.', inline=False)
+            await CHARACTER.__update_value__('Stains', 0, 'humanity')
+        else:
+            page.add_field(name='Remorse Test', value='Failed, your Humanity slips further and further away-.', inline=False)
+            await CHARACTER.__update_value__('Stains', int(STAINS+1), 'humanity')
+
+        # Yes this is in extra_page_builder(), however a few things need to be omitted
+        MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Blood Potency'), 'misc')
+        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'), 'humanity')
+
+        if CHARACTER.CHARACTER_NAME != 'Nyctea':
+            page.add_field(name='Clan', value=f'{MISC_DICT["Clan"]}', inline=True)
+            page.add_field(name='Path of Enlightenment', value=f'{HUMANITY_DICT["Path of Enlightenment"]}', inline=True)
+            page.add_field(name='Generation', value=f'{MISC_DICT["Generation"] * mc.DOT_FULL_EMOJI}', inline=True)
+            page.add_field(name='Blood Potency', value=f'{MISC_DICT["Blood Potency"] * mc.HUNGER_EMOJI}', inline=True)
+        elif CHARACTER.CHARACTER_NAME == 'Nyctea':
+            # Remove the code within this else and take out the if statement, if you intend on using this in your chronicle
+            # these limits have been set up due to a specific character in my Chronicle
+            page.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
+            page.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
+            page.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
+            page.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
+
+        page.add_field(name='Humanity',
+                       value=f'{HUMANITY_DICT["Humanity"] * mc.DOT_FULL_EMOJI} {HUMANITY_DICT["Stains"] * mc.DOT_EMPTY_EMOJI}',
+                       inline=True)
+        # Yes this is in extra_page_builder(), however a few things need to be omitted
+
+        await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Stain [+1]', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=1)
+    async def stain_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.extra_page_builder(CHARACTER)
+
+        HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains'), 'humanity')
+        HUMANITY: int = HUMANITY_DICT['Humanity']
+        STAINS: int = HUMANITY_DICT['Stains']
+        if (10 - HUMANITY) <= STAINS:
+            AGG_WP: int = await CHARACTER.__get_value__('Aggravated Willpower', 'willpower')
+            await CHARACTER.__update_value__('Aggravated Willpower', AGG_WP + 1, 'willpower')
+
+            page.add_field(name='Degeneration', value='Your Stains have eaten into your psyche, your very being. '
+                                                      'You are now Universally Impaired [-2 to all pools], additionally you are '
+                                                      'unable to intentionally violate Tenets, if you unintentionally or are '
+                                                      'forced to make a Terror Frenzy DC4. Both of these afflictions last until '
+                                                      'your next Remorse, alternatively you can expend 1 Humanity and remove all '
+                                                      'stains/afflictions caused by Degeneration. '
+                                                      '(The alternative is not automated by VTB.)', inline=False)
+        else:
+            await CHARACTER.__update_value__('Stain', int(STAINS+1), 'humanity')
+
+        await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
+        return
+
+    @discord.ui.button(label='Clan Information', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def clan_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
@@ -641,9 +733,4 @@ class Extras(discord.ui.View):
         page.add_field(name=f'Clan Disciplines', value=f'{CLAN_DISCIPLINES}', inline=False)
 
         await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
-        return
-
-    @discord.ui.button(label='Remorse', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.gray, row=1)
-    async def remorse_button_callback(self, interaction, button):
-        raise NotImplementedError
         return

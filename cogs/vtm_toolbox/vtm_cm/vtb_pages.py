@@ -67,6 +67,32 @@ async def hunger_page_builder(CHARACTER: cm.vtb_Character):
     return page
 
 
+async def extra_page_builder(CHARACTER: cm.vtb_Character) -> discord.Embed:
+    page: discord.Embed = await basic_page_builder(CHARACTER, 'Extra', '', 'mint')
+
+    MISC_DICT: dict = await CHARACTER.__get_values__(('Clan', 'Generation', 'Blood Potency'), 'misc')
+    HUMANITY_DICT: dict = await CHARACTER.__get_values__(('Humanity', 'Stains', 'Path of Enlightenment'), 'humanity')
+
+    if CHARACTER.CHARACTER_NAME != 'Nyctea':
+        page.add_field(name='Clan', value=f'{MISC_DICT["Clan"]}', inline=True)
+        page.add_field(name='Path of Enlightenment', value=f'{HUMANITY_DICT["Path of Enlightenment"]}', inline=True)
+        page.add_field(name='Generation', value=f'{MISC_DICT["Generation"] * mc.DOT_FULL_EMOJI}', inline=True)
+        page.add_field(name='Blood Potency', value=f'{MISC_DICT["Blood Potency"] * mc.HUNGER_EMOJI}', inline=True)
+    elif CHARACTER.CHARACTER_NAME == 'Nyctea':
+        # Remove the code within this else and take out the if statement, if you intend on using this in your chronicle
+        # these limits have been set up due to a specific character in my Chronicle
+        page.add_field(name='Clan', value=f'Beyond The Eye of Saulot', inline=True)
+        page.add_field(name='Path of Enlightenment', value=f'Beyond The Eye of Saulot', inline=True)
+        page.add_field(name='Generation', value=f'Beyond The Eye of Saulot', inline=True)
+        page.add_field(name='Blood Potency', value=f'Beyond The Eye of Saulot', inline=True)
+
+    page.add_field(name='Humanity',
+                   value=f'{HUMANITY_DICT["Humanity"] * mc.DOT_FULL_EMOJI} {HUMANITY_DICT["Stains"] * mc.DOT_EMPTY_EMOJI}',
+                   inline=True)
+
+    return page
+
+
 async def standard_roller_page_modifications(page: discord.Embed, CHARACTER: cm.vtb_Character) -> discord.Embed:
     page.add_field(name='', value='', inline=False)  # Just makes sure it isn't interfering with any other fields/elements
 
@@ -83,11 +109,41 @@ async def standard_roll_select(CHARACTER: cm.vtb_Character, page, select, file_n
     pool: int = CHARACTER_INFORMATION['Pool']
     composition: str = CHARACTER_INFORMATION['Composition']
 
+    FLAGS = await CHARACTER.__impairment_flags__()
+    PHYSICAL_IMPAIRMENT_FLAG = FLAGS[0]
+    MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
+    DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
+
     for_var: int = 0
     for selections in select.values:
-        attribute_value: int = await CHARACTER.__get_value__(f'{select.values[for_var]}', file_name)
-        pool += attribute_value
-        composition = f'{composition}, {(select.values[for_var]).capitalize()}[{attribute_value}]'
+        value: int = await CHARACTER.__get_value__(f'{select.values[for_var]}', file_name)
+
+        if 'attributes' in file_name:
+            if DEGENERATION_IMPAIRMENT_FLAG is True:
+                value -= 1  # Removes one from ALL attributes since the character is DEGENERATION impaired.
+
+            if PHYSICAL_IMPAIRMENT_FLAG is True or MENTAL_IMPAIRMENT_FLAG is True:
+                if select.values[for_var].lower() in ('strength', 'dexterity', 'stamina'):
+                    value -= 1  # Removes one from PHYSICAL attributes since the character is PHYSICALLY impaired.
+
+                if select.values[for_var].lower() in ('charisma', 'manipulation', 'composure', 'intelligence', 'wits', 'resolve'):
+                    value -= 1  # Removes one from MENTAL & SOCIAL attributes since the character is MENTALLY impaired.
+
+        elif 'skills' in file_name:
+
+            if 'physical' in file_name:
+                if PHYSICAL_IMPAIRMENT_FLAG is True:
+                    value -= 1
+
+            elif 'social' or 'mental' in file_name:
+                if MENTAL_IMPAIRMENT_FLAG is True:
+                    value -= 1
+
+            if DEGENERATION_IMPAIRMENT_FLAG is True:
+                value -= 2
+
+        pool += value
+        composition = f'{composition}, {(select.values[for_var]).capitalize()}[{value}]'
         for_var += 1
 
     await CHARACTER.__update_values__(('Pool', 'Composition'), (pool, composition), 'roll/info')

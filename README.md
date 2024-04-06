@@ -4,12 +4,12 @@ Exodus.Archivist
 ## Version Info
 
 > * Branch: new_character_system
-> * Version 01.05.04
-> > * Major: 01 | Large Overhauls
-> > * Minor: 05 | Non-Major Features
-> > * Patch: 04 | Other Repo Pushes
+> * Version 01.06.00
+> > * Major: 01 | Major Features/"Large Overhauls"
+> > * Minor: 06 | Non-Major Features
+> > * Patch: 00 | Other Repo Pushes 
 > * State: Stable
-> * DateTime: March 26rd 2024 | 7:47am EST
+> * DateTime: April 6th 2024 | 3:38am EST
 
 ---
 ## General
@@ -23,7 +23,7 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * Open Source [GNUGPL 3.0]
 >> * Logging /w "Syntax" [See Below]
 >> * Dangerously Cheesy [so much spaghetti]
->> * In Active Development [MAR 2024]
+>> * In Active Development [APR 2024]
 
 > * Client: 
 >> * Slash Commands

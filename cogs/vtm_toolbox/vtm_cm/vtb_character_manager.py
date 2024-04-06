@@ -107,11 +107,12 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                        'Hunger Crit Count': 0,
                        'Hunger Success Count' : 0,
                        'Hunger Fail Count' : 0,
-                       'Skull Count': 0}
+                       'Hunger Skull': 0}
     HUMANITY_DICT: dict = {
         'Humanity': 0,
         'Stains': 0,
-        'Path of Enlightenment': 'UNSET'}
+        'Path of Enlightenment': 'UNSET',
+        'Degeneration Impairment': False}
 
     CHARACTER_FILES: tuple = ('misc', 'health', 'willpower', 'attributes', 'disciplines',
                               'skills/physical', 'skills/social', 'skills/mental', 'roll/info',
@@ -161,7 +162,9 @@ class vtb_Character:
     # then there's no point in going through the for loop/using tuples, this just slightly increases performance;
     # not that this bot needs to be/is performant, especially being written in python by a newbie.
     async def __get_values__(self, KEYS: tuple, FILE_NAME: str) -> dict:
-        # Use when getting more than one value, otherwise use self.__get_value__()
+        """
+        Use when getting more than one value, otherwise use self.__get_value__()
+        """
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             CHARACTER_INFO: dict = json.load(operate_file)
@@ -176,7 +179,9 @@ class vtb_Character:
         return return_information
 
     async def __get_value__(self, KEY: str, FILE_NAME: str):
-        # Use when getting one value, otherwise use self.__get_values__()
+        """
+        Use when getting one value, otherwise use self.__get_values__()
+        """
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             CHARACTER_INFO: dict = json.load(operate_file)
@@ -188,7 +193,9 @@ class vtb_Character:
         return RETURN_INFORMATION
 
     async def __update_values__(self, KEYS: tuple, VALUES: tuple, FILE_NAME: str) -> None:
-        # Use when updating more than one value, otherwise use self.__update_value__()
+        """
+        Use when updating more than one value, otherwise use self.__update_value__()
+        """
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             character_info: dict = json.load(operate_file)
@@ -207,7 +214,9 @@ class vtb_Character:
         return None
 
     async def __update_value__(self, KEY: str, VALUE, FILE_NAME: str) -> None:
-        # Use when updating one value, otherwise use self.__update_values__()
+        """
+        Use when updating one value, otherwise use self.__update_values__()
+        """
 
         with open(f'{self.CHARACTER_FILE_PATH}/{FILE_NAME}.json', 'r') as operate_file:
             character_info: dict = json.load(operate_file)
@@ -219,6 +228,39 @@ class vtb_Character:
             json.dump(character_info, operate_file)
 
         return None
+
+    async def __impairment_flags__(self) -> tuple:
+        """ = Typical Call =
+
+        FLAGS = await CHARACTER.__impairment_flags__()
+        PHYSICAL_IMPAIRMENT_FLAG = FLAGS[0]
+        MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
+        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
+
+        """
+
+        physical_impairment_flag: bool = False
+        HEALTH_BASE: int = await self.__get_value__('Base Health', 'health')
+        HEALTH_SUPERFICIAL_DAMAGE: int = await self.__get_value__('Superficial Health Damage', 'health')
+        if HEALTH_BASE <= HEALTH_SUPERFICIAL_DAMAGE:
+            # count -= 1
+            # page.add_field(name='Physically Impaired.', value='-1 to Physical Dice Pools', inline=False)
+            physical_impairment_flag = True
+
+        mental_impairment_flag: bool = False
+        WILLPOWER_BASE: int = await self.__get_value__('Base Willpower', 'willpower')
+        WILLPOWER_SUPERFICIAL_DAMAGE: int = await self.__get_value__('Superficial Willpower Damage', 'willpower')
+        if WILLPOWER_BASE <= WILLPOWER_SUPERFICIAL_DAMAGE:
+            # count -= 1
+            # page.add_field(name='Mentally Impaired', value='-1 to Social & Mental Dice Pools', inline=False)
+            mental_impairment_flag = True
+
+        degeneration_impairment_flag: bool = await self.__get_value__('Degeneration Impairment', 'humanity')
+        # count -= 2
+        # page.add_field(name='Degeneration Impaired.', value='-2 to All Dice Pools', inline=False)
+
+        FLAGS: tuple = (physical_impairment_flag, mental_impairment_flag, degeneration_impairment_flag)
+        return FLAGS
 
     async def __rouse_check__(self) -> tuple:
         HUNGER: int = await self.__get_value__('Hunger', 'misc')
@@ -238,6 +280,9 @@ class vtb_Character:
             return result  # 1 Hunger Gain
 
     async def __roll__(self, page: discord.Embed, RETURN_EXTRA: bool = False):
+        """
+        Typically just returns the page, if you require the flags of the roll or the exact results RETURN_EXTRA needs to be True.
+        """
 
         # Could be merged, however I was encountering an odd error
         # where difficulty wasn't being assigned correctly.
@@ -260,7 +305,7 @@ class vtb_Character:
             'Hunger Crit': 0,
             'Hunger Success': 0,
             'Hunger Fail': 0,
-            'Skull Count': 0}
+            'Hunger Skull': 0}
 
         while_pool = POOL
         while_hunger = HUNGER
@@ -282,7 +327,7 @@ class vtb_Character:
                 if die_result == 10:
                     result['Hunger Crit'] += 1
                 elif die_result == 1:
-                    result['Skull Count'] += 1
+                    result['Hunger Skull'] += 1
                 elif die_result >= 6:
                     result['Hunger Success'] += 1
                 elif die_result <= 5:
@@ -293,7 +338,7 @@ class vtb_Character:
         UPDATE_KEYS = ('Regular Crit', 'Regular Success', 'Regular Fail',
                        'Hunger Crit', 'Hunger Success', 'Hunger Fail', 'Hunger Skull')
         UPDATE_VALUES = (result['Regular Crit'], result['Regular Success'], result['Regular Fail'],
-                         result['Hunger Crit'], result['Hunger Success'], result['Hunger Fail'], result['Skull Count'])
+                         result['Hunger Crit'], result['Hunger Success'], result['Hunger Fail'], result['Hunger Skull'])
         await self.__update_values__(UPDATE_KEYS, UPDATE_VALUES, 'roll/info')
 
         roll_flag: str = ''
@@ -336,7 +381,7 @@ class vtb_Character:
             roll_flag = 'Regular Success'
         elif TOTAL_SUCCESSES <= DIFFICULTY and roll_flag == '':
             roll_flag = 'Regular Fail'
-            if result['Skull Count'] >= 1:
+            if result['Hunger Skull'] >= 1:
                 roll_flag = 'Bestial Failure'
 
         page.add_field(name='Success Count', value=f'{TOTAL_SUCCESSES}')
@@ -349,6 +394,9 @@ class vtb_Character:
         return page
 
     async def __hunt__(self, input_page: discord.Embed):
+        """
+        Will roll automatically, no need to do it prior.
+        """
         page, _UNUSED_, ROLL_FLAG = await self.__roll__(input_page, True)
 
         MISC_DICT: dict = await self.__get_values__(('Hunger', 'Blood Potency'), 'misc')
