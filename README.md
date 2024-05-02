@@ -1,18 +1,29 @@
-ExodusAutomaton
+Exodus.Archivist
 ===
+---
+## Version Info
+
+> * Branch: new_character_system
+> * Version 01.06.00
+> > * Major: 01 | Major Features/"Large Overhauls"
+> > * Minor: 06 | Non-Major Features
+> > * Patch: 00 | Other Repo Pushes 
+> * State: Stable
+> * DateTime: April 6th 2024 | 3:38am EST
+
 ---
 ## General
 
-As of now ExodusAutomaton Rewrite is being solo developed by me with Pycharm Professional. 
+As of now Exodus.Archivist is being solo developed by me with Pycharm Professional. 
 It's not *good* in any sense of the word, it exclusively exists for me to mess around with programming; if for whatever 
-reason you'd like to talk to me about the project, your best place to contact me is discord `.ashywinter`
+reason you'd like to talk to me about the project, your best place to contact me is discord `winter.archivist`
 ### Primary Features:
 > * Project: 
 >> * Easily Setup
 >> * Open Source [GNUGPL 3.0]
 >> * Logging /w "Syntax" [See Below]
 >> * Dangerously Cheesy [so much spaghetti]
->> * In Active Development [FEB 2024]
+>> * In Active Development [APR 2024]
 
 > * Client: 
 >> * Slash Commands
@@ -20,15 +31,17 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * VTM v5 Toolbox 
 
 > * Active Development Features (varying states of functionality) 
->> * VTM v5 Toolbox [Extending Functionality]
->> * Bot Issue Ticket System [HIATUS]
->> * Notes System [HIATUS]
+>> * VTM v5 Toolbox [Functional | Extending Functionality]
+>> * Bot Issue Ticket System [N/A | HIATUS]
+>> * Notes System [N/A | HIATUS]
 
 > * Currently Abandoned Features (may return)
 >> * eaTools [Bot Devtools]
 
-> * Rejected Features (no chance)
->> * N/A
+> * Rejected Features (no/little chance)
+>> * VTM V5 Toolbox
+>>> * Automated Diablerie
+>>> * Integrated Path of Enlightenment/Humanity Rules
 
 ---
 ## USE:
@@ -39,8 +52,8 @@ and the discord developer tools, none of those will be explained here.
 
 > Do ALL the following <u>__BEFORE__</u> trying to run the bot
 > 
-> * Change the Bot's "TOKEN" [clientConfig.py]
-> * Change the Bot's "RUNNER" and "RUNNER_ID" [misc/config/mainConfig.py]
+> * Change the Bot's "TOKEN" [client_config.py]
+> * Change the Bot's "RUNNER" and "RUNNER_ID" [misc/config/main_config.py]
 ---
 ## LOGGING
 When things are logged they should have a "reason" or prefix attached to the beginning these can be "stacked". 

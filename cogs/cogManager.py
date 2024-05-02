@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from misc.config import mainConfig as mC
+from misc.config import main_config as mc
 
 
 class CogManager(commands.Cog):
@@ -18,12 +18,12 @@ class CogManager(commands.Cog):
         app_commands.Choice(name="Reload", value="reload")])
     async def cog(self, interaction: discord.Interaction, target: app_commands.Choice[str], operation: app_commands.Choice[str]):
 
-        if str(interaction.user) != f'{mC.RUNNER}':
+        if str(interaction.user) != f'{mc.RUNNER}':
             # Prevents anyone, but the person running the bot, from interacting
             return
 
         # Makes the base embed
-        base_page = discord.Embed(title='Cog Manager', description='', colour=mC.EMBED_COLORS[f'purple'])
+        base_page = discord.Embed(title='Cog Manager', description='', colour=mc.EMBED_COLORS[f'purple'])
 
         # Assigns basic user information
         user_info = {'user_name'  : interaction.user,

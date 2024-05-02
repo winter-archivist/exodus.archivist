@@ -6,7 +6,7 @@ EMBED_COLORS = {
     "red": 0xFF0000,
     "blue": 0x0000FF,
     "dark_yellow": 0x8B8000,
-    "cyan": 0x00FFF,
+    "cyan": 0x1fbdd2,
     "green": 0x00FF00,
     "mint": 0x3EB489
 }
@@ -29,9 +29,9 @@ HUNGER_EMOJI = '<:hunger:1186602644748390470>'
 
 
 # ? Should be changed
-RUNNER: str = f'.ashywinter'  # ? YOUR DISCORD NAME
+RUNNER: str = 'winter.archivist'  # ? YOUR DISCORD NAME
 RUNNER_ID: int = 567819777209532418  # ? YOUR DISCORD ID as an INTEGER
 
 # ? Should be kept the same
-DEVELOPER: str = '.ashywinter'  # ! if you need to contact who wrote this awful code
-GITREPO: str = 'https://github.com/AshenEntropy/.ae_rewrite'  # ! if you need to contact who wrote this awful code
+DEVELOPER: str = 'winter.archivist'  # ! if you need to contact who wrote this awful code
+GITREPO: str = 'https://github.com/AshenEntropy/exodus.archivist'  # ! if you need to contact who wrote this awful code
