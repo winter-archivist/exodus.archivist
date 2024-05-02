@@ -111,11 +111,10 @@ class RollTypes(discord.ui.View):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'purple')
 
-        # Parenthesis on (select.values) are NOT redundant!!!
-        await CHARACTER.__update_value__('difficulty', (select.values), 'roll/info')
+        await CHARACTER.__update_value__('Difficulty', int(select.values[0]), 'roll/info')
 
         page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-        await interaction.response.edit_message(embed=page, view=Home(self.CLIENT))
+        await interaction.response.edit_message(embed=page, view=RollTypes(self.CLIENT))
         return
 
     @discord.ui.button(label='Standard Roll', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)

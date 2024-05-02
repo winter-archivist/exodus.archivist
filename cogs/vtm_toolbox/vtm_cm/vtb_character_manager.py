@@ -138,29 +138,20 @@ class vtb_Character:
         self.CHARACTER_FILE_PATH: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{self.CHARACTER_NAME}'
 
         if not os.path.isdir(self.CHARACTER_FILE_PATH):
-            # This just means the interactor doesn't have any character with the given name.
+            # This just means the user doesn't have any character with the name found in .../{user_id}/target_character.json.
             raise FileNotFoundError
 
         with open(f'{self.CHARACTER_FILE_PATH}/misc.json', 'r') as operate_file:
             CHARACTER_INFO = json.load(operate_file)
 
-        if int(CHARACTER_INFO['Owner ID']) == interaction.user.id:
-            self.OWNER_NAME = interaction.user.name
-            self.OWNER_ID = interaction.user.id
-            self.OWNER_AVATAR = interaction.user.display_avatar
-            log.debug(f'> vtbCM __init__ Verified Owner of {CHARACTER_NAME} |  {self.OWNER_NAME} | {self.OWNER_ID} |')
-        else:
-            self.OWNER_NAME = interaction.user.name
-            self.OWNER_ID = interaction.user.id
-            self.OWNER_AVATAR = interaction.user.display_avatar
-            log.debug(f'*> vtbCM __init__ Bad Character Owner of {CHARACTER_NAME} |  {self.OWNER_NAME} | {self.OWNER_ID} |')
-            raise ValueError
-
-        self.AVATAR_URL: str = CHARACTER_INFO['Character Avatar URL']
+        self.OWNER_NAME = interaction.user.name
+        self.OWNER_ID = interaction.user.id
+        self.OWNER_AVATAR = interaction.user.display_avatar
+        self.CHARACTER_AVATAR: str = CHARACTER_INFO['Character Avatar URL']
 
     # The get/update value/values functions are split since if you only need one value returned/updated
     # then there's no point in going through the for loop/using tuples, this just slightly increases performance;
-    # not that this bot needs to be/is performant, especially being written in python by a newbie.
+    # not that this bot needs to be/is performant, especially being written in python, by a newbie.
     async def __get_values__(self, KEYS: tuple, FILE_NAME: str) -> dict:
         """
         Use when getting more than one value, otherwise use self.__get_value__()
@@ -230,14 +221,16 @@ class vtb_Character:
         return None
 
     async def __impairment_flags__(self) -> tuple:
-        """ = Typical Call =
-
-        FLAGS = await CHARACTER.__impairment_flags__()
-        PHYSICAL_IMPAIRMENT_FLAG = FLAGS[0]
-        MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
-        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
-
         """
+        Checks all impairment flags, then returns a tuple of booleans.
+        """
+
+        #       === Typical Call ===
+
+        #        FLAGS = await CHARACTER.__impairment_flags__()
+        #        PHYSICAL_IMPAIRMENT_FLAG = FLAGS[0]
+        #        MENTAL_IMPAIRMENT_FLAG = FLAGS[1]
+        #        DEGENERATION_IMPAIRMENT_FLAG = FLAGS[2]
 
         physical_impairment_flag: bool = False
         HEALTH_BASE: int = await self.__get_value__('Base Health', 'health')
@@ -263,6 +256,9 @@ class vtb_Character:
         return FLAGS
 
     async def __rouse_check__(self) -> tuple:
+        """
+        Makes a Rouse Check then returns the result as a tuple (str(Result), int(Hunger))
+        """
         HUNGER: int = await self.__get_value__('Hunger', 'misc')
         ROUSE_NUM_RESULT: int = random.randint(1, 10)
 

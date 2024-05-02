@@ -104,7 +104,7 @@ async def on_ready():
 # Required for Slash Commands to work
 # Do Not Remove.
 @CLIENT.command(name="sync")
-async def sync(ctx):  # ! Slash Commands Cog Essential
+async def sync(ctx):  # !/ Slash Commands Cog Essential
     if str(ctx.author.id) != f'{mc.RUNNER}':
         return
     synced = await CLIENT.tree.sync()

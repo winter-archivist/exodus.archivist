@@ -17,7 +17,7 @@ async def basic_page_builder(CHARACTER: cm.vtb_Character, page_title: str, page_
 
     base_page: discord.Embed = discord.Embed(title=page_title, description=page_description, colour=mc.EMBED_COLORS[f"{page_color.lower()}"])
 
-    base_page.set_thumbnail(url=CHARACTER.AVATAR_URL)
+    base_page.set_thumbnail(url=CHARACTER.CHARACTER_AVATAR)
     base_page.set_footer(text=f'{CHARACTER.OWNER_ID}', icon_url=f'{CHARACTER.OWNER_AVATAR}')
     base_page.set_author(name=f'{CHARACTER.OWNER_NAME}', icon_url=f'{CHARACTER.OWNER_AVATAR}')
     base_page.add_field(name='Character Name', value=f'{CHARACTER.CHARACTER_NAME}', inline=False)
