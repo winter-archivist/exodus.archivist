@@ -18,8 +18,8 @@ async def initialize_startup_cogs(CLIENT_INPUT):
     log.info('$ Initializing Startup Cogs...')
 
     # To add cogs, just add their directory, but instead of "/" use ".", however do not include their file extension.
-    INITIAL_COGS: tuple = ('cogs.cogManager',
-                           'cogs.vtm_toolbox.vampireToolboxCog')
+    INITIAL_COGS: tuple = ('cogs.cog_manager',
+                           'cogs.vtm_toolbox.vampire_toolbox_cog')
 
     # Tries to load any cog listed in the above tuple; stops execution if the cog isn't found.
     for_var = 0

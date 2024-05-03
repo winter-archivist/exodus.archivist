@@ -54,7 +54,7 @@ vtm_toolbox
 ║  ╠═ vtb_character_manager.py
 ║  ╚═ vtb_pages.py
 ║
-╠═ vampireToolboxCog.py
+╠═ vampire_toolbox_cog.py
 ╚═ VTB_README.md
 ```
 
