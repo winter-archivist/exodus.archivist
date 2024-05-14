@@ -279,7 +279,7 @@ class HP_n_WP(discord.ui.View):
 
         # Prevents a Rouse from occurring if no health can be gained.
         if SUPERFICIAL_HEALTH_DAMAGE == 0:
-            page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+            page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
             page.add_field(name='No Superficial Health to Regain', value='')
             await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
             return
@@ -294,7 +294,7 @@ class HP_n_WP(discord.ui.View):
 
         await CHARACTER.__update_value__('Superficial Health Damage', int(SUPERFICIAL_HEALTH_DAMAGE - MEND_AMOUNT), 'health')
 
-        page: discord.Embed = await vp.hp_wp_page_builder(interaction)
+        page: discord.Embed = await vp.hp_wp_page_builder(CHARACTER)
 
         page.add_field(name=f'Rouse {ROUSE_RESULT[0]}', value=f'`{MEND_AMOUNT}` Health Regained. New Hunger: {ROUSE_RESULT[1] * mc.HUNGER_EMOJI}')
         await interaction.response.edit_message(embed=page, view=HP_n_WP(self.CLIENT))
@@ -585,8 +585,8 @@ class Extras(discord.ui.View):
             POOL: int = MINIMUM_POOL
 
         page, RESULT, UNUSED_FLAG = await CHARACTER.__roll__(page, True)
-        SUCCESS_COUNT: int = (RESULT['Regular Crit Count'] + RESULT['Regular Success Count'] +
-                              RESULT['Hunger Crit Count'] + RESULT['Hunger Success Count'])
+        SUCCESS_COUNT: int = (RESULT['Regular Crit'] + RESULT['Regular Success'] +
+                              RESULT['Hunger Crit'] + RESULT['Hunger Success'])
 
         if SUCCESS_COUNT >= 1:
             page.add_field(name='Remorse Test', value='Success, you retain your Humanity & your Stains fade away.', inline=False)
@@ -629,9 +629,7 @@ class Extras(discord.ui.View):
         HUMANITY: int = HUMANITY_DICT['Humanity']
         STAINS: int = HUMANITY_DICT['Stains']
         if (10 - HUMANITY) <= STAINS:
-            AGG_WP: int = await CHARACTER.__get_value__('Aggravated Willpower', 'willpower')
-            await CHARACTER.__update_value__('Aggravated Willpower', AGG_WP + 1, 'willpower')
-
+            AGG_WP: int = await CHARACTER.__get_value__('Aggravated Willpower Damage', 'willpower')
             page.add_field(name='Degeneration', value='Your Stains have eaten into your psyche, your very being. '
                                                       'You are now Universally Impaired [-2 to all pools], additionally you are '
                                                       'unable to intentionally violate Tenets, if you unintentionally or are '
@@ -639,8 +637,10 @@ class Extras(discord.ui.View):
                                                       'your next Remorse, alternatively you can expend 1 Humanity and remove all '
                                                       'stains/afflictions caused by Degeneration. '
                                                       '(The alternative is not automated by VTB.)', inline=False)
+
+            await CHARACTER.__update_value__('Aggravated Willpower Damage', int(AGG_WP+1), 'willpower')
         else:
-            await CHARACTER.__update_value__('Stain', int(STAINS+1), 'humanity')
+            await CHARACTER.__update_value__('Stains', int(STAINS+1), 'humanity')
 
         await interaction.response.edit_message(embed=page, view=Extras(self.CLIENT))
         return

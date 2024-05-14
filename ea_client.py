@@ -36,7 +36,7 @@ async def initialize_startup_cogs(CLIENT_INPUT):
 
         for_var += 1
 
-    log.info('$ Loaded Startup Cogs... Slash Mode Check Starting...')
+    log.info('$ Loaded Startup Cogs... Slash Mode Check Started, Safe to Begin Use.')
 
 
 # Custom Client & Handler, not much extra here yet.
@@ -72,7 +72,8 @@ CLIENT = ExodusClient(command_prefix=cc.PREFIX, intents=INTENTS)
 @CLIENT.event
 async def on_ready():
     log.warn('$ Project Branch: MAIN')
-    log.info(f'$ Servers {len(CLIENT.guilds)}: {", ".join(str(x) for x in CLIENT.guilds)}')
+    log.info(f'$ Server Count: {len(CLIENT.guilds)}')
+    log.info(f'$ Server Names: {", ".join(str(x) for x in CLIENT.guilds)}')
     log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
 
     await initialize_startup_cogs(CLIENT)
@@ -104,7 +105,7 @@ async def on_ready():
 # Required for Slash Commands to work
 # Do Not Remove.
 @CLIENT.command(name="sync")
-async def sync(ctx):  # !/ Slash Commands Cog Essential
+async def sync(ctx):  # ! Slash Commands Cog Essential
     if str(ctx.author.id) != f'{mc.RUNNER}':
         return
     synced = await CLIENT.tree.sync()

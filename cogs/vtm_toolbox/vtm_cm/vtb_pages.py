@@ -42,13 +42,14 @@ async def hp_wp_page_builder(CHARACTER: cm.vtb_Character):
     if HEALTH_DICT['Superficial Health Damage'] == HEALTH_DICT['Base Health'] and HEALTH_DICT['Aggravated Health Damage'] > 1:
         SUP_HEALTH = str(mc.HEALTH_SUP_EMOJI * int(HEALTH_DICT['Superficial Health Damage'] - HEALTH_DICT['Aggravated Health Damage']))
 
-    actual_willpower = WILLPOWER_DICT['Base Willpower'] - WILLPOWER_DICT['Superficial Willpower Damage'] - WILLPOWER_DICT['Aggravated Willpower Damage']
-    FULL_WILLPOWER = str(mc.WILLPOWER_FULL_EMOJI * actual_willpower)
+    ACTUAL_WILLPOWER = WILLPOWER_DICT['Base Willpower'] - WILLPOWER_DICT['Superficial Willpower Damage'] - WILLPOWER_DICT['Aggravated Willpower Damage']
+    FULL_WILLPOWER = str(mc.WILLPOWER_FULL_EMOJI * ACTUAL_WILLPOWER)
     SUP_WILLPOWER = str(mc.WILLPOWER_SUP_EMOJI * WILLPOWER_DICT['Superficial Willpower Damage'])
     AGG_WILLPOWER = str(mc.WILLPOWER_AGG_EMOJI * WILLPOWER_DICT['Aggravated Willpower Damage'])
 
     page.add_field(name='Health', value=f'{FULL_HEALTH}{SUP_HEALTH}{AGG_HEALTH}', inline=False)
     page.add_field(name='Willpower', value=f'{FULL_WILLPOWER}{SUP_WILLPOWER}{AGG_WILLPOWER}', inline=False)
+
     return page
 
 
