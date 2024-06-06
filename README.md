@@ -4,12 +4,11 @@ Exodus.Archivist
 ## Version Info
 
 > * Branch: master
-> * Version 01.06.03
-> > * Major: 01 | Major Features/"Large Overhauls"
-> > * Minor: 06 | Non-Major Features
-> > * Patch: 03 | Other Repo Pushes 
 > * State: Stable
-> * DateTime: JUNE 6th 2024 | 2:43am EST
+> * Version 01.06.04
+> > * First Pair  | Major Features/"Large Overhauls"
+> > * Second Pair | Non-Major Features
+> > * Third Pair  | Other Repo Pushes
 
 ---
 ## General
@@ -22,8 +21,7 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * Easily Setup
 >> * Open Source [GNUGPL 3.0]
 >> * Logging /w "Syntax" [See Below]
->> * Dangerously Cheesy [so much spaghetti]
->> * In Active Development [MAY 2024]
+>> * In Active Development [JUN 2024]
 
 > * Client: 
 >> * Slash Commands
