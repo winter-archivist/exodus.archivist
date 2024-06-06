@@ -7,7 +7,7 @@ Exodus.Archivist
 > * Version 01.06.03
 > > * Major: 01 | Major Features/"Large Overhauls"
 > > * Minor: 06 | Non-Major Features
-> > * Patch: 02 | Other Repo Pushes 
+> > * Patch: 03 | Other Repo Pushes 
 > * State: Stable
 > * DateTime: JUNE 6th 2024 | 2:43am EST
 
