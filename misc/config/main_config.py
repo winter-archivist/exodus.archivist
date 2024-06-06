@@ -27,6 +27,8 @@ DOT_EMPTY_EMOJI = '<:dot_empty:1187292937650970665>'
 
 HUNGER_EMOJI = '<:hunger:1186602644748390470>'
 
+EXODUS_EMOJI = '<:ExodusE:1145153679155007600>'
+
 
 # ? Should be changed
 RUNNER: str = 'winter.archivist'  # ? YOUR DISCORD NAME
