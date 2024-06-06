@@ -64,7 +64,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
     async def Make(self, interaction: discord.Interaction, character_name: str):
         if interaction.user.id == mc.RUNNER_ID:
             try:
-                await cm.make_character_files(interaction, character_name)
+                await cm.make_blank_character_files(interaction, character_name)
                 log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
                 page: discord.Embed = discord.Embed(title='VTB-Make', description='Successful Creation', colour=mc.EMBED_COLORS[f"mint"])
             except Exception as e:
@@ -78,7 +78,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             page.add_field(name='Character Name', value=f'{character_name}', inline=False)
         else:
             page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed', colour=mc.EMBED_COLORS[f"red"])
-            page.add_field(name='Uncounted Error', value=f'Non-Admin User ID', inline=False)
+            page.add_field(name='Uncounted Error', value=f'Non-Admin User-ID Provided', inline=False)
 
         await interaction.response.send_message(embed=page)
         return

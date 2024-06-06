@@ -95,9 +95,10 @@ class Home(discord.ui.View):
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Disciplines', '', 'mint')
 
         if CHARACTER.CHARACTER_NAME != 'Nyctea':
-            DISCIPLINES: tuple = ('Obfuscate', 'Animalism', 'Potence', 'Dominate', 'Auspex', 'Protean', 'Presence', 'Fortitude',
-                                  'Thin Blood Alchemy', 'Blood Sorcery', 'Chemeristry', 'Seven Specific', 'Myr Specific',
-                                  'Selena Specific', 'Nyctea Specific One', 'Nyctea Specific Two', 'Elijah Specific')
+            DISCIPLINES: tuple = ('Animalism', 'Auspex', 'Blood Sorcery', 'Blood Rituals', 'Celerity', 'Chemeristry',
+                                  'Dementation', 'Dominate', 'Fortitude', 'Necromancy', 'Obfuscate' , 'Obtenebration',
+                                  'Potence', 'Presence', 'Protean', 'Thin-Blood Alchemy',
+                                  'Hidden/Extra 1', 'Hidden/Extra 2', 'Hidden/Extra 3')
 
             for_var = 0
             for x in DISCIPLINES:

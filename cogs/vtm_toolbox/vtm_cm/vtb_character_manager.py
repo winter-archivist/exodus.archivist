@@ -8,7 +8,7 @@ from random import randint
 from misc.config import main_config as mc
 
 
-async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME):
+async def make_blank_character_files(interaction: discord.Interaction, CHARACTER_NAME):
     CHARACTER_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{CHARACTER_NAME}/'
 
     if not os.path.exists(f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}'):
@@ -26,21 +26,24 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
     MISC_DICT: dict = {'Owner ID'            : interaction.user.id,
                        'Character Name'      : CHARACTER_NAME,
                        'Blood Potency'       : 0,
-                       'Clan'                : 'UNSET',
-                       'Bloodline'           : 'UNSET',
+                       'Clan'                : '',
+                       'Bloodline'           : '',
                        'Generation'          : 0,
                        'Bane Severity'       : 0,
                        'Hunger'              : 0,
-                       'Predator Type'       : 'UNSET',
+                       'Predator Type'       : '',
                        'Temperament'         : '',
                        'Resonance'           : '',
                        'Character Avatar URL': mc.PLACEHOLDER_IMG}
+
     HEALTH_DICT: dict = {'Base Health'              : 0,
                          'Superficial Health Damage': 0,
                          'Aggravated Health Damage' : 0}
+
     WILLPOWER_DICT: dict = {'Base Willpower'              : 0,
                             'Superficial Willpower Damage': 0,
                             'Aggravated Willpower Damage' : 0}
+
     ATTRIBUTES_DICT: dict = {'Strength'    : 0,
                              'Dexterity'   : 0,
                              'Stamina'     : 0,
@@ -50,23 +53,30 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                              'Intelligence': 0,
                              'Wits'        : 0,
                              'Resolve'     : 0}
-    DISCIPLINES_DICT: dict = {'Obfuscate'          : 0,
-                              'Animalism'          : 0,
-                              'Potence'            : 0,
-                              'Dominate'           : 0,
+
+    # All Non-Extra are sorted alphabetically
+    DISCIPLINES_DICT: dict = {'Animalism'          : 0,
                               'Auspex'             : 0,
-                              'Protean'            : 0,
-                              'Presence'           : 0,
-                              'Fortitude'          : 0,
-                              'Thin Blood Alchemy' : 0,
                               'Blood Sorcery'      : 0,
-                              'Chemeristry'        : 0,
-                              'Seven Specific'     : 0,
-                              'Myr Specific'       : 0,
-                              'Selena Specific'    : 0,
-                              'Nyctea Specific One': 0,
-                              'Nyctea Specific Two': 0,
-                              'Elijah Specific'    : 0}
+                              'Blood Rituals'      : 0,
+                              'Celerity'           : 0,
+                              'Chemeristry'        : 0,  # Non-v5
+                              'Dementation'        : 0,  # Non-v5
+                              'Dominate'           : 0,
+                              'Fortitude'          : 0,
+                              'Necromancy'         : 0,  # Non-v5
+                              'Obfuscate'          : 0,
+                              'Obtenebration'      : 0,  # Non-v5
+                              'Potence'            : 0,
+                              'Presence'           : 0,
+                              'Protean'            : 0,
+                              'Thin-Blood Alchemy' : 0,
+
+                              # ! Comments are specific to my chronicle, feel free to remove these comments
+                              'Hidden/Extra 1'     : 0,  # Hidden/Extra 1 [Temporis::Seven | Vicissitude::Elijah | Kyrvex::Nyctea]
+                              'Hidden/Extra 2'     : 0,  # Hidden/Extra 2 [Spirit::Nyctea]
+                              'Hidden/Extra 3'     : 0}
+
     PHYSICAL_SKILLS_DICT: dict = {'Athletics': 0,
                                   'Brawl'    : 0,
                                   'Craft'    : 0,
@@ -76,6 +86,7 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                                   'Melee'    : 0,
                                   'Stealth'  : 0,
                                   'Survival' : 0}
+
     SOCIAL_SKILLS_DICT: dict = {'Animal Ken'  : 0,
                                 'Etiquette'   : 0,
                                 'Insight'     : 0,
@@ -85,6 +96,7 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                                 'Persuasion'  : 0,
                                 'Streetwise'  : 0,
                                 'Subterfuge'  : 0}
+
     MENTAL_SKILLS_DICT: dict = {'Academics'    : 0,
                                 'Awareness'    : 0,
                                 'Finance'      : 0,
@@ -94,13 +106,13 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                                 'Politics'     : 0,
                                 'Science'      : 0,
                                 'Technology'   : 0}
+
     ROLL_DICT: dict = {'Difficulty': 0,
                        'Pool' : 0,
                        'Result': '',
                        'Composition': 'Base[0]',
 
-                       # These are NOT a dict as to make it friendlier
-                       # with vtb_Character.__update_information__()
+                       # These are NOT a dict as to make it friendlier with the get/update functions of vtb_Character
                        'Regular Crit Count': 0,
                        'Regular Success Count': 0,
                        'Regular Fail Count': 0,
@@ -108,6 +120,7 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
                        'Hunger Success Count' : 0,
                        'Hunger Fail Count' : 0,
                        'Hunger Skull': 0}
+
     HUMANITY_DICT: dict = {
         'Humanity': 0,
         'Stains': 0,
@@ -117,6 +130,7 @@ async def make_character_files(interaction: discord.Interaction, CHARACTER_NAME)
     CHARACTER_FILES: tuple = ('misc', 'health', 'willpower', 'attributes', 'disciplines',
                               'skills/physical', 'skills/social', 'skills/mental', 'roll/info',
                               'humanity')
+
     FILE_CONTENTS: tuple = (MISC_DICT, HEALTH_DICT, WILLPOWER_DICT, ATTRIBUTES_DICT, DISCIPLINES_DICT,
                             PHYSICAL_SKILLS_DICT, SOCIAL_SKILLS_DICT, MENTAL_SKILLS_DICT, ROLL_DICT,
                             HUMANITY_DICT)

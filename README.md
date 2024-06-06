@@ -4,12 +4,12 @@ Exodus.Archivist
 ## Version Info
 
 > * Branch: master
-> * Version 01.06.02
+> * Version 01.06.03
 > > * Major: 01 | Major Features/"Large Overhauls"
 > > * Minor: 06 | Non-Major Features
 > > * Patch: 02 | Other Repo Pushes 
 > * State: Stable
-> * DateTime: MAY 14th 2024 | 4:09am EST
+> * DateTime: JUNE 6th 2024 | 2:43am EST
 
 ---
 ## General
