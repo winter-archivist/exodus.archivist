@@ -205,7 +205,7 @@ class Disciplines(discord.ui.View):
         return
 
     @discord.ui.select(placeholder='Select Discipline(s)', options=ro.discipline_options, max_values=3, min_values=1, row=1)
-    async def physical_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+    async def discipline_select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
         page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Disciplines Page', '', 'purple')
         page = await vp.standard_roll_select(CHARACTER, page, select, 'disciplines')
