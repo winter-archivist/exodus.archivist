@@ -25,14 +25,13 @@ class CogManager(commands.Cog):
             return
 
         # Makes the base embed
-        response_embed = discord.Embed(title='Cog Manager', description='', colour=mc.EMBED_COLORS[f'purple'])
+        response_embed = discord.Embed(title='Cog Manager', description='', colour=mc.EMBED_COLORS[f'green'])
 
         # Adds the basic information to the page
         response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
         response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
 
-        response_embed.add_field(name='Target:', value=f'{target.value}', inline=True)
-        response_embed.add_field(name='Operation:', value=f'{operation.value}', inline=True)
+        response_embed.add_field(name='', value=f'{operation.value.capitalize()}ed `{target.value}`', inline=True)
 
         match operation.value:
             case 'load':
