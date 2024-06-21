@@ -11,7 +11,8 @@ class CogManager(commands.Cog):
 
     @app_commands.command(name="cog", description="Bot Runner Only")
     @app_commands.choices(target=[
-        app_commands.Choice(name="VTM Toolbox", value="vtm_toolbox.vampire_toolbox_cog")])
+        app_commands.Choice(name="VTM Toolbox", value="vtm_toolbox.vampire_toolbox_cog"),
+        app_commands.Choice(name="Overseer", value="overseer.overseer_cog")])
     @app_commands.choices(operation=[
         app_commands.Choice(name="Load", value="load"),
         app_commands.Choice(name="Unload", value="unload"),
@@ -40,7 +41,7 @@ class CogManager(commands.Cog):
             case 'unload':
                 await self.CLIENT.unload_extension(f'cogs.{target.value}')
 
-            case 'unload':
+            case 'reload':
                 await self.CLIENT.reload_extension(f'cogs.{target.value}')
 
         await interaction.response.send_message(embed=response_embed)
