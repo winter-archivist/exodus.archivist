@@ -17,7 +17,7 @@ async def make_blank_character_files(interaction: discord.Interaction, CHARACTER
     if os.path.exists(CHARACTER_DIRECTORY):
         log.debug(f'> | {interaction.user.name} | {interaction.user.id} | '
                   f'Attempted to make {CHARACTER_NAME}, but {CHARACTER_DIRECTORY} already exists.')
-        raise IsADirectoryError
+        raise FileExistsError
 
     os.mkdir(f'{CHARACTER_DIRECTORY}')
     os.mkdir(f'{CHARACTER_DIRECTORY}skills')

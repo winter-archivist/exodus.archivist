@@ -72,7 +72,7 @@ CLIENT = ExodusClient(command_prefix=cc.PREFIX, intents=INTENTS)
 
 @CLIENT.event
 async def on_ready():
-    log.warn('$ Project Branch: MAIN')
+    log.warn('$ Project Branch: overseer')
     log.info(f'$ Server Count: {len(CLIENT.guilds)}')
     log.info(f'$ Server Names: {", ".join(str(x) for x in CLIENT.guilds)}')
     log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
