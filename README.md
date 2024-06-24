@@ -5,7 +5,7 @@ Exodus.Archivist
 
 > * Branch: overseer
 > * State: HEAVILY Experimental
-> * Version 01.06.06
+> * Version 01.06.07
 > > * First Pair  | Major Features/"Large Overhauls"
 > > * Second Pair | Non-Major Features
 > > * Third Pair  | Other Repo Pushes
