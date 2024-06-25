@@ -180,7 +180,7 @@ class vtb_Character:
             return_information[f'{KEYS[loop_counter]}'] = CHARACTER_INFO[f'{KEYS[loop_counter]}']
             loop_counter += 1
 
-        log.debug(f'> vtbCM __get_vals: {return_information} | {self.OWNER_ID} | {self.OWNER_NAME} |')
+        log.debug(f'> vtbCM __get_vals: {KEYS[loop_counter]}->{return_information} | {self.OWNER_ID} | {self.OWNER_NAME} |')
         return return_information
 
     async def __get_value__(self, KEY: str, FILE_NAME: str):
@@ -193,7 +193,7 @@ class vtb_Character:
 
         RETURN_INFORMATION = CHARACTER_INFO[KEY]
 
-        log.debug(f'> vtbCM __get_val: {RETURN_INFORMATION} | {self.OWNER_ID} | {self.OWNER_NAME} |')
+        log.debug(f'> vtbCM __get_val: {KEY}->{RETURN_INFORMATION} | {self.OWNER_ID} | {self.OWNER_NAME} |')
 
         return RETURN_INFORMATION
 
