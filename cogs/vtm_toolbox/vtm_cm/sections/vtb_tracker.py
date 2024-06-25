@@ -423,6 +423,18 @@ class Hunger(discord.ui.View):
         await return_to_home(self, interaction)
         return
 
+    @discord.ui.button(label='Rouse', emoji=mc.HUNGER_EMOJI, style=discord.ButtonStyle.red, row=2)
+    async def rouse_button_callback(self, interaction, button):
+        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
+        page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Rouse Check', '', 'red')
+
+        ROUSE_RESULTS: tuple = await CHARACTER.__rouse_check__()
+        page.add_field(name='Result:', value=ROUSE_RESULTS[0], inline=False)
+        page.add_field(name='New Hunger:', value=ROUSE_RESULTS[1], inline=False)
+
+        await interaction.response.edit_message(embed=page, view=Hunger(self.CLIENT))
+        return None
+
     @discord.ui.button(label='Predator Type', emoji='<:ExodusE:1145153679155007600>', style=discord.ButtonStyle.red, row=2)
     async def predator_type_button_callback(self, interaction, button):
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
