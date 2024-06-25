@@ -44,7 +44,10 @@ async def get_all_games_information() -> tuple:
     return tuple(return_var)
 
 
-async def get_all_keys() -> tuple:
+async def get_all_keys(RETURN_GAME: bool = None) -> tuple:
+    # If RETURN_GAME is True then in addition to the keys,
+    # it'll give dict with the Key as the Key and the Associated game as the Value
+
     GAMES: tuple = await get_games()
     return_var: list = []
     for_var: int = 0
@@ -55,16 +58,26 @@ async def get_all_keys() -> tuple:
             details: dict = json.load(operate_file)
         return_var.append(details['Key'])
         for_var += 1
-    return tuple(return_var)
+
+    if RETURN_GAME:
+
+        return tuple(return_var)
+    else:
+        return tuple(return_var)
 
 
 async def key_gen(LENGTH: int) -> str:
     # Returns random LENGTH character long string that contains ascii upper/lower case, digits, and punctuation.
-    # It does not check if the same key has been made before, its just so unlikely I don't feel like programming it in.
-    key = ''.join(SystemRandom().choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(LENGTH))
-    log.debug(f'> Newly Generated Key: `{key}`')
+    # If the generated key is found to be in use, it will repeatedly regenerate until the key is new.
+    new_key = ''.join(SystemRandom().choice(ascii_uppercase + ascii_lowercase + digits) for _ in range(LENGTH))
+    USED_KEYS: tuple = await get_all_keys()
 
-    return key
+    while new_key in USED_KEYS:
+        new_key = ''.join(SystemRandom().choice(ascii_uppercase) for _ in range(LENGTH))
+
+    log.debug(f'> Newly Generated Key: `{new_key}`')
+
+    return new_key
 
 
 class OverseerCog(commands.Cog):
@@ -168,21 +181,18 @@ class OverseerCog(commands.Cog):
         await interaction.response.send_message(embed=response_embed)
         return
 
-    @app_commands.command(name="test-key", description="Tests Overseer Game Key")
-    @discord.app_commands.describe(key='Tested Key')
-    async def overseer_key_test(self, interaction: discord.Interaction, key: str):
-        # This is purely a test of the get_all_keys() function for the moment
-        KEYS: tuple = await get_all_keys()
+    @app_commands.command(name="join-game", description="Joins Overseer Game by Key")
+    @discord.app_commands.describe(key='Game Key')
+    async def overseer_join_game(self, interaction: discord.Interaction, key: str):
 
-        if key in KEYS:
-            log.debug(f'> Tested Key: {key} is in use')
-            response_embed = discord.Embed(title='Key Use', description='', colour=mc.EMBED_COLORS[f'red'])
-            response_embed.add_field(name=f'`{key}` In Use', value='Sadge')
-        else:
-            log.debug(f'> Tested Key: {key} is not in use')
-            response_embed = discord.Embed(title='Key Use?', description='', colour=mc.EMBED_COLORS[f'green'])
-            response_embed.add_field(name=f'`{key}` Not In Use', value='Hapy')
+        # ! TO BE REMOVED
+        if str(interaction.user) != f'{mc.RUNNER}':
+            # Prevents anyone, but the person running the bot, from interacting
+            return
+        # ! TO BE REMOVED
 
+        response_embed = discord.Embed(title='', description='', colour=mc.EMBED_COLORS[f'green'])
+        response_embed.add_field(name='', value='')
 
         response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
         response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
