@@ -29,10 +29,17 @@ async def get_game_information(game: str) -> dict:
     with open(f'{GAME_PATH}/players.json', 'r') as operate_file:
         PLAYERS: dict = json.load(operate_file)
 
-    return_var: dict = {'details':
-                            {'Name': f'{NAME}', 'System': f'{SYSTEM}', 'Key': f'{KEY}', 'Max Players': f'{MAX_PLAYERS}'},
-                        'players': PLAYERS
-                        }
+    return_var: dict = \
+        {
+            'details':
+                {
+                    'Name': f'{NAME}',
+                    'System': f'{SYSTEM}',
+                    'Key': f'{KEY}',
+                    'Max Players': f'{MAX_PLAYERS}'},
+            'players':
+                PLAYERS
+        }
     return return_var
 
 
@@ -44,26 +51,18 @@ async def get_all_games_information() -> tuple:
     return tuple(return_var)
 
 
-async def get_all_keys(RETURN_GAME: bool = None) -> tuple:
-    # If RETURN_GAME is True then in addition to the keys,
-    # it'll give dict with the Key as the Key and the Associated game as the Value
-
+async def get_all_keys() -> tuple:
     GAMES: tuple = await get_games()
     return_var: list = []
-    for_var: int = 0
+
     for x in GAMES:
-        game_path = f'cogs/overseer/games/{GAMES[for_var]}'
+        game_path = f'cogs/overseer/games/{x}'
 
         with open(f'{game_path}/details.json', 'r') as operate_file:
             details: dict = json.load(operate_file)
         return_var.append(details['Key'])
-        for_var += 1
 
-    if RETURN_GAME:
-
-        return tuple(return_var)
-    else:
-        return tuple(return_var)
+    return tuple(return_var)
 
 
 async def key_gen(LENGTH: int) -> str:
@@ -101,28 +100,25 @@ class OverseerCog(commands.Cog):
 
         # Checks for not permitted Characters in the name or system
         NOT_ALLOWED_CHARACTERS: tuple = ('<', '>', ':', '\\', '/', '|', '?', '*')
-        for_var: int = 0
         for x in NOT_ALLOWED_CHARACTERS:
 
-            if name.__contains__(NOT_ALLOWED_CHARACTERS[for_var]):
+            if name.__contains__(NOT_ALLOWED_CHARACTERS[x]):
                 response_embed = discord.Embed(title='Create Game', description='', colour=mc.EMBED_COLORS[f'red'])
                 response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
                 response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
-                response_embed.add_field(name='Failed Creation', value=f'**Invalid Character:** `{NOT_ALLOWED_CHARACTERS[for_var]}` in **Name:** `{name}`', inline=False)
+                response_embed.add_field(name='Failed Creation', value=f'**Invalid Character:** `{NOT_ALLOWED_CHARACTERS[x]}` in **Name:** `{name}`', inline=False)
                 response_embed.add_field(name='All Invalid Characters', value=f'{" ".join(NOT_ALLOWED_CHARACTERS)}', inline=False)
                 await interaction.response.send_message(embed=response_embed)
                 return
 
-            if system.__contains__(NOT_ALLOWED_CHARACTERS[for_var]):
+            if system.__contains__(NOT_ALLOWED_CHARACTERS[x]):
                 response_embed = discord.Embed(title='Create Game', description='', colour=mc.EMBED_COLORS[f'red'])
                 response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
                 response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
-                response_embed.add_field(name='Failed Creation', value=f'**Invalid Character:** `{NOT_ALLOWED_CHARACTERS[for_var]}` in **System:** `{system}`', inline=False)
+                response_embed.add_field(name='Failed Creation', value=f'**Invalid Character:** `{NOT_ALLOWED_CHARACTERS[x]}` in **System:** `{system}`', inline=False)
                 response_embed.add_field(name='All Invalid Characters', value=f'{" ".join(NOT_ALLOWED_CHARACTERS)}', inline=False)
                 await interaction.response.send_message(embed=response_embed)
                 return
-
-            for_var += 1
 
         GAME_DIRECTORY: str = f'cogs/overseer/games/{name}'
 
@@ -154,12 +150,10 @@ class OverseerCog(commands.Cog):
                 # it's just here to make it clearer where to add additional files
                 {'placeholder' : 'placeholder'})
 
-            for_var: int = 0
             for x in GAME_FILES:
-                with open(f'{GAME_DIRECTORY}/{GAME_FILES[for_var]}.json', 'w') as operate_file:
-                    json.dump(FILE_CONTENTS[for_var], operate_file)
-                log.debug(f'> Made Game {GAME_FILES[for_var]} | {interaction.user.name} | {interaction.user.id}')
-                for_var += 1
+                with open(f'{GAME_DIRECTORY}/{GAME_FILES[x]}.json', 'w') as operate_file:
+                    json.dump(FILE_CONTENTS[x], operate_file)
+                log.debug(f'> Made Game {GAME_FILES[x]} | {interaction.user.name} | {interaction.user.id}')
 
         except Exception as e:
             log.crit(f'*> {interaction.user.name} | {interaction.user.id} failed at making new game.')
@@ -191,9 +185,61 @@ class OverseerCog(commands.Cog):
             return
         # ! TO BE REMOVED
 
-        response_embed = discord.Embed(title='', description='', colour=mc.EMBED_COLORS[f'green'])
-        response_embed.add_field(name='', value='')
+        KEYS: tuple = await get_all_keys()
+        if key not in KEYS:  # If a key isn't in use, it can't be used to join a game, obviously.
+            response_embed = discord.Embed(title='Invalid Key Provided', description='', colour=mc.EMBED_COLORS[f'red'])
+            response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
+            response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
+            await interaction.response.send_message(embed=response_embed)
+            return
 
+        GAMES: tuple = await get_games()
+        for games in GAMES:
+            # Checks all Games until it finds a matching key, once it does, it exits the for loop
+            # This is used to find what game the player is wanting to join based on just the key
+            game_path: str = f'cogs/overseer/games/{games}'
+
+            with open(f'{game_path}/details.json', 'r') as operate_file:
+                details: dict = json.load(operate_file)
+
+            if details['Key'] == key:
+                break
+
+        with open(f'{game_path}/players.json', 'r') as operate_file:
+            players: dict = json.load(operate_file)
+
+        if str(interaction.user.id) in players:
+            response_embed = discord.Embed(title='Already In Game', description='', colour=mc.EMBED_COLORS[f'red'])
+            response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
+            response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
+            await interaction.response.send_message(embed=response_embed)
+            return
+
+        try:
+            PLAYER_FILE: dict = \
+                {
+                    f'{interaction.user.id}':
+                        {
+                            'Username'    : f'{interaction.user.name}',
+                            'Public Tags' : ('Player',),
+                            'Private Tags': ('Joined Via Key',)
+                        }
+                }
+
+            players.update(PLAYER_FILE)
+            with open(f'{game_path}/players.json', 'w') as operate_file:
+                json.dump(players, operate_file)
+
+            log.debug(f'> {interaction.user.name}/{interaction.user.id} Joined {games} with {key}')
+
+        except Exception as e:
+            log.crit(f'*> {interaction.user.name} | {interaction.user.id} failed at joining game with correct key.')
+            page: discord.Embed = discord.Embed(title='Overseer-Game-Join', description='Failed Join', colour=mc.EMBED_COLORS[f"red"])
+            page.add_field(name='Encountered Error', value=f'{e}', inline=False)
+            return
+
+        response_embed = discord.Embed(title='Joined Game Successfully', description='', colour=mc.EMBED_COLORS[f'green'])
+        response_embed.add_field(name=f'Joined {games} Via Key!', value='')
         response_embed.set_footer(text=interaction.user.id, icon_url=interaction.user.display_avatar)
         response_embed.set_author(name=interaction.user, icon_url=interaction.user.display_avatar)
         await interaction.response.send_message(embed=response_embed)
