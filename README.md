@@ -5,7 +5,8 @@ Exodus.Archivist
 
 > * Branch: overseer
 > * State: Stable
-> * Version 01.06.08
+> * Version 01.06.09 
+haha nice
 > > * First Pair  | Major Features/"Large Overhauls"
 > > * Second Pair | Non-Major Features
 > > * Third Pair  | Other Repo Pushes
