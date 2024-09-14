@@ -12,7 +12,10 @@ class CogManager(commands.Cog):
     @app_commands.command(name="cog", description="Bot Runner Only")
     @app_commands.choices(target=[
         app_commands.Choice(name="VTM Toolbox", value="vtm_toolbox.vampire_toolbox_cog"),
-        app_commands.Choice(name="Overseer", value="overseer.overseer_cog")])
+        app_commands.Choice(name="Overseer", value="overseer.overseer_cog"),
+        app_commands.Choice(name="ARCHON", value="archon.archon_cog"),
+        app_commands.Choice(name="EA Roller", value="ea_roller.ea_roller_cog")
+    ])
     @app_commands.choices(operation=[
         app_commands.Choice(name="Load", value="load"),
         app_commands.Choice(name="Unload", value="unload"),
