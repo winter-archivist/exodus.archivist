@@ -22,7 +22,7 @@ async def initialize_startup_cogs(CLIENT_INPUT):
                            'cogs.vtm_toolbox.vampire_toolbox_cog',
                            'cogs.overseer.overseer_cog',
                            'cogs.archon.archon_cog',
-                           'cogs.ea_roller.ea_roller_cog')
+                           'cogs.rolletron.rolletron_cog')
 
     # Tries to load any cog listed in the above tuple; stops execution if the cog isn't found.
     for_var = 0
