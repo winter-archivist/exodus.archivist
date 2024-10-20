@@ -19,7 +19,7 @@ class REDGEN(discord.ext.commands.Cog):
     async def redgen(self, interaction: discord.Interaction):
         if interaction.user.id != 567819777209532418:
             return
-        to_write: str = ''
+        message: str = ''
 
         # RANGES
         R10: tuple = (0, 9)
@@ -112,10 +112,10 @@ class REDGEN(discord.ext.commands.Cog):
                               'Childhood Environment', 'Family Crisis', 'Life Goal')
         while_var: int = 0
         while while_var != 13:
-            to_write = await generate(target_string=to_write,
-                                      OPTIONS=INPUT_OPTIONS[while_var],
-                                      RANGE=R10,
-                                      NAME=INPUT_NAMES[while_var])
+            message = await generate(target_string=message,
+                                     OPTIONS=INPUT_OPTIONS[while_var],
+                                     RANGE=R10,
+                                     NAME=f'`{INPUT_NAMES[while_var]}`')
             while_var += 1
 
         friend_chance: int = randint(0, 9)
@@ -128,7 +128,7 @@ class REDGEN(discord.ext.commands.Cog):
             friend_relationship: str = friend_relationships[randint(0, 9)]
         else:
             friend_relationship: str = 'None'
-        to_write += f'Friend Relationship: {friend_relationship} \n'
+        message += f'`Friend Relationship`: {friend_relationship} \n'
 
         enemy_chance: int = randint(1, 11)
         if enemy_chance > 7:
@@ -147,7 +147,7 @@ class REDGEN(discord.ext.commands.Cog):
                  'You just don\'t like each other', 'One of you was a romantic rival', 'One of you was a business rival.',
                  'One of you set the other up for a crime they didn\'t commit.')
             enemy_why: str = enemy_whys[randint(0, 9)]
-            to_write += f'Enemy Cause: {enemy_why} \n'
+            message += f'`Enemy Cause`: {enemy_why} \n'
 
             enemy_capabilities: tuple = \
                 (
@@ -158,7 +158,7 @@ class REDGEN(discord.ext.commands.Cog):
                     'The Local Cops or Other Lawmen', 'A powerful gang lord or small corporation', 'A powerful Corporation',
                     'An entire city or government or agency')
             enemy_capability: str = enemy_capabilities[randint(0, 9)]
-            to_write += f'Enemy Capability: {enemy_capability} \n'
+            message += f'`Enemy Capability`: {enemy_capability} \n'
 
             enemy_endings: tuple = \
                 ('Avoid the scum', 'Avoid the scum',
@@ -169,10 +169,10 @@ class REDGEN(discord.ext.commands.Cog):
                  'Set them up for a crime or other transgression they didn\'t commit',
                  'Set out to murder or maim them.')
             enemy_ending: str = enemy_endings[randint(0, 9)]
-            to_write += f'Enemy If Encountered: {enemy_ending} \n'
+            message += f'`Enemy If Encountered`: {enemy_ending} \n'
         else:
             enemy: str = 'None'
-        to_write += f'Enemy: {enemy} \n'
+        message += f'`Enemy`: {enemy} \n'
 
         tragic_love_chance: int = randint(0, 9)
         if tragic_love_chance > 7:
@@ -185,7 +185,7 @@ class REDGEN(discord.ext.commands.Cog):
             tragic_love: str = roles[randint(0, 9)]
         else:
             tragic_love: str = 'None'
-        to_write += f'Tragic Love: {tragic_love} \n'
+        message += f'`Tragic Love`: {tragic_love} \n'
 
         # generates a list of 9 numbers from 2 to 8.
         stats: list = []
@@ -216,13 +216,13 @@ class REDGEN(discord.ext.commands.Cog):
             'Intelligence', 'Willpower', 'Cool', 'Empathy', 'Technique', 'Reflexes', 'Luck', 'Body', 'Dexterity', 'Movement')
         while_var = 0
         while while_var != 9:
-            to_write += f'{STATS_NAMES[while_var]}: {stats[while_var]} \n'
+            message += f'`{STATS_NAMES[while_var]}`: {stats[while_var]} \n'
             while_var += 1
 
         with open('cogs/REDgen/generated_character.txt', 'w') as file:
-            file.write(to_write)
+            file.write(message)
 
-        await interaction.response.send_message(file=discord.File('cogs/REDgen/generated_character.txt'))
+        await interaction.response.send_message(content=message)
         return
 
 
