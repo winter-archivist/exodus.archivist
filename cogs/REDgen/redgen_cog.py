@@ -219,9 +219,6 @@ class REDGEN(discord.ext.commands.Cog):
             message += f'`{STATS_NAMES[while_var]}`: {stats[while_var]} \n'
             while_var += 1
 
-        with open('cogs/REDgen/generated_character.txt', 'w') as file:
-            file.write(message)
-
         await interaction.response.send_message(content=message)
         return
 
