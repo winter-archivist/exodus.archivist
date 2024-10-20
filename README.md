@@ -5,7 +5,7 @@ Exodus.Archivist
 
 > * Branch: overseer
 > * State: Stable
-> * Version 01.06.10
+> * Version 01.06.12
 > > * First Pair  | Major Features/"Large Overhauls"
 > > * Second Pair | Non-Major Features
 > > * Third Pair  | Other Repo Pushes
@@ -21,12 +21,13 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * Easily Setup
 >> * Open Source [GNUGPL 3.0]
 >> * Logging /w "Syntax" [See Below]
->> * In Active Development [SEP 2024]
+>> * In Active Development [OCT 2024]
 
 > * Client: 
 >> * Slash Commands
 >> * Cog Manager
->> * VTM v5 Toolbox 
+>> * VTM v5 Toolbox
+>> * REDgen
 
 > * Active Development Features (varying states of functionality) 
 >> * VTM v5 Toolbox [Functional | Extending Functionality]
