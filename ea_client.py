@@ -112,10 +112,13 @@ async def on_ready():
 @commands.is_owner()
 async def sync(ctx):
     # ! Essential to ALL Slash Commands
-    await CLIENT.tree.sync()
-    log.crit('Synced.')
-    # synced = await CLIENT.tree.sync()
-    # log.info(f"Synced [ {len(synced)} ] command(s).")
+    try:
+        synced = await CLIENT.tree.sync()
+        log.info(f"Synced [ {len(synced)} ] command(s).")
+
+    except Exception as e:
+        log.crit(f'<<< Error Syncing Commands | {e}>>>')
+        exit()
 
 
 CLIENT.run(token=cc.TOKEN, reconnect=True)

@@ -3,7 +3,7 @@ Exodus.Archivist
 ---
 ## Version Info
 
-> * Branch: overseer
+> * Branch: main
 > * State: Stable
 > * Version 01.06.15
 > > * First Pair  | Major Features/"Large Overhauls"
