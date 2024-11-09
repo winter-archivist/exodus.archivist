@@ -18,9 +18,13 @@ class VTM_Toolbox(discord.ext.commands.Cog):
 
     @discord.app_commands.command(name='vtm-toolbox', description='Toolbox for VTM!')
     @discord.app_commands.describe(character_name='Character Name')
-    @discord.app_commands.choices(target_tool=[discord.app_commands.Choice(name="Vampire Tracker", value="tracker"),
-                                               discord.app_commands.Choice(name="Vampire Roller", value="roller")])
+    @discord.app_commands.choices(target_tool=[
+        discord.app_commands.Choice(name="Tracker", value="tracker"),
+        discord.app_commands.Choice(name="Roller", value="roller"),
+                                               ])
     async def Toolbox(self, interaction: discord.Interaction, character_name: str, target_tool: discord.app_commands.Choice[str]):
+
+        # Resets the currently stored Roll information for given character.
         ROLL_DICT: dict = {'Difficulty'           : 0,
                            'Pool'                 : 0,
                            'Result'               : '',
@@ -38,6 +42,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
         with open(ROLL_FILE_DIRECTORY, "w") as operate_file:
             json.dump(ROLL_DICT, operate_file)
 
+        # Updates target_character.json (stored in the uid folder)
         CHARACTER_NAME_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character.json'
         CHARACTER_NAME_DICT: dict = {'character_name': character_name}
         with open(CHARACTER_NAME_FILE, "w") as operate_file:
@@ -45,19 +50,19 @@ class VTM_Toolbox(discord.ext.commands.Cog):
 
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
-        if target_tool.value == 'tracker':
-            page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'mint')
-            await interaction.response.send_message(embed=page, view=vt.Home(self.CLIENT))
+        match target_tool.value:
+            case 'tracker':
+                page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'mint')
+                await interaction.response.send_message(embed=page, view=vt.Home(self.CLIENT))
 
-        elif target_tool.value == 'roller':
-            page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'purple')
-            page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
-            await interaction.response.send_message(embed=page, view=vr.Home(self.CLIENT))
-        else:
-            log.error('**> Unknown target_tool.value given to Toolbox()')
-            raise ValueError
+            case 'roller':
+                page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'purple')
+                page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
+                await interaction.response.send_message(embed=page, view=vr.Home(self.CLIENT))
 
-        return
+            case _:
+                log.error('**> Unknown target_tool.value given to Toolbox()')
+                raise ValueError
 
     @discord.app_commands.command(name='vtb-make', description='[ADMIN]')
     @discord.app_commands.describe(character_name='Character Name')
@@ -72,6 +77,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
                 log.crit(f'*> Make Error: {e}')
                 page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed Creation', colour=mc.EMBED_COLORS[f"red"])
                 page.add_field(name='Encountered Error', value=f'{e}', inline=False)
+                raise ValueError
 
             page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
             page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')

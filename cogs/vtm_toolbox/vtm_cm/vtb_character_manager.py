@@ -54,7 +54,6 @@ async def make_blank_character_files(interaction: discord.Interaction, CHARACTER
                              'Wits'        : 0,
                              'Resolve'     : 0}
 
-    # All Non-Extra are sorted alphabetically
     DISCIPLINES_DICT: dict = {'Animalism'          : 0,
                               'Auspex'             : 0,
                               'Blood Sorcery'      : 0,

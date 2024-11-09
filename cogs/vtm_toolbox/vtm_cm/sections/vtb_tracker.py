@@ -739,6 +739,7 @@ class Extras(discord.ui.View):
 
             CLAN_DISCIPLINES: str = 'N/A'
 
+        # Where information is actually added to the page
         page.add_field(name=f'Clan Bane: {CLAN_BANE_TITLE}', value=f'{CLAN_BANE_DESCRIPTION}', inline=False)
         if variant_bane:
             page.add_field(name=f'Clan Bane: {VARIANT_CLAN_BANE_TITLE}', value=f'{VARIANT_CLAN_BANE_DESCRIPTION}', inline=False)

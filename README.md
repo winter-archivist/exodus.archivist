@@ -5,7 +5,7 @@ Exodus.Archivist
 
 > * Branch: overseer
 > * State: Stable
-> * Version 01.06.12
+> * Version 01.06.13
 > > * First Pair  | Major Features/"Large Overhauls"
 > > * Second Pair | Non-Major Features
 > > * Third Pair  | Other Repo Pushes
@@ -38,9 +38,8 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * eaTools [Bot Devtools]
 
 > * Rejected Features (no/little chance)
->> * VTM V5 Toolbox
->>> * Automated Diablerie
->>> * Integrated Path of Enlightenment/Humanity Rules
+>> * Automated Diablerie
+>> * Integrated Path of Enlightenment/Humanity Rules
 
 ---
 ## USE:

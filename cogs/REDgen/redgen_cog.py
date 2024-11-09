@@ -17,8 +17,9 @@ class REDGEN(discord.ext.commands.Cog):
 
     @discord.app_commands.command(name='redgen', description='Generates a Random Cyberpunk RED character.')
     async def redgen(self, interaction: discord.Interaction):
-        if interaction.user.id != 567819777209532418:
+        if interaction.guild.id != 778737073175003156:
             return
+
         message: str = ''
 
         # RANGES
@@ -47,7 +48,7 @@ class REDGEN(discord.ext.commands.Cog):
         affectations: tuple = \
             ('Tattoos', 'Mirrorshades', 'Ritual Scars',
              'Spiked Gloves', 'Nose Rings', 'Tongue or other Piercings',
-             'Strange fingernail implants', 'Spiked boots or heels', 'fingerless gloves',
+             'Strange fingernail implants', 'Spiked boots or heels', 'Fingerless Gloves',
              'Strange Contacts')
         concepts_valued_most: tuple = \
             ('Money', 'Honor', 'Your Word',
