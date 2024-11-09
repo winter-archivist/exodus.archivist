@@ -15,7 +15,7 @@ class REDGEN(discord.ext.commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
 
-    @discord.app_commands.command(name='redgen', description='Generates a Random Cyberpunk RED character.', guilds='')
+    @discord.app_commands.command(name='redgen', description='Generates a Random Cyberpunk RED character.')
     async def redgen(self, interaction: discord.Interaction):
         if interaction.guild.id != 778737073175003156:
             return
