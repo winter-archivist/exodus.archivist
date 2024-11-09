@@ -301,3 +301,9 @@ class OverseerCog(commands.Cog):
 
 async def setup(CLIENT):
     await CLIENT.add_cog(OverseerCog(CLIENT))
+    log.info('> Overseer Cog Setup Complete.')
+
+
+async def teardown(CLIENT):
+    await CLIENT.add_cog(OverseerCog(CLIENT))
+    log.info(f'> Overseer Cog Teardown Complete')

@@ -75,7 +75,7 @@ CLIENT = ExodusClient(command_prefix=cc.PREFIX, intents=INTENTS)
 
 @CLIENT.event
 async def on_ready():
-    log.warn('$ Project Branch: overseer')
+    log.warn('$ Project Branch: main')
     log.info(f'$ Server Count: {len(CLIENT.guilds)}')
     log.info(f'$ Server Names: {", ".join(str(x) for x in CLIENT.guilds)}')
     log.info(f'$ Start-Time: {time.strftime("%H:%M:%S", time.localtime())}')
@@ -109,11 +109,13 @@ async def on_ready():
 # Required for Slash Commands to work
 # Do Not Remove.
 @CLIENT.command(name="sync")
-async def sync(ctx):  # ! Slash Commands Cog Essential
-    if str(ctx.author.id) != f'{mc.RUNNER}':
-        return
-    synced = await CLIENT.tree.sync()
-    log.info(f"Synced [ {len(synced)} ] command(s).")
+@commands.is_owner()
+async def sync(ctx):
+    # ! Essential to ALL Slash Commands
+    await CLIENT.tree.sync()
+    log.crit('Synced.')
+    # synced = await CLIENT.tree.sync()
+    # log.info(f"Synced [ {len(synced)} ] command(s).")
 
 
 CLIENT.run(token=cc.TOKEN, reconnect=True)

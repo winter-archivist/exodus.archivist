@@ -65,3 +65,9 @@ class ROLLETRON(discord.ext.commands.Cog):
 
 async def setup(CLIENT):
     await CLIENT.add_cog(ROLLETRON(CLIENT))
+    log.info('> ROLLETRON Setup Complete.')
+
+
+async def teardown(CLIENT):
+    await CLIENT.add_cog(ROLLETRON(CLIENT))
+    log.info(f'> ROLLETRON Teardown Complete')

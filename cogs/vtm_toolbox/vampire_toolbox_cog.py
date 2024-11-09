@@ -20,8 +20,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
     @discord.app_commands.describe(character_name='Character Name')
     @discord.app_commands.choices(target_tool=[
         discord.app_commands.Choice(name="Tracker", value="tracker"),
-        discord.app_commands.Choice(name="Roller", value="roller"),
-                                               ])
+        discord.app_commands.Choice(name="Roller", value="roller")])
     async def Toolbox(self, interaction: discord.Interaction, character_name: str, target_tool: discord.app_commands.Choice[str]):
 
         # Resets the currently stored Roll information for given character.
@@ -92,3 +91,9 @@ class VTM_Toolbox(discord.ext.commands.Cog):
 
 async def setup(CLIENT):
     await CLIENT.add_cog(VTM_Toolbox(CLIENT))
+    log.info('> VTM_Toolbox Setup Complete.')
+
+
+async def teardown(CLIENT):
+    await CLIENT.add_cog(VTM_Toolbox(CLIENT))
+    log.info(f'> VTM Toolbox Teardown Complete')

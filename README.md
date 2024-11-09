@@ -5,7 +5,7 @@ Exodus.Archivist
 
 > * Branch: overseer
 > * State: Stable
-> * Version 01.06.14
+> * Version 01.06.15
 > > * First Pair  | Major Features/"Large Overhauls"
 > > * Second Pair | Non-Major Features
 > > * Third Pair  | Other Repo Pushes
@@ -21,16 +21,16 @@ reason you'd like to talk to me about the project, your best place to contact me
 >> * Easily Setup
 >> * Open Source [GNUGPL 3.0]
 >> * Logging /w "Syntax" [See Below]
->> * In Active Development [OCT 2024]
+>> * In Active Development [NOV 2024]
 
 > * Client: 
 >> * Slash Commands
 >> * Cog Manager
 >> * VTM v5 Toolbox
->> * REDgen
 
-> * Active Development Features (varying states of functionality) 
+> * Active Development Features (in order of their varying states of functionality)
 >> * VTM v5 Toolbox [Functional | Extending Functionality]
+>> * Overseer [Non-Functional Test Build | Working On]
 >> * Bot Issue Ticket System [N/A | HIATUS]
 >> * Notes System [N/A | HIATUS]
 
@@ -48,10 +48,11 @@ reason you'd like to talk to me about the project, your best place to contact me
 Before using the bot please ensure you understand python, discord.py, 
 and the discord developer tools, none of those will be explained here.
 
-> Do ALL the following <u>__BEFORE__</u> trying to run the bot
+> Do ALL the following <u>__BEFORE__</u> trying to run the bot.
+> Details on WHY these exist are found in their respective config files.
 > 
 > * Change the Bot's "TOKEN" [client_config.py]
-> * Change the Bot's "RUNNER" and "RUNNER_ID" [misc/config/main_config.py]
+> * Change the Bot's "RUNNER" and "RUNNER_ID" [main_config.py]
 ---
 ## LOGGING
 When things are logged they should have a "reason" or prefix attached to the beginning these can be "stacked". 

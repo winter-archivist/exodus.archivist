@@ -13,6 +13,5 @@ TOKEN: str = f'{os.environ["TOKEN"]}'
 PREFIX: str = f'ex.'
 
 # ? Determines whether the bot will attempt loading its slash-commands.
-# I set this to False when doing lots of non-slash-command based testing; If you don't,
-# you'll sync too much you'll get rate-limited
-SLASH_MODE: bool = True
+# Should be kept off, however can be enabled if needed.
+SLASH_MODE: bool = False
