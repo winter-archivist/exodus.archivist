@@ -10,6 +10,7 @@ import cogs.vtm_toolbox.vtm_cm.vtb_character_manager as cm
 import cogs.vtm_toolbox.vtm_cm.vtb_pages as vp
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_tracker as vt
+import cogs.vtm_toolbox.vtm_cm.sections.vtb_list as vl
 
 
 class VTM_Toolbox(discord.ext.commands.Cog):
@@ -23,29 +24,18 @@ class VTM_Toolbox(discord.ext.commands.Cog):
         discord.app_commands.Choice(name="Roller", value="roller")])
     async def Toolbox(self, interaction: discord.Interaction, character_name: str, target_tool: discord.app_commands.Choice[str]):
 
-        # Resets the currently stored Roll information for given character.
-        ROLL_DICT: dict = {'Difficulty'           : 0,
-                           'Pool'                 : 0,
-                           'Result'               : '',
-                           'Composition'          : 'Base[0]',
-
-                           # These are NOT a dict as to make it friendlier
-                           # with vtb_Character.__update_information__()
-                           'Regular Success Count': 0,
-                           'Regular Fail Count'   : 0,
-                           'Hunger Crit Count'    : 0,
-                           'Hunger Success Count' : 0,
-                           'Hunger Fail Count'    : 0,
-                           'Skull Count'          : 0}
-        ROLL_FILE_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{character_name}/roll/info.json'
-        with open(ROLL_FILE_DIRECTORY, "w") as operate_file:
-            json.dump(ROLL_DICT, operate_file)
-
         # Updates target_character.json (stored in the uid folder)
-        CHARACTER_NAME_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character.json'
-        CHARACTER_NAME_DICT: dict = {'character_name': character_name}
-        with open(CHARACTER_NAME_FILE, "w") as operate_file:
-            json.dump(CHARACTER_NAME_DICT, operate_file)
+        try:
+            CHARACTER_NAME_FILE: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/target_character.json'
+            CHARACTER_NAME_DICT: dict = {'character_name': character_name}
+            with open(CHARACTER_NAME_FILE, "w") as operate_file:
+                json.dump(CHARACTER_NAME_DICT, operate_file)
+        except FileNotFoundError:
+            page: discord.Embed = discord.Embed(title='Target Character File Not Found.', description='', colour=mc.EMBED_COLORS['red'])
+            page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+            page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+            await interaction.response.send_message(embed=page)
+            return
 
         CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
 
@@ -55,6 +45,32 @@ class VTM_Toolbox(discord.ext.commands.Cog):
                 await interaction.response.send_message(embed=page, view=vt.Home(self.CLIENT))
 
             case 'roller':
+                # Resets the currently stored Roll information for given character.
+                try:
+                    ROLL_DICT: dict = {'Difficulty'           : 0,
+                                       'Pool'                 : 0,
+                                       'Result'               : '',
+                                       'Composition'          : 'Base[0]',
+
+                                       # These are NOT a dict as to make it friendlier
+                                       # with vtb_Character.__update_information__()
+                                       'Regular Success Count': 0,
+                                       'Regular Fail Count'   : 0,
+                                       'Hunger Crit Count'    : 0,
+                                       'Hunger Success Count' : 0,
+                                       'Hunger Fail Count'    : 0,
+                                       'Skull Count'          : 0}
+                    ROLL_FILE_DIRECTORY: str = f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}/{character_name}/roll/info.json'
+                    with open(ROLL_FILE_DIRECTORY, "w") as operate_file:
+                        json.dump(ROLL_DICT, operate_file)
+                except FileNotFoundError:
+                    page: discord.Embed = discord.Embed(title='Character File Not Found.', description='',
+                                                        colour=mc.EMBED_COLORS['red'])
+                    page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+                    page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+                    await interaction.response.send_message(embed=page)
+                    return
+
                 page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'purple')
                 page: discord.Embed = await vp.standard_roller_page_modifications(page, CHARACTER)
                 await interaction.response.send_message(embed=page, view=vr.Home(self.CLIENT))
@@ -62,6 +78,13 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             case _:
                 log.error('**> Unknown target_tool.value given to Toolbox()')
                 raise ValueError
+
+    @discord.app_commands.command(name='vtb-list', description='Lists all owned characters..')
+    async def List(self, interaction: discord.Interaction):
+        BOOK = vl.vtb_Book(interaction, self.CLIENT)
+        await BOOK.__write_pages__(interaction)
+        await interaction.response.send_message(embed=BOOK.PAGES[0], view=BOOK.HOME_VIEW)
+        return
 
     @discord.app_commands.command(name='vtb-make', description='[ADMIN]')
     @discord.app_commands.describe(character_name='Character Name')
