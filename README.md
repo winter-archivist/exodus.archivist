@@ -5,7 +5,7 @@ Exodus.Archivist
 
 > * Branch: main
 > * State: Stable
-> * Version 01.07.00
+> * Version 01.07.01
 > > * First Pair  | Major Features/Major Rewrites
 > > * Second Pair | Moderate Features/Moderate Rewrites
 > > * Third Pair  | Patches/Other Repo Pushes
@@ -63,9 +63,9 @@ The way in which these are "stacked" is done from top to bottom of the list belo
 Higher they are on the list, the more important/higher "priority" 
 
 > Prefix List
->> SHUTDOWN :: <<<{text}>>> \
+>> SHUTDOWN  :: <<<{text}>>> \
 >> Error     :: * \
->> Startup   ::  $ \
+>> Startup   :: $ \
 >> From Tool :: & \
->> From Cog  ::  >
+>> From Cog  :: > \
 ---
