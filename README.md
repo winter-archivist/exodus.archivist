@@ -5,7 +5,7 @@ Exodus.Archivist
 
 > * Branch: main
 > * State: Stable
-> * Version 01.07.01
+> * Version 01.07.02
 > > * First Pair  | Major Features/Major Rewrites
 > > * Second Pair | Moderate Features/Moderate Rewrites
 > > * Third Pair  | Patches/Other Repo Pushes

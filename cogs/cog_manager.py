@@ -2,6 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+from zenlog import log
+
 from misc.config import main_config as mc
 
 
@@ -46,6 +48,13 @@ class CogManager(commands.Cog):
 
             case 'reload':
                 await self.CLIENT.reload_extension(f'cogs.{target.value}')
+
+        try:
+            log.info(f"> Synced [ {len(await self.CLIENT.tree.sync())} ] command(s).")
+
+        except Exception as e:
+            log.crit(f'> <<< Error Syncing Commands | {e}>>>')
+            exit()
 
         await interaction.response.send_message(embed=response_embed)
 

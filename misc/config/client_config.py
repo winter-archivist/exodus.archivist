@@ -12,6 +12,11 @@ TOKEN: str = f'{os.environ["TOKEN"]}'
 # ? Prefix for all NON-SLASH Commands.
 PREFIX: str = f'ex.'
 
+# ? List of cogs that will be loaded on startup
+# To add cogs, just add their directory, but instead of "/" use ".", however do not include their file extension.
+# I do not recommend removing the cog_manager
+INITIALIZATION_COGS: tuple = ('cogs.cog_manager', 'cogs.vtm_toolbox.vampire_toolbox_cog', 'cogs.rolletron.rolletron_cog')
+
 # ? Determines whether the bot will attempt loading its slash-commands.
 # Should be kept off, however can be enabled if needed.
 SLASH_MODE: bool = False

@@ -17,24 +17,15 @@ import misc.config.client_config as cc
 async def initialize_startup_cogs(CLIENT_INPUT):
     log.info('$ Initializing Startup Cogs...')
 
-    # To add cogs, just add their directory, but instead of "/" use ".", however do not include their file extension.
-    INITIAL_COGS: tuple = ('cogs.cog_manager',
-                           'cogs.vtm_toolbox.vampire_toolbox_cog')
-
     # Tries to load any cog listed in the above tuple; stops execution if the cog isn't found.
-    for_var = 0
-    for x in INITIAL_COGS:
-        targeted_cog = INITIAL_COGS[for_var]
-
+    for x in cc.INITIALIZATION_COGS:
         try:
-            await CLIENT_INPUT.load_extension(f'{targeted_cog}')
-            log.debug(f'$ Loaded Initialization Cog: {targeted_cog}')
+            await CLIENT_INPUT.load_extension(x)
+            log.debug(f'$ Loaded Initialization Cog: {x}')
 
         except Exception as e:
-            log.crit(f"<<<$ Failed to Load Initialization Cog: {targeted_cog} {e}>>>")
+            log.crit(f"<<<$ Failed to Load Initialization Cog: {x} {e}>>>")
             exit()
-
-        for_var += 1
 
     log.info('$ Loaded Startup Cogs... Slash Mode Check Started, Safe to Begin Use.')
 

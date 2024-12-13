@@ -36,4 +36,4 @@ RUNNER_ID: int = 567819777209532418  # ? YOUR DISCORD ID as an INTEGER
 
 # ? Should be kept the same
 DEVELOPER: str = 'winter.archivist'  # ! if you need to contact who wrote this awful code
-GITREPO: str = 'https://github.com/AshenEntropy/exodus.archivist'  # ! if you need to contact who wrote this awful code
+GITREPO: str = 'https://github.com/winter-archivist/exodus.archivist'  # ! if you need to contact who wrote this awful code
