@@ -11,6 +11,7 @@ import cogs.vtm_toolbox.vtm_cm.vtb_pages as vp
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_roller as vr
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_tracker as vt
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_list as vl
+from cogs.vtm_toolbox.vtm_cm.sections.vtb_list import vtb_Book
 
 
 class VTM_Toolbox(discord.ext.commands.Cog):
@@ -39,15 +40,15 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             await interaction.response.send_message(embed=page)
             return
 
-        CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
-
         match target_tool.value:
             case 'tracker':
+                CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
                 page: discord.Embed = await vp.basic_page_builder(CHARACTER, 'Home', '', 'mint')
                 await interaction.response.send_message(embed=page, view=vt.Home(self.CLIENT))
                 return
 
             case 'roller':
+                CHARACTER: cm.vtb_Character = cm.vtb_Character(interaction)
                 # Resets the currently stored Roll information for given character.
                 try:
                     ROLL_DICT: dict = {'Difficulty'           : 0,
@@ -82,10 +83,11 @@ class VTM_Toolbox(discord.ext.commands.Cog):
             case 'list':
                 BOOK = vl.vtb_Book(interaction, self.CLIENT)
                 await BOOK.__write_pages__(interaction)
-                await interaction.response.send_message(embed=BOOK.PAGES[0], view=BOOK.HOME_VIEW)
+                await interaction.response.send_message(embed=BOOK.PAGES[0], view=vl.PAGE_VIEW(self.CLIENT, BOOK))
                 return
 
             case 'make':
+
                 if interaction.user.id == mc.RUNNER_ID:
                     try:
                         await cm.make_blank_character_files(interaction, character_name)

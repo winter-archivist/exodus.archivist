@@ -6,8 +6,7 @@
 ### Note
 You should understand VTM mechanics if you intend on modifying any of the code, some parts will make ZERO sense without 
 understanding some of the math/systems involved in VTM. Additionally, quite a bit of this bot is written for my 
-chronicle specifically; An example of this is can be found in the Discipline section of the bot, specifically in its 
-lack of support for many disciplines.
+chronicle specifically.
 ---
 ### VTB File Structure
 Tree Characters:`║ ═ ╠ ╚`
