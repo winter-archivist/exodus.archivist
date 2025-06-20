@@ -69,8 +69,8 @@ async def on_ready():
 
     await initialize_startup_cogs(CLIENT)
 
-    # Slash Commands Setup; can be easily disabled/enabled via the variable "SLASH_MODE" in misc/config/client_config.py
-    match cc.SLASH_MODE:
+    # Slash Commands Setup; can be easily disabled/enabled via the variable "SYNC_SLASH_COMMANDS_ON_START" in misc/config/client_config.py
+    match cc.SYNC_SLASH_COMMANDS_ON_START:
 
         case True:
 
@@ -83,10 +83,10 @@ async def on_ready():
                 exit()
 
         case False:
-            log.warn('$ SLASH_MODE is False, Sync Skipped')
+            log.warn('$ SYNC_SLASH_COMMANDS_ON_START is False, Sync Skipped')
 
         case _:
-            log.crit('<<<$ SLASH_MODE is Not a Bool, Client Killed >>>')
+            log.crit('<<<$ SYNC_SLASH_COMMANDS_ON_START is Not a Bool, Client Killed >>>')
             exit()
 
     log.info('$ Bot Online | All Startup Cogs Initialized.')
@@ -102,6 +102,7 @@ async def sync(ctx):
     try:
         synced = await CLIENT.tree.sync()
         log.info(f"Synced [ {len(synced)} ] command(s).")
+        await ctx.channel.send('Synced.')
 
     except Exception as e:
         log.crit(f'<<< Error Syncing Commands | {e}>>>')
