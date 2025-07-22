@@ -13,10 +13,10 @@ import cogs.vtm_toolbox.vtm_cm.sections.vtb_tracker as vt
 import cogs.vtm_toolbox.vtm_cm.sections.vtb_list as vl
 from cogs.vtm_toolbox.vtm_cm.sections.vtb_list import vtb_Book
 
-
 class VTM_Toolbox(discord.ext.commands.Cog):
     def __init__(self, CLIENT):
         self.CLIENT = CLIENT
+        self.vrf1_role_id: int = 1396813043622740069
 
     @discord.app_commands.command(name='vtm-toolbox', description='Toolbox for VTM!')
     @discord.app_commands.describe(character_name='Character Name')
@@ -24,7 +24,7 @@ class VTM_Toolbox(discord.ext.commands.Cog):
         discord.app_commands.Choice(name="Tracker", value="tracker"),
         discord.app_commands.Choice(name="Roller", value="roller"),
         discord.app_commands.Choice(name="Character List", value="list"),
-        discord.app_commands.Choice(name="[ADMIN] make", value="make")])
+        discord.app_commands.Choice(name="[VRF1] Make Empty Kindred", value="make_empty")])
     async def Toolbox(self, interaction: discord.Interaction, character_name: str, target_tool: discord.app_commands.Choice[str]):
 
         # Updates target_character.json (stored in the uid folder)
@@ -86,30 +86,55 @@ class VTM_Toolbox(discord.ext.commands.Cog):
                 await interaction.response.send_message(embed=BOOK.PAGES[0], view=vl.PAGE_VIEW(self.CLIENT, BOOK))
                 return
 
-            case 'make':
+            case 'make_empty':
 
-                if interaction.user.id == mc.RUNNER_ID:
-                    try:
-                        await cm.make_blank_character_files(interaction, character_name)
-                        log.crit(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
-                        page: discord.Embed = discord.Embed(title='VTB-Make', description='Successful Creation',
-                                                            colour=mc.EMBED_COLORS[f"mint"])
-                    except Exception as e:
-                        log.crit(f'*> {interaction.user.name} | {interaction.user.id} failed at making {character_name}.')
-                        log.crit(f'*> Make Error: {e}')
-                        page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed Creation',
-                                                            colour=mc.EMBED_COLORS[f"red"])
-                        page.add_field(name='Encountered Error', value=f'{e}', inline=False)
-                        raise ValueError
+                # Verifies that the user has VRF1
+                try:
+                    if interaction.user.get_role(self.vrf1_role_id).name == 'VRF1':
+                        log.warn(f'> {interaction.user.name} | {interaction.user.id} passed VTB-Make-Empty verification')
+                except AttributeError as e:
+                    log.warn(f'> {interaction.user.name} | {interaction.user.id} attempted to use VTB-Make-Empty without verification')
+                    lacking_verification_page: discord.Embed = discord.Embed(title='VTB-Make-Empty', description='Lacking Verification', colour=mc.EMBED_COLORS[f"red"])
+                    lacking_verification_page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+                    lacking_verification_page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+                    await interaction.response.send_message(embed=lacking_verification_page, ephemeral=True)
+                    return
+                except Exception as e:
+                    log.crit(f'> VTB-Make-Empty Verification Error: {e}')
+                    failed_verification_page: discord.Embed = discord.Embed(title='VTB-Make-Empty', description='Verification Failed for Unknown Reasons', colour=mc.EMBED_COLORS[f"red"])
+                    failed_verification_page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+                    failed_verification_page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+                    await interaction.response.send_message(embed=failed_verification_page, ephemeral=True)
+                    return
 
-                    page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
-                    page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
-                    page.add_field(name='Character Name', value=f'{character_name}', inline=False)
-                else:
-                    page: discord.Embed = discord.Embed(title='VTB-Make', description='Failed', colour=mc.EMBED_COLORS[f"red"])
-                    page.add_field(name='Uncounted Error', value=f'Non-Admin User-ID Provided', inline=False)
+                # Creates Empty Character
+                try:
+                    await cm.make_blank_character_files(interaction, character_name)
+                    log.info(f'> {interaction.user.name} | {interaction.user.id} made {character_name}.')
+                    successful_creation_page: discord.Embed = discord.Embed(title='VTB-Make-Empty', description='Successful Creation', colour=mc.EMBED_COLORS[f"mint"])
+                    successful_creation_page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+                    successful_creation_page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+                    successful_creation_page.add_field(name='Character Name', value=f'{character_name}', inline=False)
+                    await interaction.response.send_message(embed=successful_creation_page)
+                    return
+                except FileExistsError as e:
+                    log.warn(f'> VTB-Make-Empty Creation Error, Files Already Exist: {e}')
+                    failed_creation_page: discord.Embed = discord.Embed(title='VTB-Make-Empty', description='Creation Failed due to character already existing', colour=mc.EMBED_COLORS[f"red"])
+                    failed_creation_page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+                    failed_creation_page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+                    failed_creation_page.add_field(name='Character Name', value=f'{character_name}', inline=False)
+                    await interaction.response.send_message(embed=failed_creation_page, ephemeral=True)
+                    return
+                except Exception as e:
+                    log.warn(f'> VTB-Make-Empty Creation Error: {e}')
+                    failed_creation_page: discord.Embed = discord.Embed(title='VTB-Make-Empty', description='Creation Failed for Unknown Reasons', colour=mc.EMBED_COLORS[f"red"])
+                    failed_creation_page.set_footer(text=f'{interaction.user.id}', icon_url=f'{interaction.user.display_avatar}')
+                    failed_creation_page.set_author(name=f'{interaction.user.name}', icon_url=f'{interaction.user.display_avatar}')
+                    failed_creation_page.add_field(name='Character Name', value=f'{character_name}', inline=False)
+                    await interaction.response.send_message(embed=failed_creation_page, ephemeral=True)
+                    return
 
-                await interaction.response.send_message(embed=page)
+                log.crit('> VTB-Make-Empty | How Did We Get Here?')
                 return
 
             case _:

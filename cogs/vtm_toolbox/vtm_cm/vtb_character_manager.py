@@ -15,8 +15,7 @@ async def make_blank_character_files(interaction: discord.Interaction, CHARACTER
         os.mkdir(f'cogs/vtm_toolbox/vtb_characters/{interaction.user.id}')
 
     if os.path.exists(CHARACTER_DIRECTORY):
-        log.debug(f'> | {interaction.user.name} | {interaction.user.id} | '
-                  f'Attempted to make {CHARACTER_NAME}, but {CHARACTER_DIRECTORY} already exists.')
+        log.debug(f'> {interaction.user.name} | {interaction.user.id} Attempted to make {CHARACTER_NAME}, but {CHARACTER_DIRECTORY} already exists.')
         raise FileExistsError
 
     os.mkdir(f'{CHARACTER_DIRECTORY}')
